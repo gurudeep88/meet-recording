@@ -1,0 +1,130 @@
+import { useLocation } from "react-router-dom";
+import {GENERATE_TOKEN_URL} from "../constants";
+
+export function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+
+export function getMeetingId() {
+    const characters ='abcdefghijklmnopqrstuvwxyz';
+    function generateString(length) {
+        let result = ' ';
+        const charactersLength = characters.length;
+        for ( let i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+    const str = generateString(9).trim()
+    const strArr = str.match(/.{3}/g);
+    return strArr.join("-");
+}
+
+
+export async function getToken(roomName, profile, name,  isModerator) {
+    const body = {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            sessionId: roomName, // enter your sessionId
+            apiKey: "27fd6f8080d512442a3694f461adb3986cda5ba39dbe368d75",
+            user: {
+                id: profile.id,
+                avatar: profile.avatar,
+                name: name,
+                email: profile.email,
+                role: isModerator
+            }
+        })
+    };
+
+    try {
+        const response = await fetch(GENERATE_TOKEN_URL, body);
+        if (response.ok) {
+            const json = await response.json();
+            localStorage.setItem(`sariska_${roomName}${name}`, json.token);
+            return json.token;
+        } else {
+            console.log(response.status);
+        }
+    } catch (error) {
+        console.log('error', error);
+    }
+}
+
+export const formatAMPM = (date)=> {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+}
+
+export const getUserById = (id, conference) => {
+     if (id === conference.myUserId()) {
+         return conference.getLocalUser()
+     }
+     return conference?.participants[id]?._identity?.user
+}
+
+export const clearAllTokens = () => {
+    Object.entries(localStorage).map(x => x[0]).filter(
+            x => x.substring(0,8)==="sariska_"
+        ).map(
+            x => localStorage.removeItem(x))
+}
+
+export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewportHeight) {
+    const numWindows = totalParticipant;
+    const columns = Math.ceil(Math.sqrt(numWindows));
+    const rows = Math.ceil(numWindows / columns);
+    const gridItemWidth = viewportWidth / columns;
+    const gridItemHeight = (viewportHeight -128) / rows;
+
+    if ( gridItemWidth < gridItemHeight ) {
+        return { rows, columns, gridItemWidth: gridItemHeight*16/9, gridItemHeight};
+    }
+    return { rows, columns, gridItemWidth, gridItemHeight: gridItemWidth*9/16};
+}
+
+export function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+export function videoShadow(level) {
+    const scale = 2;
+
+    // Internal circle audio level.
+    const int = {
+        level: level > 0.15 ? 20 : 0,
+        color: "rgba(255,255,255,0.4)"
+    };
+
+    // External circle audio level.
+    const ext = {
+        level: parseFloat(
+            ((int.level * scale * level) + int.level).toFixed(0)),
+        color: "rgba(255,255,255,0.2)"
+    };
+
+    // Internal blur.
+    int.blur = int.level ? 2 : 0;
+
+    // External blur.
+    ext.blur = ext.level ? 6 : 0;
+
+    return [
+        `0 0 ${int.blur}px ${int.level}px ${int.color}`,
+        `0 0 ${ext.blur}px ${ext.level}px ${ext.color}`
+    ].join(', ');
+}

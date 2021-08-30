@@ -1,0 +1,216 @@
+import {Box, makeStyles} from '@material-ui/core';
+import React, {useEffect, useState} from 'react'
+import {color} from '../../assets/styles/_color';
+import ActionButtons from '../../components/meeting/ActionButtons';
+import SariskaMediaTransport from 'sariska-media-transport';
+import Navbar from '../../components/shared/Navbar'
+import ReconnectDialog from "../../components/shared/ReconnectDialog";
+import {useDispatch, useSelector} from "react-redux";
+import {addRemoteTrack, removeRemoteTrack, remoteTrackMutedChanged} from "../../store/actions/track";
+import GridLayout from "../../components/meeting/GridLayout";
+import SpeakerLayout from "../../components/meeting/SpeakerLayout";
+import {EXIT_FULL_SCREEN_MODE, SPEAKER, IS_PRESENTING, START_PRESENTING, STOP_PRESENTING} from "../../constants";
+import {addMessage} from "../../store/actions/message";
+import {clearAllTokens, getRandomColor, getUserById} from "../../utils";
+import PermissionDialog from "../../components/shared/PermissionDialog";
+import SnackbarBox from '../../components/shared/Snackbar';
+import {unreadMessage} from '../../store/actions/chat';
+import {clearAllReducers} from "../../store/actions/conference";
+import Home from "../Home";
+import {setPresenter} from "../../store/actions/layout";
+import {addThumbnailColor, removeThumbnailColor} from "../../store/actions/color";
+import {setAudioLevel} from "../../store/actions/audioIndicator";
+import {showNotification} from "../../store/actions/notification";
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        background: color.secondaryDark,
+        minHeight: '100vh',
+        justifyContent: "space-between"
+    }
+}));
+
+const Meeting = () => {
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    const localTracks = useSelector(state => state.localTrack);
+    const conference = useSelector(state => state.conference);
+    const connection = useSelector(state => state.connection);
+    const layout = useSelector(state => state.layout);
+    const notification = useSelector(state => state.notification);
+    const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
+    const [lobbyUserJoined, setLobbyUserJoined] = useState({});
+    const [recordingAlreadyEnabled, setRecordingAlreadyEnabled] = useState(false);
+    const [transcriptionAlreadyEnabled, setTranscriptionAlreadyEnabled] = useState(false);
+
+
+    const allowLobbyAccess = () => {
+        conference.lobbyApproveAccess(lobbyUserJoined.id)
+        setLobbyUserJoined({});
+    }
+
+    const denyLobbyAccess = () => {
+        conference.lobbyDenyAccess(lobbyUserJoined.id);
+        setLobbyUserJoined({});
+    }
+
+    const updateNetwork = () => { // set internet connectivity status
+        if (!window.navigator.onLine) {
+            dispatch(showNotification({
+                message: "You lost your internet connection. Trying to reconnect...",
+                severity: "info",
+                autoHide: false
+            }));
+        }
+
+        setTimeout(() => {
+            if (window.navigator.onLine && !layout.disconnected) {
+                dispatch(showNotification({message: "Internet Recovered!!!", autoHide: true, severity: "info"}));
+            }
+        }, 3000);
+        SariskaMediaTransport.setNetworkInfo({isOnline: window.navigator.onLine});
+    };
+
+    const destroy = async () => {
+        if (conference?.isJoined()) {
+            // await conference?.leave();
+        }
+        for (const track of localTracks) {
+            await track.dispose();
+        }
+        await connection?.disconnect();
+        window.removeEventListener("offline", updateNetwork);
+        window.removeEventListener("online", updateNetwork);
+        dispatch(clearAllReducers());
+        clearAllTokens();
+    }
+
+    useEffect(() => {
+        if (!conference) {
+            return;
+        }
+        conference.getParticipants().forEach(item=>{
+            if (item._properties?.IS_PRESENTING === START_PRESENTING) {
+                dispatch(showNotification({autoHide: true, message: `Screen sharing started by ${item._identity?.user?.name}`}));
+                dispatch(setPresenter(item._id));
+            }
+
+            if (item._properties?.features_jigasi) {
+                setTranscriptionAlreadyEnabled(true);
+            }
+
+            if (item._properties?.features_jigasi) {
+                setRecordingAlreadyEnabled(true);
+            }
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, (track) => {
+            if (track.isLocal()) {
+                return;
+            }
+            dispatch(addRemoteTrack(track));
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, (track) => {
+            dispatch(removeRemoteTrack(track));
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_MUTE_CHANGED, (track) => {
+            dispatch(remoteTrackMutedChanged());
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
+            setDominantSpeakerId(id);
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
+            if (key === IS_PRESENTING && newValue === START_PRESENTING) {
+                dispatch(showNotification({ autoHide: true, message: `Screen sharing started by ${participant._identity?.user?.name}`}));
+                dispatch(setPresenter(participant._id));
+            }
+
+            if (key === IS_PRESENTING && newValue === STOP_PRESENTING) {
+                dispatch(setPresenter(null));
+            }
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
+            if (conference.isModerator()) {
+                conference.enableLobby();
+            }
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.LOBBY_USER_JOINED, (id, displayName) => {
+            setLobbyUserJoined({id, displayName});
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.USER_JOINED, (id) => {
+            dispatch(addThumbnailColor({partcipantId: id, color: getRandomColor()}));
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.USER_LEFT, (id) => {
+            dispatch(removeThumbnailColor(id));
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.MESSAGE_RECEIVED, (id, text, ts) => {
+            dispatch(addMessage({text: text, user: getUserById(id, conference)}));
+            if (id !== conference.myUserId()) {
+                dispatch(unreadMessage(1))
+            }
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.NOISY_MIC, () => {
+            dispatch(showNotification({autoHide: true, message: "Your mic seems to be noisy", severity: "info"}));
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.TALK_WHILE_MUTED, () => {
+            dispatch(showNotification({autoHide: true, message: "Trying to speak?  your are muted!!!", severity: "info"}));
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.NO_AUDIO_INPUT, () => {
+            dispatch(showNotification({autoHide: true, message: "Looks like device has no audio input", severity: "warning"}));
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_AUDIO_LEVEL_CHANGED, (participantId, audioLevel) => {
+            dispatch(setAudioLevel({participantId, audioLevel}));
+        });
+
+        window.addEventListener("offline", updateNetwork);
+        window.addEventListener("online", updateNetwork);
+        window.addEventListener("beforeunload", destroy);
+
+        return () => {
+            destroy();
+        };
+    }, [conference]);
+
+
+    if (!conference || !conference.isJoined()) {
+        return <Home/>;
+    }
+
+    return (
+        <Box className={classes.root}>
+            {layout.mode === EXIT_FULL_SCREEN_MODE ?
+                <Navbar dominantSpeakerId={dominantSpeakerId}/>
+                : <div/>
+            }
+            {layout.type === SPEAKER ?
+                <SpeakerLayout dominantSpeakerId={dominantSpeakerId}/> :
+                <GridLayout dominantSpeakerId={dominantSpeakerId}/>
+            }
+            <ActionButtons dominantSpeakerId={dominantSpeakerId}/>
+            {lobbyUserJoined.id && <PermissionDialog
+                denyLobbyAccess={denyLobbyAccess}
+                allowLobbyAccess={allowLobbyAccess}
+                displayName={lobbyUserJoined.displayName}/>}
+
+            <SnackbarBox notification={notification}/>
+            <ReconnectDialog open={layout.disconnected}/>
+        </Box>
+    )
+}
+
+export default Meeting

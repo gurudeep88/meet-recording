@@ -104,7 +104,6 @@ const LobbyRoom = ({tracks}) => {
     const [name, setName] = useState("");
     const [buttonText, setButtonText] = useState("Create Meeting");
     const [accessDenied, setAccessDenied] = useState(false);
-    const [reconnectDialog, setReconnectDialog] = useState(false);
     const profile = useSelector(state => state.profile);
     const queryParams = useParams();
 

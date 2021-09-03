@@ -30,15 +30,11 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
 
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
-        "selectedEndpoints": [largeVideoId],
         "onStageEndpoints":  [largeVideoId],
         "defaultConstraints": { "maxHeight":  180 },
         "constraints": {
             [largeVideoId]: { "maxHeight": 720 }
         }
-    }
-    if (layout.presenterParticipantId) {
-        conference.selectParticipant(layout.presenterParticipantId);
     }
     conference.setReceiverConstraints(constraints);
     return (

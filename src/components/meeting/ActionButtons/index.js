@@ -146,6 +146,10 @@ const ActionButtons = () => {
         const [desktopTrack] = await SariskaMediaTransport.createLocalTracks({
             resolution: 720,
             devices: ["desktop"],
+            desktopSharingFrameRate: {
+                min: 25,
+                max: 30
+            },
             constraints: {
                 video: {
                      height: {

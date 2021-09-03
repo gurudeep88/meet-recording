@@ -68,7 +68,7 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
                                     width={gridItemWidth}
                                     isBorderSeparator={participantIds.length !== 1}
                                     isFilmstrip={true}
-                                    isPresenter={layout.presenterParticipantId === conference.myUserId()}
+                                    isPresenter={layout.presenterParticipantId === participantIds[i * columns + j]}
                                     isActiveSpeaker={dominantSpeakerId === participantIds[i * columns + j]}
                                     participantDetails={participants[participantIds[i * columns + j]]?._identity?.user}
                                     participantTracks={tracks[participantIds[i * columns + j]]}

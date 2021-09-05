@@ -298,24 +298,22 @@ const Navbar = ({dominantSpeakerId}) => {
             return;
         }
 
-        const token = authorizeDropbox();
-        if (!token) {
-            return dispatch(showNotification({
-                severity: "error",
-                message: 'Recording failed no dropbox token'
-            }));
+        // const token = authorizeDropbox();
+        // if (!token) {
+        //     return dispatch(showNotification({
+        //         severity: "error",
+        //         message: 'Recording failed no dropbox token'
+        //     }));
+        // }
+        
+        const appData = {
+           file_recording_metadata : {
+             'share': true
+            }
         }
 
-        const appData = JSON.stringify({
-            'file_recording_metadata': {
-                'upload_credentials': {
-                    'service_name': 'dropbox',
-                    'token': token
-                }
-            }
-        });
-
         const session = await conference.startRecording({
+            baseUrl: "https://test.sariska.io",
             mode: SariskaMediaTransport.constants.recording.mode.FILE,
             appData: JSON.stringify(appData)
         });

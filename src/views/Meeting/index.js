@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: "column",
         background: color.secondaryDark,
         minHeight: '100vh',
-        justifyContent: "space-between"
     }
 }));
 
@@ -193,11 +192,8 @@ const Meeting = () => {
     }
 
     return (
-        <Box className={classes.root}>
-            {layout.mode === EXIT_FULL_SCREEN_MODE ?
-                <Navbar dominantSpeakerId={dominantSpeakerId}/>
-                : <div/>
-            }
+        <Box style={{justifyContent: layout.mode === EXIT_FULL_SCREEN_MODE && "center"}} className={classes.root}>
+            {layout.mode === EXIT_FULL_SCREEN_MODE && <Navbar dominantSpeakerId={dominantSpeakerId}/>}
             {layout.type === SPEAKER ?
                 <SpeakerLayout dominantSpeakerId={dominantSpeakerId}/> :
                 <GridLayout dominantSpeakerId={dominantSpeakerId}/>

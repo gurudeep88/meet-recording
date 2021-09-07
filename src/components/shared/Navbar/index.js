@@ -42,7 +42,8 @@ const StyledBadge = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
     root: {
         top: 0,
-        width: "100%"
+        width: "100%",
+        position: "fixed"
     },
     navContainer: {},
     nav: {
@@ -132,6 +133,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(3, 0, 0, 0),
     },
     chatList: {
+        height: "100%",
         width: '360px',
         padding: theme.spacing(3, 3, 0, 3),
     },
@@ -152,6 +154,7 @@ const useStyles = makeStyles((theme) => ({
     },
     drawer: {
         "& .MuiDrawer-paper": {
+            overflow: "hidden",
             top: '64px',
             height: '82%',
             right: '10px',
@@ -305,7 +308,7 @@ const Navbar = ({dominantSpeakerId}) => {
         //         message: 'Recording failed no dropbox token'
         //     }));
         // }
-        
+
         const appData = {
            file_recording_metadata : {
              'share': true

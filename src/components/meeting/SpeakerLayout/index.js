@@ -4,9 +4,13 @@ import VideoBox from '../../shared/VideoBox';
 import PartcipantPane from "../../shared/ParticipantPane";
 import {useSelector} from "react-redux";
 import {useWindowResize} from "../../../hooks/useWindowResize";
+import classnames from "classnames";
+import * as Constants from "../../../constants";
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        alignItems: "center",
         display: "flex",
         "& .fullmode": {
             position: "absolute",
@@ -37,12 +41,17 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         }
     }
     conference.setReceiverConstraints(constraints);
+
+    const activeClasses = classnames(classes.root, {
+        'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
+    });
+
     return (
-        <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}} className={classes.root}>
+        <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}} className={activeClasses}>
             <VideoBox
                 isFilmstrip={true}
                 width={viewportWidth}
-                height={viewportHeight}
+                height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight}
                 isLargeVideo={true}
                 isActiveSpeaker={ largeVideoId===dominantSpeakerId}
                 isPresenter={largeVideoId===layout.presenterParticipantId}
@@ -51,7 +60,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
                 localUserId={conference.myUserId()}
             />
             {  conference.getParticipantCount() > 1 &&
-                <PartcipantPane dominantSpeakerId={dominantSpeakerId} largeVideoId={largeVideoId} localTracks={localTracks} remoteTracks={remoteTracks}/>
+                <PartcipantPane height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight } dominantSpeakerId={dominantSpeakerId} largeVideoId={largeVideoId} localTracks={localTracks} remoteTracks={remoteTracks}/>
             }
         </Box>
     )

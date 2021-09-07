@@ -35,19 +35,10 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
     const layout = useSelector(state => state.layout);
 
     //merge local and remote track
-    let tracks = {
-        ...remoteTracks,
-        [localUser.id]: localTracks
-    };
-
+    const tracks = {...remoteTracks, [localUser.id]: localTracks };
     // merge local and remote participant
-    const participants = {
-        ...conference.participants,
-        [localUser.id]: {_identity: {user: {name: localUser.name, id: localUser.id}}, _id: localUser.id}
-    };
+    const participants = [...conference.getParticipants(), {_identity: {user: {name: localUser.name, id: localUser.id}}, _id: localUser.id}];
 
-
-    const participantIds = Object.keys(tracks);
     const {
         rows,
         columns,
@@ -62,18 +53,20 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
                 {[...Array(rows)].map((x, i) =>
                     <Grid className={classes.row} key={i} item>
                         {[...Array(columns)].map((y, j) =>
-                            { return tracks[participantIds[i * columns + j]] ?
+                            { return (tracks[participants[i * columns + j]?._id] ||  participants[i * columns + j]?._id) &&
                                 <VideoBox key={i * columns + j}
                                     height={gridItemHeight}
                                     width={gridItemWidth}
-                                    isBorderSeparator={participantIds.length !== 1}
+                                    isBorderSeparator={participants.length !== 1}
                                     isFilmstrip={true}
-                                    isPresenter={layout.presenterParticipantId === participantIds[i * columns + j]}
-                                    isActiveSpeaker={dominantSpeakerId === participantIds[i * columns + j]}
-                                    participantDetails={participants[participantIds[i * columns + j]]?._identity?.user}
-                                    participantTracks={tracks[participantIds[i * columns + j]]}
+                                    isPresenter={layout.presenterParticipantId === participants[i * columns + j]._id}
+                                    isActiveSpeaker={dominantSpeakerId === participants[i * columns + j]._id}
+                                    participantDetails={participants[i * columns + j]?._identity?.user}
+                                    participantTracks={tracks[participants[i * columns + j]._id] || []}
                                     localUserId={conference.myUserId()}
-                                /> : null }
+                                />
+                            
+                            }
                         )}
                     </Grid>
                 )}

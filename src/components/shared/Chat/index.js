@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
         flexDirection: "column",
-        height: "500px",
+        height: "90%",
         right: "2px",
         justifyContent: "space-between",
         margin: theme.spacing(3, 0, 0, 0),
@@ -61,8 +61,8 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     chatList: {
-        overflow: "scroll",
-        height: "500px",
+        overflow: "auto",
+        height: "100%",
         boxSizing: 'border-box',
         "& .MuiAvatar-root": {
             width: '30px',

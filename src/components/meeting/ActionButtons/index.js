@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center",
         bottom: 0,
         width: "100%",
+        position: "fixed",
         color: color.white,
         "& .MuiSvgIcon-root": {
             padding: '8px',

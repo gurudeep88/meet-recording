@@ -84,12 +84,12 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
     const columns = Math.ceil(Math.sqrt(numWindows));
     const rows = Math.ceil(numWindows / columns);
     const gridItemWidth = viewportWidth / columns;
-    const gridItemHeight = (viewportHeight -128) / rows;
-
-    if ( gridItemWidth < gridItemHeight ) {
-        return { rows, columns, gridItemWidth: gridItemHeight*16/9, gridItemHeight};
+    let gridItemHeight = viewportHeight / rows;
+    if ( gridItemHeight > gridItemWidth*9/16 ) {
+        gridItemHeight  = gridItemWidth*9/16
     }
-    return { rows, columns, gridItemWidth, gridItemHeight: gridItemWidth*9/16};
+
+    return { rows, columns, gridItemWidth, gridItemHeight};
 }
 
 export function getRandomColor() {

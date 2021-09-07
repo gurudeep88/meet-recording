@@ -10,7 +10,7 @@ export function useWindowResize() {
         const documentWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
         const documentHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
         const viewportWidth = mode === EXIT_FULL_SCREEN_MODE ? documentWidth - 280 : documentWidth;
-        const viewportHeight = mode === EXIT_FULL_SCREEN_MODE ? documentHeight - 128 : documentHeight - 64;
+        const viewportHeight = mode === EXIT_FULL_SCREEN_MODE ? documentHeight - 128 : documentHeight - 128;
         return {viewportWidth, viewportHeight};
     }
 

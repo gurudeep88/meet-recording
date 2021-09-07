@@ -25,6 +25,7 @@ import {showNotification} from "../../store/actions/notification";
 const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
+        justifyContent: "center",
         flexDirection: "column",
         background: color.secondaryDark,
         minHeight: '100vh',
@@ -192,7 +193,7 @@ const Meeting = () => {
     }
 
     return (
-        <Box style={{justifyContent: layout.mode === EXIT_FULL_SCREEN_MODE && "center"}} className={classes.root}>
+        <Box className={classes.root}>
             {layout.mode === EXIT_FULL_SCREEN_MODE && <Navbar dominantSpeakerId={dominantSpeakerId}/>}
             {layout.type === SPEAKER ?
                 <SpeakerLayout dominantSpeakerId={dominantSpeakerId}/> :

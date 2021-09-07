@@ -148,8 +148,8 @@ const ActionButtons = () => {
             resolution: 720,
             devices: ["desktop"],
             desktopSharingFrameRate: {
-                min: 25,
-                max: 30
+                min: 40,
+                max: 60
             },
             constraints: {
                 video: {

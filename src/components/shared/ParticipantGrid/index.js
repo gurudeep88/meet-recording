@@ -15,13 +15,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         justifyContent: "center",
         display: "flex",
-        flexDirection: "column",
-        "& .gridSeparator": {
-            border: "2px solid black"
-        },
-        "& .activeSpeaker": {
-            border: "2px solid #44A5FF"
-        }
+        flexDirection: "column"
     }
 }));
 
@@ -57,7 +51,7 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
                                 <VideoBox key={i * columns + j}
                                     height={gridItemHeight}
                                     width={gridItemWidth}
-                                    isBorderSeparator={participants.length !== 1}
+                                    isBorderSeparator={participants.length > 1}
                                     isFilmstrip={true}
                                     isPresenter={layout.presenterParticipantId === participants[i * columns + j]._id}
                                     isActiveSpeaker={dominantSpeakerId === participants[i * columns + j]._id}

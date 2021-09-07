@@ -147,14 +147,6 @@ const Meeting = () => {
             setLobbyUserJoined({id, displayName});
         });
 
-        conference.addEventListener(SariskaMediaTransport.events.conference.USER_JOINED, (id) => {
-            dispatch(addThumbnailColor({partcipantId: id, color: getRandomColor()}));
-        });
-
-        conference.addEventListener(SariskaMediaTransport.events.conference.USER_LEFT, (id) => {
-            dispatch(removeThumbnailColor(id));
-        });
-
         conference.addEventListener(SariskaMediaTransport.events.conference.MESSAGE_RECEIVED, (id, text, ts) => {
             dispatch(addMessage({text: text, user: getUserById(id, conference)}));
             if (id !== conference.myUserId()) {

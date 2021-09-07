@@ -23,6 +23,14 @@ const useStyles = makeStyles((theme) => ({
             height: theme.spacing(20),
             width: theme.spacing(20),
             fontSize: "40pt"
+        },
+        "& .gridSeparator": {
+            boxSizing: "border-box",
+            border: "2px solid black"
+        },
+        "& .activeSpeaker": {
+            boxSizing: "border-box",
+            border: "2px solid #44A5FF"
         }
     },
     audioBox: {
@@ -119,38 +127,43 @@ const VideoBox = ({
         dispatch(setPinParticipant(id));
     }
 
-    const rootActiveClasses = classnames(classes.root, {
+    const borderActiveClasses = classnames({
         'gridSeparator': isBorderSeparator,
         'activeSpeaker': isActiveSpeaker
     });
 
-    const avatarActiveClasses = classnames(classes.avatar, {
+    const audioIndicatorActiveClasses = classnames(classes.avatar, {
         'largeVideo': isLargeVideo,
+    });
+
+    const avatarActiveClasses = classnames(classes.avatarBox, {
+        'gridSeparator': isBorderSeparator,
+        'activeSpeaker': isActiveSpeaker
     });
 
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
-             onMouseLeave={() => setVisiblePinPartcipant(false)} className={rootActiveClasses}>
+             onMouseLeave={() => setVisiblePinPartcipant(false)} className={classes.root}>
             <Box className={classes.audioBox}>
                 {audioTrack?.isMuted() ? <MicOffIcon/> : <MicIcon className={classes.disable}/>}
                 {!audioTrack?.isLocal() && <Audio track={audioTrack}/>}
             </Box>
             {
                 videoTrack?.isMuted() ?
-                    <Box className={classes.avatarBox}>
+                    <Box className={avatarActiveClasses}>
                         <Avatar
                             src={participantDetails?.avatar ? participantDetails?.avatar: null }
                             style={isFilmstrip ? {
                                 boxShadow: videoShadow(audioLevel),
                                 background: avatarColor
                             } : {background: avatarColor}}
-                            className={avatarActiveClasses}>
+                            className={audioIndicatorActiveClasses}>
                             {participantDetails?.name.slice(0, 1).toUpperCase()}
                         </Avatar>
                     </Box>
                     :
-                    <Box style={{width: `${width}px`, height: `${height}px`}}>
+                    <Box className={borderActiveClasses} style={{width: `${width}px`, height: `${height}px`}}>
                         <Video isTransform={isPresenter} track={videoTrack}/>
                     </Box>
             }
@@ -166,7 +179,7 @@ const VideoBox = ({
             {!isFilmstrip && <Box>
                 <AudioLevelIndicator passedAudioLevel={audioLevel}/>
             </Box>}
-        </Box>)
+        </Box>) 
 }
 
 export default VideoBox;

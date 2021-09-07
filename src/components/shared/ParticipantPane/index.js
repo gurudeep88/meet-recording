@@ -39,7 +39,7 @@ const PartcipantPane = ({remoteTracks, localTracks, largeVideoId, dominantSpeake
                                      participantTracks={localTracks}/>
                 } else {
                     return <VideoBox localUserId={conference.myUserId()}
-                                     width={219}
+                                     width={218}
                                      height={123}
                                      isPresenter={key===layout.presenterParticipantId}
                                      isFilmstrip={false}

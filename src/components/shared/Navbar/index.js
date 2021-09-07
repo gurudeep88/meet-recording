@@ -147,6 +147,7 @@ const useStyles = makeStyles((theme) => ({
     virtualList: {
         width: '360px',
         padding: theme.spacing(3),
+        overflow: "auto"
     },
     settingsList: {
         width: '390px',
@@ -163,6 +164,9 @@ const useStyles = makeStyles((theme) => ({
     },
     fullList: {
         width: 'auto',
+    },
+    drawerVirtualBackground: {
+        overflow: "auto!important"
     },
     urlBox: {
         padding: '24px 10px',

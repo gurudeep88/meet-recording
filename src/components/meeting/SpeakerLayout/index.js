@@ -15,9 +15,6 @@ const useStyles = makeStyles((theme) => ({
         "& .fullmode": {
             position: "absolute",
             right: 0,
-        },
-        "& .activeSpeaker": {
-            border: "2px solid #44A5FF"
         }
     }
 }));

@@ -16,7 +16,8 @@ import {useHistory} from "react-router-dom";
 import {localTrackMutedChanged} from "../../../store/actions/track";
 import {addConference} from "../../../store/actions/conference";
 import {addConnection} from "../../../store/actions/connection";
-import {getToken} from "../../../utils";
+import {getToken,getRandomColor} from "../../../utils";
+import {addThumbnailColor, removeThumbnailColor} from "../../../store/actions/color";
 import {useDispatch, useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -162,6 +163,10 @@ const LobbyRoom = ({tracks}) => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_ERROR, () => {
             setLoading(false);
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.USER_JOINED, (id) => {
+            dispatch(addThumbnailColor({participantId: id, color: getRandomColor()}));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_FAILED, async (error) => {

@@ -57,14 +57,14 @@ const ParticipantDetails = () => {
                 {localTracks.find(track=>track.isAudioTrack())?.isMuted() ? <MicOffOutlinedIcon/> : <MicNoneOutlinedIcon/> }
             </Box>
             <Box>
-                {Object.entries(conference.participants).map(([key, value]) => {
-                    return !value._hidden ? <Box className={classes.localBox}>
+                {conference.getParticipantsWithoutHidden().map(participant=>
+                    <Box className={classes.localBox}>
                         <Box className={classes.userBox}>
-                            <Avatar src={ value?._identity?.user?.avatar ? value?._identity?.user?.avatar: null} style={{background: avatarColors[key]}} >{value?._identity?.user?.name.toUpperCase().slice(0, 1)}</Avatar>
-                            <Typography>{value?._identity?.user?.name}</Typography>
+                            <Avatar src={ participant?._identity?.user?.avatar ? participant?._identity?.user?.avatar: null} style={{background: avatarColors[participant._id]}} >{participant?._identity?.user?.name.toUpperCase().slice(0, 1)}</Avatar>
+                            <Typography>{participant?._identity?.user?.name}</Typography>
                         </Box>
-                        {remoteTracks[key]?.find(track=>track.isAudioTrack())?.isMuted() ? <MicOffOutlinedIcon/> : <MicNoneOutlinedIcon/> }
-                    </Box> : null}
+                        {remoteTracks[participant._id]?.find(track=>track.isAudioTrack())?.isMuted() ? <MicOffOutlinedIcon/> : <MicNoneOutlinedIcon/> }
+                    </Box>
                 )}
             </Box>
         </Box>

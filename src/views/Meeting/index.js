@@ -9,7 +9,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {addRemoteTrack, removeRemoteTrack, remoteTrackMutedChanged} from "../../store/actions/track";
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
-import {EXIT_FULL_SCREEN_MODE, SPEAKER, IS_PRESENTING, START_PRESENTING, STOP_PRESENTING} from "../../constants";
+import {EXIT_FULL_SCREEN_MODE, SPEAKER} from "../../constants";
 import {addMessage} from "../../store/actions/message";
 import {clearAllTokens, getRandomColor, getUserById} from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
@@ -17,7 +17,7 @@ import SnackbarBox from '../../components/shared/Snackbar';
 import {unreadMessage} from '../../store/actions/chat';
 import {clearAllReducers} from "../../store/actions/conference";
 import Home from "../Home";
-import {setPresenter} from "../../store/actions/layout";
+import {setPresenter, setPinParticipant} from "../../store/actions/layout";
 import {addThumbnailColor, removeThumbnailColor} from "../../store/actions/color";
 import {setAudioLevel} from "../../store/actions/audioIndicator";
 import {showNotification} from "../../store/actions/notification";
@@ -42,9 +42,6 @@ const Meeting = () => {
     const notification = useSelector(state => state.notification);
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUserJoined, setLobbyUserJoined] = useState({});
-    const [recordingAlreadyEnabled, setRecordingAlreadyEnabled] = useState(false);
-    const [transcriptionAlreadyEnabled, setTranscriptionAlreadyEnabled] = useState(false);
-
 
     const allowLobbyAccess = () => {
         conference.lobbyApproveAccess(lobbyUserJoined.id)
@@ -84,25 +81,16 @@ const Meeting = () => {
         window.removeEventListener("offline", updateNetwork);
         window.removeEventListener("online", updateNetwork);
         dispatch(clearAllReducers());
-        clearAllTokens();
     }
 
     useEffect(() => {
         if (!conference) {
             return;
         }
-        conference.getParticipants().forEach(item=>{
-            if (item._properties?.IS_PRESENTING === START_PRESENTING) {
-                dispatch(showNotification({autoHide: true, message: `Screen sharing started by ${item._identity?.user?.name}`}));
+        conference.getParticipantsWithoutHidden().forEach(item=>{
+            if (item._properties?.presenting) {
+                dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
                 dispatch(setPresenter(item._id));
-            }
-
-            if (item._properties?.features_jigasi) {
-                setTranscriptionAlreadyEnabled(true);
-            }
-
-            if (item._properties?.features_jigasi) {
-                setRecordingAlreadyEnabled(true);
             }
         });
 
@@ -126,13 +114,21 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
-            if (key === IS_PRESENTING && newValue === START_PRESENTING) {
+            if (key === "presenting" && newValue === "start") {
                 dispatch(showNotification({ autoHide: true, message: `Screen sharing started by ${participant._identity?.user?.name}`}));
                 dispatch(setPresenter(participant._id));
             }
-
-            if (key === IS_PRESENTING && newValue === STOP_PRESENTING) {
+            if (key === "presenting" && newValue === "stop") {
                 dispatch(setPresenter(null));
+            }
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.USER_LEFT, (id) => {
+            if (id === layout.pinnedParticipantId) {
+                dispatch(setPinParticipant(null))
+            }
+            if (id === layout.presenterParticipantId) {
+               dispatch(setPresenter(null));
             }
         });
 

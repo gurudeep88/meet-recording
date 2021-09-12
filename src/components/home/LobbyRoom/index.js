@@ -107,6 +107,7 @@ const LobbyRoom = ({tracks}) => {
     const [accessDenied, setAccessDenied] = useState(false);
     const profile = useSelector(state => state.profile);
     const queryParams = useParams();
+    const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
 
     const handleTitleChange = (e) => {
         setMeetingTitle(e.target.value);
@@ -124,8 +125,12 @@ const LobbyRoom = ({tracks}) => {
         let token = localStorage.getItem(`sariska_${meetingTitle}${name}`);
         const isModerator = !queryParams.meetingId;
         token = token ? token : await getToken(meetingTitle, profile, name, isModerator);
-        const connection = new SariskaMediaTransport.JitsiConnection(token);
+        
+        if (!token) {
+            return;
+        }
 
+        const connection = new SariskaMediaTransport.JitsiConnection(token);
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
             dispatch(addConnection(connection));
             createConference(connection);
@@ -156,6 +161,9 @@ const LobbyRoom = ({tracks}) => {
         conference.addTrack(videoTrack);
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, () => {
+            
+            console.log("SariskaMediaTransport.events.conference.CONFERENCE_JOINED");
+
             setLoading(false);
             dispatch(addConference(conference));
             history.push(`/${meetingTitle}`);
@@ -206,13 +214,15 @@ const LobbyRoom = ({tracks}) => {
         dispatch(localTrackMutedChanged());
     };
 
+    if (iAmRecorder && !meetingTitle) {
+        setMeetingTitle(queryParams.meetingId);
+    }
     // this is required for cloud recording, make sure to allow join meeting if query params has iAmRecorder.
     useEffect(() => {
-        if (window.location.hash.indexOf("iAmRecorder") >= 0) {
-            setMeetingTitle(queryParams.meetingId);
+        if (meetingTitle && iAmRecorder) {
             handleSubmit();
         }
-    }, []);
+    }, [meetingTitle]);
 
     useEffect(() => {
         if (queryParams.meetingId) {

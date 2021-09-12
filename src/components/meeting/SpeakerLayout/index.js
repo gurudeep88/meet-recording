@@ -42,7 +42,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-
+     
     return (
         <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}} className={activeClasses}>
             <VideoBox

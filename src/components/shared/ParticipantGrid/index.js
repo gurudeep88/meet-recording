@@ -31,7 +31,7 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
     //merge local and remote track
     const tracks = {...remoteTracks, [localUser.id]: localTracks };
     // merge local and remote participant
-    const participants = [...conference.getParticipants(), {_identity: {user: {name: localUser.name, id: localUser.id}}, _id: localUser.id}];
+    const participants = [...conference.getParticipantsWithoutHidden(), {_identity: { user: localUser }, _id: localUser.id}];
 
     const {
         rows,

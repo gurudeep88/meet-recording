@@ -209,6 +209,8 @@ const Navbar = ({dominantSpeakerId}) => {
     });
 
     const [caption, setCaption] = useState(false);
+    const [recording, setRecording] = useState(false);
+    const [streaming, setStreaming] = useState(false);
 
     const [openLivestreamDialog, setOpenLivestreamDialog] = useState(false);
     const [broadcasts, setBroadcasts] = useState([]);
@@ -258,7 +260,7 @@ const Navbar = ({dominantSpeakerId}) => {
     }
 
     const startStreaming = async () => {
-        if (streamingSession) {
+        if (streaming) {
             return;
         }
         const youtubeBroadcasts = await googleApi.requestAvailableYouTubeBroadcasts();
@@ -284,6 +286,7 @@ const Navbar = ({dominantSpeakerId}) => {
         }
         const streamName = selectedStream.result.items[0]?.cdn?.ingestionInfo?.streamName;
         setOpenLivestreamDialog(false);
+
         const session = await conference.startRecording({
             broadcastId: boundStreamID,
             mode: SariskaMediaTransport.constants.recording.mode.STREAM,
@@ -293,7 +296,7 @@ const Navbar = ({dominantSpeakerId}) => {
     }
 
     const stopStreaming = async () => {
-        if (!streamingSession) {
+        if (!streaming) {
             return;
         }
         await conference.stopRecording(streamingSession._sessionID);
@@ -301,7 +304,7 @@ const Navbar = ({dominantSpeakerId}) => {
     }
 
     const startRecording = async () => {
-        if (recordingSession) {
+        if (recording) {
             return;
         }
 
@@ -329,7 +332,7 @@ const Navbar = ({dominantSpeakerId}) => {
     }
 
     const stopRecording = async () => {
-        if (!recordingSession) {
+        if (!recording) {
             return;
         }
         setRecordingSession(null);
@@ -338,48 +341,71 @@ const Navbar = ({dominantSpeakerId}) => {
 
 
     const startCaption = () => {
-        setCaption(true);
-        conference.dial("jitsi_meet_transcribe");
-       /// conference.setLocalParticipantProperty("requestingTranscription", true);
+        conference.setLocalParticipantProperty("requestingTranscription", true);
     }
 
 
     const stopCaption = () => {
-        setCaption(false);
         conference.setLocalParticipantProperty("requestingTranscription", false);
     }
 
     useEffect(() => {
-        conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED, (data) => {
-            console.log("data", data);
-            if (data.status === "on") {
+        conference.getParticipantsWithoutHidden().forEach(item=>{
+            if (item._properties?.transcribing) {
+                setCaption(true);
+            }
+
+            if (item._properties?.recording) {
+                setRecording(true);
+            }
+
+            if (item._properties?.streaming) {
+                setRecording(true);
+            }
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED, (status) => {
+            if (status === "ON") {
+                setCaption(true);
+                conference.setLocalParticipantProperty("transcribing");
                 dispatch(showNotification({autoHide: true, message: "Caption started"}));
             }
 
-            if (data.status === "off") {
+            if (status === "OFF") {
+                setCaption(false);
+                conference.removeLocalParticipantProperty("transcribing");
                 dispatch(showNotification({autoHide: true, message: "Caption stopped"}));
             }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
             if (data._status === "on" && data._mode === "stream") {
+                setStreaming(true);
+                conference.setLocalParticipantProperty("streaming");
                 dispatch(showNotification({autoHide: true, message: "Live streaming started"}));
             }
 
             if (data._status === "off" && data._mode === "stream") {
+                setStreaming(false);
                 setStreamingSession(null);
+                conference.removeLocalParticipantProperty("streaming");
                 dispatch(showNotification({autoHide: true, message: "Live streaming stopped"}));
             }
 
             if (data._status === "on" && data._mode === "file") {
+                setRecording(true);
+                conference.setLocalParticipantProperty("recording");
                 dispatch(showNotification({autoHide: true, message: "Recording started"}));
             }
 
             if (data._status === "off" && data._mode === "file") {
                 setRecordingSession(null);
+                setRecording(false);
+                conference.removeLocalParticipantProperty("recording");
                 dispatch(showNotification({autoHide: true, message: "Recording stopped"}));
             }
         });
+
     }, []);
 
     const detailedList = (anchor) => (
@@ -474,7 +500,7 @@ const Navbar = ({dominantSpeakerId}) => {
                                             </Tooltip>
                                         </Button>
                                     }
-                                    {recordingSession ?
+                                    {recording ?
                                         <Button onClick={stopRecording}
                                                 className={classnames(classes.link, classes.stopRecording)}>
                                             <Tooltip title="Stop Recording">
@@ -488,7 +514,7 @@ const Navbar = ({dominantSpeakerId}) => {
                                             </Tooltip>
                                         </Button>
                                     }
-                                    {streamingSession ?
+                                    {streaming ?
                                         <Button onClick={stopStreaming}
                                                 className={classnames(classes.link, classes.stopStreaming)}>
                                             <Tooltip title="Stop Streaming">

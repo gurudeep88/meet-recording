@@ -26,6 +26,7 @@ import {
 import FullscreenIcon from "@material-ui/icons/Fullscreen";
 import FullscreenExitOutlinedIcon from "@material-ui/icons/FullscreenExitOutlined";
 import {setFullScreen, setPresenter} from "../../../store/actions/layout";
+import {clearAllTokens} from "../../../utils";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -166,7 +167,7 @@ const ActionButtons = () => {
             stopPresenting();
         });
         setPresenting(true);
-        conference.setLocalParticipantProperty(IS_PRESENTING, START_PRESENTING);
+        conference.setLocalParticipantProperty("presenting", "start");
         dispatch(addLocalTrack(desktopTrack));
         dispatch(setPresenter(conference.myUserId()));
     }
@@ -175,10 +176,10 @@ const ActionButtons = () => {
         const videoTrack = localTracks.find(track => track.videoType === "camera");
         const desktopTrack = localTracks.find(track => track.videoType === "desktop");
         await conference.replaceTrack(desktopTrack, videoTrack);
-        dispatch(removeLocalTrack(desktopTrack));
-        setPresenting(false);
-        conference.setLocalParticipantProperty(IS_PRESENTING, STOP_PRESENTING);
         dispatch(setPresenter(null));
+        dispatch(removeLocalTrack(desktopTrack));
+        conference.setLocalParticipantProperty("presenting", "stop");
+        setPresenting(false);
     }
 
     useEffect(()=>{
@@ -213,6 +214,7 @@ const ActionButtons = () => {
 
     const leaveConference = () => {
         history.push("/leave");
+        clearAllTokens();
     };
 
     return (

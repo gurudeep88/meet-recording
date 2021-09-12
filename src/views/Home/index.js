@@ -180,8 +180,10 @@ const Home = () => {
     };
 
     const signInIfNotSignedIn = async () => {
-        const {Os} = await googleApi.signInIfNotSignedIn();
-        dispatch(setProfile({id: Os.$R, name: Os.Ne, email: Os.zt, avatar: Os.KI}));
+        const response = await googleApi.signInIfNotSignedIn();
+        console.log("response", response);
+        const {Rs} = response;
+        dispatch(setProfile({id: Rs.GS, name: Rs.Qe, email: Rs.Ct, avatar: Rs.$I}));
         googleAPIData.isSignedIn = true;
         googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);
         setGoogleAPIData({...googleAPIData});
@@ -213,7 +215,7 @@ const Home = () => {
                 googleAPIData.isSignedIn = await googleApi.loadGoogleAPI();
                 if (googleAPIData.isSignedIn) {
                     const profile = await googleApi.getCurrentUserProfile();
-                    dispatch(setProfile({id: profile.$R, name: profile.Ne, email: profile.zt, avatar: profile.KI}));
+                    dispatch(setProfile({id: profile.GS, name: profile.mU, email: profile.Ct, avatar: profile.$I}));
                     googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);
                 }
                 setGoogleAPIData({...googleAPIData});

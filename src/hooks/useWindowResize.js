@@ -15,7 +15,7 @@ export function useWindowResize() {
     }
 
     useEffect(() => {
-        setWindowSize(getDimensions(layout.mode))
+        setTimeout(()=>setWindowSize(getDimensions(layout.mode)), 0);
     }, [layout]);
 
     useEffect(() => {

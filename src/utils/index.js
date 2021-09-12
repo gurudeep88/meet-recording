@@ -35,7 +35,7 @@ export async function getToken(roomName, profile, name,  isModerator) {
                 avatar: profile.avatar,
                 name: name,
                 email: profile.email,
-                role: isModerator
+                moderator: isModerator
             }
         })
     };

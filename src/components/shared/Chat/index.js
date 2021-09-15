@@ -118,10 +118,10 @@ const ChatPanel = ({setUnread}) => {
                 {messages.map((newMessage, index) => (
                     <ListItem key={index}>
                         <ListItemAvatar>
-                            <Avatar src={ newMessage?.user?.avatar ? newMessage?.user?.avatar : null } style={{background: avatarColors[newMessage.participantId]}} >{newMessage?.username?.toUpperCase().slice(0, 1)}</Avatar>
+                            <Avatar src={ newMessage?.user?.avatar ? newMessage?.user?.avatar : null } style={{background: avatarColors[newMessage?.user?.id]}} >{newMessage?.user?.name?.toUpperCase().slice(0, 1)}</Avatar>
                         </ListItemAvatar>
                         <ListItemText
-                            primary={newMessage.username}
+                            primary={newMessage.name}
                             secondary={newMessage.text}
                         />
                     </ListItem>

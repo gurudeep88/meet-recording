@@ -5,12 +5,14 @@ import {color} from "../../../assets/styles/_color";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
+import CreateIcon from '@material-ui/icons/Create';
 import AlbumIcon from '@material-ui/icons/Album';
 import ClosedCaptionIcon from '@material-ui/icons/ClosedCaption';
 import DetailsIcon from "@material-ui/icons/Details";
 import GroupIcon from '@material-ui/icons/Group';
 import CommentIcon from '@material-ui/icons/Comment';
 import PublicIcon from '@material-ui/icons/Public';
+import DescriptionIcon from '@material-ui/icons/Description';
 import Logo from "../Logo";
 import CopyLink from "../CopyLink";
 import ViewComfyIcon from '@material-ui/icons/ViewComfy';
@@ -183,6 +185,7 @@ const Navbar = ({dominantSpeakerId}) => {
     const dispatch = useDispatch()
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state => state.layout);
+    const avatarColors = useSelector(state => state.color);
     const [streamingSession, setStreamingSession] = useState(false);
     const [recordingSession, setRecordingSession] = useState(false);
     const unread = useSelector(state => state.chat.unreadMessage);
@@ -347,6 +350,20 @@ const Navbar = ({dominantSpeakerId}) => {
 
     const stopCaption = () => {
         conference.setLocalParticipantProperty("requestingTranscription", false);
+    }
+
+    const openWhiteboard = ()=>{
+       window.open(
+          `https://whiteboard.sariska.io/boards/${conference.connection.name}?authorName=${conference.getLocalUser().name}&authorColor=grey`,
+          '_blank'
+       );
+    }
+
+    const openSharedDocument = ()=>{
+        window.open(
+          `https://etherpad.sariska.io/p/${conference.connection.name}?userName=${conference.getLocalUser().name}&userColor=grey`,
+          '_blank'
+       );
     }
 
     useEffect(() => {
@@ -575,6 +592,16 @@ const Navbar = ({dominantSpeakerId}) => {
                                     <Button onClick={toggleSettingsDrawer("right", true)} className={classes.link}>
                                         <Tooltip title="Settings">
                                             <SettingsIcon/>
+                                        </Tooltip>
+                                    </Button>
+                                    <Button onClick={openWhiteboard} className={classes.link}>
+                                        <Tooltip title="Whiteboard">
+                                            <CreateIcon/>
+                                        </Tooltip>
+                                    </Button>
+                                    <Button onClick={openSharedDocument} className={classes.link}>
+                                        <Tooltip title="Shared Document">
+                                            <DescriptionIcon/>
                                         </Tooltip>
                                     </Button>
                                     <Drawer anchor="right" open={settingsState["right"]}

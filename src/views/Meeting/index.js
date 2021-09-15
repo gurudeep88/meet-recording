@@ -88,7 +88,7 @@ const Meeting = () => {
             return;
         }
         conference.getParticipantsWithoutHidden().forEach(item=>{
-            if (item._properties?.presenting) {
+            if (item._properties?.presenting === "start") {
                 dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
                 dispatch(setPresenter(item._id));
             }

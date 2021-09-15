@@ -1,7 +1,7 @@
 import {SET_GOOGLE_API_STATE, SET_PROFILE, UPDATE_PROFILE, SET_MEETING_TITLE} from "../actions/types";
 
 const initialState = {
-    name: JSON.parse(localStorage.getItem("reduxState") || "{}").username,
+    name: JSON.parse(localStorage.getItem("reduxState") || "{}").name,
     meetingTitle: '',
     googleAPIState: 0,
     avatar: "",

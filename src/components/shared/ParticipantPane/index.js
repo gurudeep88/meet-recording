@@ -4,7 +4,6 @@ import {useSelector} from "react-redux";
 import VideoBox from "../VideoBox";
 import classnames from "classnames";
 import * as Constants from "../../../constants";
-import {useWindowResize} from "../../../hooks/useWindowResize";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -20,34 +19,30 @@ const PartcipantPane = ({remoteTracks, localTracks, largeVideoId, dominantSpeake
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state => state.layout);
-    const {viewportWidth, viewportHeight} = useWindowResize();
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-
+    
     return (
         <Box style={{height: `${height}px`}} className={activeClasses}>
-            {conference.getParticipantsWithoutHidden().map(participant => {
-                if (participant._id === largeVideoId) {
-                    return <VideoBox localUserId={conference.myUserId()}
-                                     isPresenter={conference.myUserId()===layout.presenterParticipantId}
-                                     isFilmstrip={false}
-                                     width={218}
-                                     height={123}
-                                     isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
-                                     participantDetails={conference.getLocalUser()}
-                                     participantTracks={localTracks}/>
-                } else {
-                    return <VideoBox localUserId={conference.myUserId()}
-                                     width={218}
-                                     height={123}
-                                     isPresenter={participant._id===layout.presenterParticipantId}
-                                     isFilmstrip={false}
-                                     isActiveSpeaker={dominantSpeakerId===participant._id}
-                                     participantDetails={participant?._identity?.user}
-                                     participantTracks={remoteTracks[participant._id] || []}/>
-                }
+            { conference.getParticipantsWithoutHidden().map(participant => {              
+                return <VideoBox localUserId={conference.myUserId()}
+                                    width={218}
+                                    height={123}
+                                    isPresenter={participant._id===layout.presenterParticipantId}
+                                    isFilmstrip={false}
+                                    isActiveSpeaker={dominantSpeakerId===participant._id}
+                                    participantDetails={participant?._identity?.user}
+                                    participantTracks={remoteTracks[participant._id] || []}/>
             })}
+            <VideoBox localUserId={conference.myUserId()}
+                    isPresenter={conference.myUserId()===layout.presenterParticipantId}
+                    isFilmstrip={false}
+                    width={218}
+                    height={123}
+                    isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
+                    participantDetails={conference.getLocalUser()}
+                    participantTracks={localTracks}/>
         </Box>)
 }
 

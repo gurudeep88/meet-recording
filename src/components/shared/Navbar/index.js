@@ -18,7 +18,7 @@ import CopyLink from "../CopyLink";
 import ViewComfyIcon from '@material-ui/icons/ViewComfy';
 import {useSelector, useDispatch} from "react-redux";
 import {setLayout} from "../../../store/actions/layout";
-import {SPEAKER} from "../../../constants";
+import {GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD} from "../../../constants";
 import classnames from "classnames";
 import Chat from "../Chat";
 import ParticipantDetails from "../ParticipantDetails";
@@ -27,11 +27,13 @@ import FlipToFrontOutlinedIcon from '@material-ui/icons/FlipToFrontOutlined';
 import SettingsIcon from "@material-ui/icons/Settings";
 import {withStyles} from '@material-ui/core/styles';
 import {unreadMessage} from "../../../store/actions/chat";
+import {setPresentationtType} from "../../../store/actions/layout";
 import SettingsBox from "../../meeting/Settings";
 import {showNotification} from "../../../store/actions/notification";
 import googleApi from "../../../utils/google-apis";
 import LiveStreamDialog from "../LiveStreamDialog";
 import {authorizeDropbox} from "../../../utils/dropbox-apis";
+import Whiteboard from "../Whiteboard";
 
 const StyledBadge = withStyles((theme) => ({
     badge: {
@@ -214,9 +216,10 @@ const Navbar = ({dominantSpeakerId}) => {
     const [caption, setCaption] = useState(false);
     const [recording, setRecording] = useState(false);
     const [streaming, setStreaming] = useState(false);
-
     const [openLivestreamDialog, setOpenLivestreamDialog] = useState(false);
     const [broadcasts, setBroadcasts] = useState([]);
+    const [whiteboard, setWhiteboard] = useState(false);
+    const [sharedDocument, setSharedDocument] = useState(false);
 
     const toggleBackgroundDrawer = (anchor, open) => (event) => {
         if (
@@ -244,6 +247,7 @@ const Navbar = ({dominantSpeakerId}) => {
         }
         setState({...state, [anchor]: open});
     };
+
     const toggleChatDrawer = (anchor, open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -251,6 +255,7 @@ const Navbar = ({dominantSpeakerId}) => {
         setChatState({...chatState, [anchor]: open});
         dispatch(unreadMessage(0));
     };
+
     const toggleParticipantDrawer = (anchor, open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -259,7 +264,13 @@ const Navbar = ({dominantSpeakerId}) => {
     };
 
     const toggleView = () => {
-        layout.type === SPEAKER ? dispatch(setLayout("grid")) : dispatch(setLayout("speaker"));
+       if ( layout.type === SPEAKER  || layout.type === PRESENTATION) {
+            dispatch(setLayout(GRID));
+       } else if ( sharedDocument  || whiteboard) {
+           dispatch(setLayout(PRESENTATION));
+       } else {
+            dispatch(setLayout(SPEAKER));
+       }
     }
 
     const startStreaming = async () => {
@@ -310,27 +321,29 @@ const Navbar = ({dominantSpeakerId}) => {
         if (recording) {
             return;
         }
+        const response = await authorizeDropbox();
+        const {token} = response;
 
-        // const token = authorizeDropbox();
-        // if (!token) {
-        //     return dispatch(showNotification({
-        //         severity: "error",
-        //         message: 'Recording failed no dropbox token'
-        //     }));
-        // }
-
-        const appData = {
-           file_recording_metadata : {
-             'share': true
-            }
+        if (!token) {
+            return dispatch(showNotification({
+                severity: "error",
+                message: 'Recording failed no dropbox token'
+            }));
         }
 
+        const appData = {
+            file_recording_metadata: {
+                upload_credentials: {
+                        service_name: "dropbox",
+                        token,
+                    }
+                }
+            }
+
         const session = await conference.startRecording({
-            baseUrl: "https://test.sariska.io",
             mode: SariskaMediaTransport.constants.recording.mode.FILE,
             appData: JSON.stringify(appData)
         });
-
         setRecordingSession(session);
     }
 
@@ -342,31 +355,59 @@ const Navbar = ({dominantSpeakerId}) => {
         await conference.stopRecording(recordingSession._sessionID);
     }
 
-
     const startCaption = () => {
         conference.setLocalParticipantProperty("requestingTranscription", true);
     }
-
 
     const stopCaption = () => {
         conference.setLocalParticipantProperty("requestingTranscription", false);
     }
 
-    const openWhiteboard = ()=>{
-       window.open(
-          `https://whiteboard.sariska.io/boards/${conference.connection.name}?authorName=${conference.getLocalUser().name}&authorColor=grey`,
-          '_blank'
-       );
+    const startWhiteboard = (isRemoteEvent)=>{
+        dispatch(setLayout(PRESENTATION));
+        setWhiteboard(true);
+        dispatch(setPresentationtType({ presentationType:  WHITEBOARD}));
+        if (sharedDocument) {
+            setSharedDocument(false);
+            conference.setLocalParticipantProperty("sharedDocument", "stop");
+        }
+        if (isRemoteEvent !== true) {
+            conference.setLocalParticipantProperty("whiteboard", "start");
+        }
     }
 
-    const openSharedDocument = ()=>{
-        window.open(
-          `https://etherpad.sariska.io/p/${conference.connection.name}?userName=${conference.getLocalUser().name}&userColor=grey`,
-          '_blank'
-       );
+    const stopWhiteboard = (isRemoteEvent)=>{
+        dispatch(setLayout(SPEAKER));
+        setWhiteboard(false);
+        if (isRemoteEvent !== true) {
+            conference.setLocalParticipantProperty("whiteboard", "stop");
+        }
     }
+
+    const startSharedDocument = (isRemoteEvent)=>{
+        dispatch(setLayout(PRESENTATION));
+        dispatch(setPresentationtType({ presentationType:  SHARED_DOCUMENT}));
+        setSharedDocument(true);
+        if (whiteboard) {
+            setWhiteboard(false);
+            conference.setLocalParticipantProperty("whiteboard", "stop");
+        }
+        if (isRemoteEvent !== true) {
+            conference.setLocalParticipantProperty("sharedDocument", "start");
+        }
+    }
+
+    const stopSharedDocument = (isRemoteEvent)=>{
+        dispatch(setLayout(SPEAKER));
+        setSharedDocument(false);
+        if (isRemoteEvent !== true) { 
+            conference.setLocalParticipantProperty("sharedDocument", "stop");
+        }
+    }
+
 
     useEffect(() => {
+
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.transcribing) {
                 setCaption(true);
@@ -377,7 +418,40 @@ const Navbar = ({dominantSpeakerId}) => {
             }
 
             if (item._properties?.streaming) {
-                setRecording(true);
+                setStreaming(true);
+            }
+
+            console.log("item._properties?", item._properties);
+
+            if (item._properties?.whiteboard === "start") {
+                console.log("item._propertieswhiteboard?", item._properties?.whiteboard);
+                startWhiteboard(true);
+            }
+
+            if (item._properties?.sharedDocument === "start") {
+                console.log("item._propertiessharedDocument?", item._properties?.sharedDocument);
+                startSharedDocument(true);
+            }
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
+           
+            console.log(participant, key, oldValue, newValue)
+            
+            if (key === "whiteboard" && newValue === "start") {
+                startWhiteboard(true);
+            }
+
+            if (key === "whiteboard" && newValue === "stop") {
+                stopWhiteboard(true);
+            }
+
+            if (key === "sharedDocument" && newValue === "stop") {
+                stopSharedDocument(true);
+            }
+
+            if (key === "sharedDocument" && newValue === "start") {
+                startSharedDocument(true);
             }
         });
 
@@ -594,16 +668,34 @@ const Navbar = ({dominantSpeakerId}) => {
                                             <SettingsIcon/>
                                         </Tooltip>
                                     </Button>
-                                    <Button onClick={openWhiteboard} className={classes.link}>
-                                        <Tooltip title="Whiteboard">
-                                            <CreateIcon/>
-                                        </Tooltip>
-                                    </Button>
-                                    <Button onClick={openSharedDocument} className={classes.link}>
-                                        <Tooltip title="Shared Document">
-                                            <DescriptionIcon/>
-                                        </Tooltip>
-                                    </Button>
+                                    {whiteboard ?
+                                        <Button onClick={stopWhiteboard} className={classes.link}>
+                                            <Tooltip title="Stop Whiteboard">
+                                                <CreateIcon style={{color: "#27ced7"}}/>
+                                            </Tooltip>
+                                        </Button>
+                                        :
+                                        <Button onClick={startWhiteboard} className={classes.link}>
+                                            <Tooltip title="Start Whiteboard">
+                                                <CreateIcon style={{color: color.white}} />
+                                            </Tooltip>
+                                        </Button>
+                                    }
+                                    {sharedDocument ?
+                                        <Button onClick={stopSharedDocument}
+                                                className={classes.link}>
+                                            <Tooltip title="Stop Shared Document">
+                                                <DescriptionIcon style={{color: "#27ced7"}}/>
+                                            </Tooltip>
+                                        </Button>
+                                        :
+                                        <Button onClick={startSharedDocument}
+                                                className={classes.link}>
+                                            <Tooltip title="Start Shared Document">
+                                                <DescriptionIcon style={{color: color.white}} />
+                                            </Tooltip>
+                                        </Button>
+                                    }
                                     <Drawer anchor="right" open={settingsState["right"]}
                                             onClose={toggleSettingsDrawer("right", false)} className={classes.drawer}>
                                         {settingsList("right")}

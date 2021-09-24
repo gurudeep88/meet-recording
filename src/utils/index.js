@@ -21,6 +21,31 @@ export function getMeetingId() {
 }
 
 
+export function getJitsiMeetGlobalNS() {
+    if (!window.SariskaMediaTransport) {
+        window.SariskaMediaTransport = {};
+    }
+
+    if (!window.SariskaMediaTransport.app) {
+        window.SariskaMediaTransport.app = {};
+    }
+
+    return window.SariskaMediaTransport.app;
+}
+
+
+export function createDeferred() {
+    const deferred = {};
+
+    deferred.promise = new Promise((resolve, reject) => {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+    });
+
+    return deferred;
+}
+
+
 export async function getToken(roomName, profile, name,  isModerator) {
     const body = {
         method: "POST",
@@ -127,4 +152,26 @@ export function videoShadow(level) {
         `0 0 ${int.blur}px ${int.level}px ${int.color}`,
         `0 0 ${ext.blur}px ${ext.level}px ${ext.color}`
     ].join(', ');
+}
+
+export function getWhiteIframeUrl(conference) {
+    return `https://whiteboard.sariska.io/boards/${conference.connection.name}?authorName=${conference.getLocalUser().name}`;     
+
+}
+
+export function getSharedDocumentIframeUrl(conference) {
+    return `https://etherpad.sariska.io/p/${conference.connection.name}?userName=${conference.getLocalUser().name}&showChat=false&showControls=false&chatAndUsers=false`;     
+}
+
+export function appendLinkTags(type, conference) {
+    var preloadLink = document.createElement("link");
+    preloadLink.href = type === "whiteboard" ? getWhiteIframeUrl(conference) : getSharedDocumentIframeUrl(conference);
+    preloadLink.rel = "preload";
+    preloadLink.as = "script";
+    document.head.appendChild(preloadLink);
+}
+
+export function preloadIframes(conference) {
+    appendLinkTags("whiteboard", conference);
+    appendLinkTags("sharedDocument", conference);
 }

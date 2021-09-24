@@ -59,7 +59,6 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
                                     participantTracks={tracks[participants[i * columns + j]._id] || []}
                                     localUserId={conference.myUserId()}
                                 />
-                            
                             }
                         )}
                     </Grid>

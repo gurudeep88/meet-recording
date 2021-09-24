@@ -15,16 +15,17 @@ export function useWindowResize() {
     }
 
     useEffect(() => {
-        setTimeout(()=>setWindowSize(getDimensions(layout.mode)), 0);
+        setTimeout(()=>setWindowSize(getDimensions(layout.mode)), 100);
     }, [layout]);
 
     useEffect(() => {
         function handleResize() {
             setWindowSize(getDimensions(layout.mode));
         }
-        window.addEventListener("resize", handleResize);
         handleResize();
+        window.addEventListener("resize", handleResize)
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+
     return windowSize;
 }

@@ -11,14 +11,24 @@ import {setProfile} from "../../store/actions/profile";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import AddIcon from '@material-ui/icons/Add';
 import {formatAMPM, getMeetingId} from "../../utils";
+import microsoftLogo from '../../assets/images/shared/microsoftLogo.svg'; // Tell Webpack this JS file uses this image
+import slack from '../../assets/images/shared/slack.png'; // Tell Webpack this JS file uses this image
 
 const useStyles = makeStyles((theme) => ({
     googleBtn: {
         cursor: "pointer",
-        width: "196px",
+        width: "210px",
         height: "42px",
-        marginBottom: "15px",
         backgroundColor: "#4285f4",
+        borderRadius: "2px",
+        boxShadow: "0 3px 4px 0 rgba(0,0,0,.25)"
+    },
+    microsoftBtn: {
+        color: "#5e5e5e",
+        cursor: "pointer",
+        width: "210px",
+        height: "42px",
+        backgroundColor: "#ffffff",
         borderRadius: "2px",
         boxShadow: "0 3px 4px 0 rgba(0,0,0,.25)"
     },
@@ -44,7 +54,12 @@ const useStyles = makeStyles((theme) => ({
         color: "#fff",
         fontSize: "14px"
     },
-
+    btnTextMicrosoft: {
+        float: "right",
+        margin: "11px",
+        color: "#5e5e5e",
+        fontSize: "14px"
+    },
     root: {
         minHeight: "100vh",
         background: color.secondaryDark,
@@ -65,11 +80,11 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
     },
     calenderEntries: {
-        overflow: "auto",
         width: "90%",
+        overflow: "auto",
         background: "#c7ddff",
         borderRadius: "8px",
-        height: "450px"
+        padding: "11px"
     },
     calenderEntriesRow: {
         background: "#fff",
@@ -150,6 +165,21 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexDirection: "column",
         alignItems: "center"
+    },
+    bottomText: {
+        textAlign: "center",
+        padding: "10px"
+    },
+    separator: {
+        padding: "10px"
+    },
+    slackBtn: {
+        cursor: "pointer"
+    },
+    slackContainer: {
+        position: "absolute",
+        left: "22px",
+        bottom: 0,
     }
 }));
 
@@ -180,10 +210,9 @@ const Home = () => {
     };
 
     const signInIfNotSignedIn = async () => {
-        const response = await googleApi.signInIfNotSignedIn();
-        console.log("response", response);
-        const {Rs} = response;
-        dispatch(setProfile({id: Rs.GS, name: Rs.Qe, email: Rs.Ct, avatar: Rs.$I}));
+        const profile = await googleApi.signInIfNotSignedIn();
+        console.log({id: profile.getId(), name: profile.getName(), email: profile.getEmail(), avatar: profile.getImageUrl()})
+        dispatch(setProfile({id: profile.getId(), name: profile.getName(), email: profile.getEmail(), avatar: profile.getImageUrl()}));
         googleAPIData.isSignedIn = true;
         googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);
         setGoogleAPIData({...googleAPIData});
@@ -195,6 +224,8 @@ const Home = () => {
         const text = `Click the following link to join the meeting:\n${meetingUrl}`;
         await googleApi.updateCalendarEntry(item.id, item.calendarId, meetingUrl, text);
         googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);
+
+        console.log("googleAPIData", googleAPIData);
         setGoogleAPIData({...googleAPIData});
         setUpdateCalenderLoader(null);
     }
@@ -215,7 +246,7 @@ const Home = () => {
                 googleAPIData.isSignedIn = await googleApi.loadGoogleAPI();
                 if (googleAPIData.isSignedIn) {
                     const profile = await googleApi.getCurrentUserProfile();
-                    dispatch(setProfile({id: profile.GS, name: profile.mU, email: profile.Ct, avatar: profile.$I}));
+                    dispatch(setProfile({id: profile.getId(), name: profile.getName(), email: profile.getEmail(), avatar: profile.getImageUrl()}));
                     googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);
                 }
                 setGoogleAPIData({...googleAPIData});
@@ -233,11 +264,11 @@ const Home = () => {
             <Grid className={classes.gridContainer} container>
                 <Grid item md={6}>
                     <Box className={classes.leftBox}>
-                        {loading && <CircularProgress className={classes.buttonProgress} size={24}/>}
-                        {!loading && googleAPIData.isSignedIn && <Box className={classes.calenderEntries}>
+                        { loading && <CircularProgress className={classes.buttonProgress} size={24}/> }
+                        { !loading && googleAPIData.isSignedIn && <Box className={classes.calenderEntries}>
                             <div className={classes.calenderHeader}>Calendar</div>
                             {!googleAPIData.calenderEntries.find(item=>item.calendarId) && <div className={classes.calenderHeader}>
-                                No Calendar entries found in next month
+                                No Calendar entries found for next 30 days
                             </div>}
                             {googleAPIData.calenderEntries.map(item => {
                                 return item.calendarId ?
@@ -263,19 +294,30 @@ const Home = () => {
                                     </div> : null
                             })}
                         </Box>}
-                        {!loading && !googleAPIData.isSignedIn && <Box className={classes.loginBox}>
+                        { !loading && !googleAPIData.isSignedIn && <Box className={classes.loginBox}>
                             <div onClick={signInIfNotSignedIn} className={classes.googleBtn}>
                                 <div className={classes.googleIconWrapper}>
                                     <img className={classes.googleIcon}
                                          src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
                                 </div>
-                                <p className={classes.btnText}><b>Sign in with google</b></p>
+                                <p className={classes.btnText}><b>Sign in with Google</b></p>
                             </div>
-                            <div>
-                                Continue with google to access your profile, calenders and YouTube live
+                            <div className={classes.separator}>OR</div> 
+                            <div onClick={signInIfNotSignedIn} className={classes.microsoftBtn}>
+                                <div className={classes.googleIconWrapper}>
+                                    <img className={classes.googleIcon}
+                                         src={microsoftLogo} />
+                                </div>
+                                <p className={classes.btnTextMicrosoft}><b>Sign in with Microsoft</b></p>
+                            </div>
+                            <div className={classes.bottomText}>
+                                Continue with google/microsoft to access your profile, calenders and YouTube live
                                 broadcasts.
                             </div>
-                        </Box>}
+                        </Box> }
+                    </Box>
+                    <Box className={classes.slackContainer}>
+                        <p><img className={classes.slackBtn} src={slack}/></p>
                     </Box>
                 </Grid>
                 <Grid className={classes.rightContainer} item md={6}>

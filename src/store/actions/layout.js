@@ -34,3 +34,10 @@ export const setPresenter = (id) => {
         payload: id,
     }
 }
+
+export const setPresentationtType = (payload) => {
+    return {
+        type: Constants.SET_PRESENTATION_TYPE,
+        payload
+    }
+}

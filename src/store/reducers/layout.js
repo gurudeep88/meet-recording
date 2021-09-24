@@ -1,12 +1,13 @@
-import {SET_FULLSCREEN_MODE, SET_LAYOUT, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED} from "../actions/types";
-import {EXIT_FULL_SCREEN_MODE} from "../../constants";
+import {SET_FULLSCREEN_MODE, SET_LAYOUT, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE} from "../actions/types";
+import {EXIT_FULL_SCREEN_MODE, SPEAKER} from "../../constants";
 
 const initialState = {
-    type: "speaker",  //default layout,
+    type: SPEAKER,  //default layout,
     mode: EXIT_FULL_SCREEN_MODE, //default mode,
     pinnedParticipantId: null,
     presenterParticipantId: null,
-    disconnected: false
+    disconnected: false,
+    presentationType: null
 };
 
 export const layout = (state = initialState, action) => {
@@ -26,6 +27,9 @@ export const layout = (state = initialState, action) => {
         case SET_PIN_PARTICIPANT:
             state.pinnedParticipantId = action.payload;
             return {...state};
+        case SET_PRESENTATION_TYPE:
+            state.presentationType = action.payload.presentationType;
+            return {...state};    
         default:
             return state;
     }

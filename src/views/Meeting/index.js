@@ -9,16 +9,16 @@ import {useDispatch, useSelector} from "react-redux";
 import {addRemoteTrack, removeRemoteTrack, remoteTrackMutedChanged} from "../../store/actions/track";
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
-import {EXIT_FULL_SCREEN_MODE, SPEAKER} from "../../constants";
+import PresentationLayout from "../../components/meeting/PresentationLayout";
+import {EXIT_FULL_SCREEN_MODE, SPEAKER, PRESENTATION, GRID} from "../../constants";
 import {addMessage} from "../../store/actions/message";
-import {clearAllTokens, getRandomColor, getUserById} from "../../utils";
+import {getUserById, preloadIframes} from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
 import SnackbarBox from '../../components/shared/Snackbar';
 import {unreadMessage} from '../../store/actions/chat';
 import {clearAllReducers} from "../../store/actions/conference";
 import Home from "../Home";
 import {setPresenter, setPinParticipant} from "../../store/actions/layout";
-import {addThumbnailColor, removeThumbnailColor} from "../../store/actions/color";
 import {setAudioLevel} from "../../store/actions/audioIndicator";
 import {showNotification} from "../../store/actions/notification";
 
@@ -61,7 +61,6 @@ const Meeting = () => {
                 autoHide: false
             }));
         }
-
         setTimeout(() => {
             if (window.navigator.onLine && !layout.disconnected) {
                 dispatch(showNotification({message: "Internet Recovered!!!", autoHide: true, severity: "info"}));
@@ -169,7 +168,7 @@ const Meeting = () => {
         window.addEventListener("offline", updateNetwork);
         window.addEventListener("online", updateNetwork);
         window.addEventListener("beforeunload", destroy);
-
+        preloadIframes(conference);
         return () => {
             destroy();
         };
@@ -180,12 +179,21 @@ const Meeting = () => {
         return <Home/>;
     }
 
+    console.log("layoutlayoutlayout", layout);
+    
     return (
         <Box className={classes.root}>
-            {layout.mode === EXIT_FULL_SCREEN_MODE && <Navbar dominantSpeakerId={dominantSpeakerId}/>}
-            {layout.type === SPEAKER ?
-                <SpeakerLayout dominantSpeakerId={dominantSpeakerId}/> :
+            { layout.mode === EXIT_FULL_SCREEN_MODE && 
+                <Navbar dominantSpeakerId={dominantSpeakerId}/>
+            }
+            { layout.type === SPEAKER &&
+                <SpeakerLayout dominantSpeakerId={dominantSpeakerId}/>
+            }
+            { layout.type === GRID &&
                 <GridLayout dominantSpeakerId={dominantSpeakerId}/>
+            }
+            { layout.type === PRESENTATION && 
+                <PresentationLayout dominantSpeakerId={dominantSpeakerId}/>
             }
             <ActionButtons dominantSpeakerId={dominantSpeakerId}/>
             {lobbyUserJoined.id && <PermissionDialog

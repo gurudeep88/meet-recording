@@ -1,7 +1,8 @@
 import {Box, makeStyles} from '@material-ui/core';
 import React from 'react'
-import VideoBox from '../../shared/VideoBox';
-import ParticipantPaneSpeakerLayout from "../../shared/ParticipantPaneSpeakerLayout";
+import PartcipantPane from "../../shared/ParticipantPane";
+import SharedDocument from '../../shared/SharedDocument';
+import Whiteboard from '../../shared/Whiteboard';
 import {useSelector} from "react-redux";
 import {useWindowResize} from "../../../hooks/useWindowResize";
 import classnames from "classnames";
@@ -10,16 +11,21 @@ import * as Constants from "../../../constants";
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        justifyContent: "space-evenly",
         alignItems: "center",
         display: "flex",
         "& .fullmode": {
             position: "absolute",
             right: 0,
+        },
+        "& iframe .hasSecondary": {
+           boxShadow: "none",
+           borderRadius: "40px"
         }
     }
 }));
 
-const SpeakerLayout = ({dominantSpeakerId}) => {
+const PresentationLayout = ({dominantSpeakerId}) => {
     const classes = useStyles();
     const {viewportWidth, viewportHeight} = useWindowResize();
     const localTracks = useSelector(state => state.localTrack);
@@ -31,11 +37,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
 
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
-        "onStageEndpoints":  [largeVideoId],
-        "defaultConstraints": { "maxHeight":  180 },
-        "constraints": {
-            [largeVideoId]: { "maxHeight": 720 }
-        }
+        "defaultConstraints": { "maxHeight":  180 }
     }
     conference.setReceiverConstraints(constraints);
 
@@ -44,23 +46,27 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     });
      
     return (
-        <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}} className={activeClasses}>
-            <VideoBox
-                isFilmstrip={true}
+        <Box  className={activeClasses}>
+            <SharedDocument
+                isVisible={layout.presentationType === Constants.SHARED_DOCUMENT}
+                conference={conference}
                 width={viewportWidth}
                 height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight}
-                isLargeVideo={true}
-                isActiveSpeaker={ largeVideoId===dominantSpeakerId}
-                isPresenter={largeVideoId===layout.presenterParticipantId}
-                participantDetails={conference.participants[largeVideoId]?._identity?.user || conference.getLocalUser()}
-                participantTracks={remoteTracks[largeVideoId] || localTracks}
-                localUserId={conference.myUserId()}
             />
-            {  conference.getParticipantCount() > 1 &&
-                <ParticipantPaneSpeakerLayout height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight } dominantSpeakerId={dominantSpeakerId} largeVideoId={largeVideoId} localTracks={localTracks} remoteTracks={remoteTracks}/>
-            }
+            <Whiteboard
+                isVisible={layout.presentationType === Constants.WHITEBOARD}
+                conference={conference}
+                width={viewportWidth}
+                height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight}
+            />
+            <PartcipantPane 
+                height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight } 
+                dominantSpeakerId={dominantSpeakerId} 
+                largeVideoId={largeVideoId} 
+                localTracks={localTracks} 
+                remoteTracks={remoteTracks}/>
         </Box>
     )
 }
 
-export default SpeakerLayout;
+export default PresentationLayout;

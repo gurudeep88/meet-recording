@@ -19,7 +19,6 @@ export const GOOGLE_API_STATES = {
 export const GOOGLE_SCOPE_CALENDAR = 'https://www.googleapis.com/auth/calendar';
 export const GOOGLE_SCOPE_YOUTUBE = 'https://www.googleapis.com/auth/youtube.readonly';
 export const GENERATE_TOKEN_URL = "https://api.sariska.io/api/v1/misc/generate-token";
-export const SPEAKER = "speaker";
 export const EXIT_FULL_SCREEN_MODE = "exitFullScreen";
 export const ENTER_FULL_SCREEN_MODE = "enterFullScreen";
 export const VIRTUAL_BACKGROUND  = "VIRTUAL_BACKGROUND";
@@ -27,6 +26,13 @@ export const IS_PRESENTING  = "IS_PRESENTING";
 export const START_PRESENTING = "START_PRESENTING";
 export const STOP_PRESENTING = "STOP_PRESENTING";
 export const CHAT = "CHAT";
+export const PRESENTATION = "PRESENTATION";
+export const GRID = "GRID";
+export const SPEAKER = "SPEAKER";
+export const SET_PRESENTATION_TYPE = "SET_PRESENTATION_TYPE";
+export const SHARED_DOCUMENT = "SHARED_DOCUMENT";
+export const WHITEBOARD = "WHITEBOARD";
+
 export const images = [
     {
         name: 'Modern living room',

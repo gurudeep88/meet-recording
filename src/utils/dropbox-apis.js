@@ -2,6 +2,7 @@
 
 import { Dropbox, DropboxAuth } from 'dropbox';
 import { getJitsiMeetGlobalNS } from "./index"
+import {DROPBOX_APP_KEY} from "../constants";
 
 /**
  * Executes the oauth flow.
@@ -46,7 +47,7 @@ function getTokenExpiresAtTimestamp(expiresIn) {
  */
 export function authorizeDropbox() {
     const redirectURI= "https://meet.sariska.io/oauth.html";
-    const dropbox = new DropboxAuth({ clientId: "hey9dkz8x8s3x74" });
+    const dropbox = new DropboxAuth({ clientId: DROPBOX_APP_KEY });
 
     return dropbox.getAuthenticationUrl(redirectURI, undefined, 'code', 'offline', undefined, undefined, true)
         .then(authorize)

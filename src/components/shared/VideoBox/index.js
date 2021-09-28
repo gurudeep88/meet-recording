@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import {color} from '../../../assets/styles/_color';
 import Video from "../Video";
 import Audio from "../Audio";
+import PanTool from "@material-ui/icons/PanTool";
 import MicOffIcon from "@material-ui/icons/MicOff";
 import MicIcon from "@material-ui/icons/Mic";
 import {useDispatch, useSelector} from "react-redux";
@@ -88,7 +89,13 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center",
         justifyContent: "center",
         position: "absolute",
-        right: "10px"
+        padding: theme.spacing(1),
+        right: 0
+    },
+    handRaise: {
+        marginLeft: "8px",
+        color: color.primary,
+        lineHeight: "0!important"
     },
     disable: {
         background: color.red,
@@ -115,7 +122,7 @@ const VideoBox = ({
     const classes = useStyles();
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.isVideoTrack());
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
-    const pinnedPartcipantId = useSelector(state => state.layout?.pinnedPartcipantId);
+    const { pinnedPartcipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
     const avatarColors = useSelector(state => state.color);
     const audioIndicator = useSelector(state => state.audioIndicator);
     const dispatch = useDispatch();
@@ -167,15 +174,18 @@ const VideoBox = ({
                         <Video isTransform={isPresenter} track={videoTrack}/>
                     </Box>
             }
-            {visiblePinParticipant && <Box className={classes.rightControls}>
-                <PinParticipant participantId={participantDetails?.id} pinnedPartcipantId={pinnedPartcipantId} togglePinParticipant={togglePinParticipant}/>
-                <ConnectionIndicator participantId={participantDetails?.id} />
-            </Box>}
-
+            <Box className={classes.rightControls}>
+                {visiblePinParticipant && <>
+                    <PinParticipant participantId={participantDetails?.id} pinnedPartcipantId={pinnedPartcipantId} togglePinParticipant={togglePinParticipant}/>
+                    <ConnectionIndicator participantId={participantDetails?.id} />
+                </>}
+                {raisedHandParticipantIds[participantDetails?.id] &&
+                    <Typography className={classes.handRaise} ><PanTool /></Typography>
+                }
+            </Box>
             <Box className={classes.textBox}>
                 <Typography>{localUserId === participantDetails?.id ? "You" : participantDetails?.name}</Typography>
             </Box>
-
             {!isFilmstrip && <Box>
                 <AudioLevelIndicator passedAudioLevel={audioLevel}/>
             </Box>}

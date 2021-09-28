@@ -8,7 +8,7 @@ import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import {color} from '../../../assets/styles/_color';
 import ScreenShareIcon from '@material-ui/icons/ScreenShare';
 import CallEndIcon from '@material-ui/icons/CallEnd';
-import {useHistory, useParams} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import {useDispatch, useSelector} from "react-redux";
 import {
     addLocalTrack,
@@ -19,11 +19,9 @@ import StopScreenShareIcon from '@material-ui/icons/StopScreenShare';
 import {
     ENTER_FULL_SCREEN_MODE,
     EXIT_FULL_SCREEN_MODE,
-    IS_PRESENTING,
-    START_PRESENTING,
-    STOP_PRESENTING
 } from "../../../constants";
 import FullscreenIcon from "@material-ui/icons/Fullscreen";
+import PanTool from '@material-ui/icons/PanTool';
 import FullscreenExitOutlinedIcon from "@material-ui/icons/FullscreenExitOutlined";
 import {setFullScreen, setPresenter} from "../../../store/actions/layout";
 import {clearAllTokens} from "../../../utils";
@@ -87,9 +85,9 @@ const ActionButtons = () => {
     const localTracks = useSelector(state => state.localTrack);
     const [presenting, setPresenting] = useState(false);
     const [time, setTime] = useState(new Date().toLocaleTimeString().slice(0,5));
-    const data = useParams();
     const profile = useSelector(state => state.profile)
     const layout = useSelector((state) => state.layout);
+    const [raiseHand, setRaiseHand] = useState(false);
 
     const enterFullScreen = () => {
         try {
@@ -182,6 +180,16 @@ const ActionButtons = () => {
         setPresenting(false);
     }
 
+    const startRaiseHand = () => {
+        conference.setLocalParticipantProperty("handraise", "start");
+        setRaiseHand(true);
+    };
+
+    const stopRaiseHand = () => {
+        conference.setLocalParticipantProperty("handraise", "stop");
+        setRaiseHand(false);
+    };
+
     useEffect(()=>{
         setInterval(()=> {
             setTime(new Date().toLocaleTimeString().slice(0,5))
@@ -225,6 +233,7 @@ const ActionButtons = () => {
                 <Tooltip title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}>{videoTrack?.isMuted() ?
                     <VideocamOffIcon onClick={unmuteVideo}/> : <VideocamIcon onClick={muteVideo}/>}</Tooltip>
                 <Tooltip title={ presenting ? "Stop Presenting": "Share Screen" }>{presenting ? <StopScreenShareIcon onClick={stopPresenting}/> : <ScreenShareIcon onClick={shareScreen}/>}</Tooltip>
+                <Tooltip title={ raiseHand ? "Hand Down" : "Raise Hand"}>{ raiseHand ? <PanTool style={{color: color.primary}} onClick={stopRaiseHand}/> : <PanTool  onClick={startRaiseHand}/> }</Tooltip>
                 <Tooltip title="Leave Call"><CallEndIcon className={classes.end} onClick={leaveConference}/></Tooltip>
                 <Tooltip title={ layout.mode ===  EXIT_FULL_SCREEN_MODE  ? "Full Screen": "Exit Full Screen" }>
                     { layout.mode === EXIT_FULL_SCREEN_MODE ? <FullscreenIcon onClick={enterFullScreen} className={classes.subIcon}/> : <FullscreenExitOutlinedIcon onClick={exitFullScreen} className={classes.subIcon}/>}

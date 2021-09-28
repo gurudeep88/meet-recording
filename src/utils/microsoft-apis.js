@@ -2,18 +2,20 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 import base64js from 'base64-js';
 import { findWindows } from 'windows-iana';
-import { parseStandardURIString, parseURLParams, createDeferred } from './index';
-import { getShareInfoText } from '../../invite';
-import { setCalendarAPIAuthState } from '../actions';
+import { createDeferred } from '../utils';
+import { parseStandardURIString } from './parseStandardURIString';
+import { parseURLParams } from './parseURLParams';
 
-let state;
-
+let state = {};
 /**
  * Constants used for interacting with the Microsoft API.
  *
  * @private
  * @type {object}
  */
+
+const microsoftApiApplicationClientID = "f3edbc22-ed68-4085-b3b7-f8e0bff30298";
+
 const MS_API_CONFIGURATION = {
     /**
      * The URL to use when authenticating using Microsoft API.
@@ -40,8 +42,7 @@ const MS_API_CONFIGURATION = {
      *
      * @type {string}
      */
-    MS_CONSUMER_TENANT: 'f3edbc22-ed68-4085-b3b7-f8e0bff30298',
-
+    MS_CONSUMER_TENANT: 'd7fe23b0-0bae-4d49-a6d7-2c918c26f535',
     /**
      * The redirect URL to be used by the Microsoft API on successful
      * authentication.
@@ -128,7 +129,6 @@ export const microsoftCalendarApi = {
     /**
      * Prompts the participant to sign in to the Microsoft API Client Library.
      *
-     * @returns {function(Dispatch<any>, Function): Promise<void>}
      */
     signIn() {
         // Ensure only one popup window at a time.
@@ -153,7 +153,7 @@ export const microsoftCalendarApi = {
         popupAuthWindow = window.open(
             authUrl,
             'Auth M$',
-            `width=${w}, height=${h}, top=${(screen.height / 2) - (h / 2)}, left=${(screen.width / 2) - (w / 2)}`);
+            `width=${w}, height=${h}, top=${(window.screen.height / 2) - (h / 2)}, left=${(window.screen.width / 2) - (w / 2)}`);
 
         const windowCloseCheck = setInterval(() => {
             if (popupAuthWindow && popupAuthWindow.closed) {
@@ -212,10 +212,9 @@ export const microsoftCalendarApi = {
 
         return signInDeferred.promise;
     },
+
     /**
      * Returns whether or not the user is currently signed in.
-     *
-     * @returns {function(Dispatch<any>, Function): Promise<boolean>}
      */
     _isSignedIn() {
         const now = new Date().getTime();
@@ -226,9 +225,7 @@ export const microsoftCalendarApi = {
 
         if (msAuthState.accessToken && isExpired) {
             // token expired, let's refresh it
-            return dispatch(refreshAuthToken())
-                .then(() => true)
-                .catch(() => false);
+            return refreshAuthToken();
         }
 
         return Promise.resolve(msAuthState.accessToken && !isExpired);
@@ -250,17 +247,19 @@ export const microsoftCalendarApi = {
             return Promise.reject('Not authorized, please sign in!');
         }
 
+        const client = Client.init({
+            authProvider: done => done(null, token)
+        });
+
         return client
             .api(`/me/events/${id}`)
             .get()
             .then(description => {
                 const body = description.body;
-
                 if (description.bodyPreview) {
                     body.content
                         = `${description.bodyPreview}<br><br>`;
                 }
-
                 // replace all new lines from the text with html
                 // <br> to make it pretty
                 body.content += text.split('\n').join('<br>');
@@ -473,12 +472,11 @@ function refreshAuthToken() {
 
     return signInPromise.then(hash => {
         const params = getParamsFromHash(hash);
-
-        dispatch(setCalendarAPIAuthState({
+        state.authState = {
             accessToken: params.access_token,
             idToken: params.id_token,
             tokenExpires: params.tokenExpires
-        }));
+        }
     });
 }
 

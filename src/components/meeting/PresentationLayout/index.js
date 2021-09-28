@@ -32,8 +32,6 @@ const PresentationLayout = ({dominantSpeakerId}) => {
     const remoteTracks = useSelector(state => state.remoteTrack);
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state=>state.layout);
-    const myUserId = conference.myUserId();
-    const largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantId || dominantSpeakerId || myUserId;
 
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
@@ -62,7 +60,6 @@ const PresentationLayout = ({dominantSpeakerId}) => {
             <PartcipantPane 
                 height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight } 
                 dominantSpeakerId={dominantSpeakerId} 
-                largeVideoId={largeVideoId} 
                 localTracks={localTracks} 
                 remoteTracks={remoteTracks}/>
         </Box>

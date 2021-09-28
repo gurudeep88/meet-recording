@@ -13,6 +13,7 @@ import AddIcon from '@material-ui/icons/Add';
 import {formatAMPM, getMeetingId} from "../../utils";
 import microsoftLogo from '../../assets/images/shared/microsoftLogo.svg'; // Tell Webpack this JS file uses this image
 import slack from '../../assets/images/shared/slack.png'; // Tell Webpack this JS file uses this image
+import { microsoftCalendarApi } from "../../utils/microsoft-apis";
 
 const useStyles = makeStyles((theme) => ({
     googleBtn: {
@@ -210,7 +211,8 @@ const Home = () => {
     };
 
     const signInIfNotSignedIn = async () => {
-        const profile = await googleApi.signInIfNotSignedIn();
+        await googleApi.signInIfNotSignedIn();
+        const profile = await googleApi.getCurrentUserProfile();
         console.log({id: profile.getId(), name: profile.getName(), email: profile.getEmail(), avatar: profile.getImageUrl()})
         dispatch(setProfile({id: profile.getId(), name: profile.getName(), email: profile.getEmail(), avatar: profile.getImageUrl()}));
         googleAPIData.isSignedIn = true;
@@ -255,8 +257,19 @@ const Home = () => {
             }
             setLoading(false);
         }
+
+        const microsoftLogin = async () => {
+            try {
+                const response = await microsoftCalendarApi.isSignedIn();
+                console.log("response", response);
+            } catch (e) {
+                console.log("e", e);
+            }
+            setLoading(false);
+        }
         createNewLocalTracks();
         googleLogin();
+        microsoftLogin();
     }, []);
 
     return (
@@ -303,7 +316,7 @@ const Home = () => {
                                 <p className={classes.btnText}><b>Sign in with Google</b></p>
                             </div>
                             <div className={classes.separator}>OR</div> 
-                            <div onClick={signInIfNotSignedIn} className={classes.microsoftBtn}>
+                            <div onClick={microsoftCalendarApi.signIn} className={classes.microsoftBtn}>
                                 <div className={classes.googleIconWrapper}>
                                     <img className={classes.googleIcon}
                                          src={microsoftLogo} />

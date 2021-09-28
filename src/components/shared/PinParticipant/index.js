@@ -16,9 +16,8 @@ const useStyles = makeStyles((theme) => ({
     controls: {
         cursor: "pointer",
         color: "white",
-        height: "20px",
-        width: "20px",
-        padding: theme.spacing(1)
+        height: "24px",
+        width: "24px"
     }
 }));
 

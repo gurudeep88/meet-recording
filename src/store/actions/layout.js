@@ -21,6 +21,14 @@ export const setPinParticipant = (id) => {
     }
 }
 
+export const setRaiseHand = (payload) => {
+    return {
+        type: Constants.SET_HAND_RAISE,
+        payload
+    }
+}
+
+
 export const setDisconnected = (disconnected) => {
     return {
         type: Constants.SET_DISCONNECTED,

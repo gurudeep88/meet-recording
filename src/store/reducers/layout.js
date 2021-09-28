@@ -1,4 +1,4 @@
-import {SET_FULLSCREEN_MODE, SET_LAYOUT, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE} from "../actions/types";
+import {SET_FULLSCREEN_MODE, SET_LAYOUT, SET_HAND_RAISE, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE} from "../actions/types";
 import {EXIT_FULL_SCREEN_MODE, SPEAKER} from "../../constants";
 
 const initialState = {
@@ -7,6 +7,7 @@ const initialState = {
     pinnedParticipantId: null,
     presenterParticipantId: null,
     disconnected: false,
+    raisedHandParticipantIds: {},
     presentationType: null
 };
 
@@ -21,9 +22,16 @@ export const layout = (state = initialState, action) => {
         case SET_DISCONNECTED:
             state.disconnected = action.payload;
             return {...state};
+        case SET_HAND_RAISE:
+            if (action.payload.raiseHand) {
+                state.raisedHandParticipantIds[action.payload.participantId] = action.payload.participantId;
+            } else {
+                delete state.raisedHandParticipantIds[action.payload.participantId]; 
+            }
+            return {...state};
         case SET_PRESENTER:
             state.presenterParticipantId = action.payload;
-            return {...state};
+            return {...state};    
         case SET_PIN_PARTICIPANT:
             state.pinnedParticipantId = action.payload;
             return {...state};

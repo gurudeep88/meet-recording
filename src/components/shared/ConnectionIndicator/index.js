@@ -38,7 +38,7 @@ const connectionSvgIcon = <svg height="1em" width="1em" viewBox="0 0 32 32">
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginLeft: "10px",
+         marginLeft: "8px",
         "& svg": {
             fill: "#fff"
         },
@@ -48,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
             textAlign: "center",
             lineHeight: "22px",
             padding: 0,
-            width: "22px",
-            height: "22px",
+            width: "24px",
+            height: "24px",
             borderRadius: "50%",
             boxSizing: "border-box",
             zIndex: 3,

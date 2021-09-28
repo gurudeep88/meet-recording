@@ -18,7 +18,7 @@ import CopyLink from "../CopyLink";
 import ViewComfyIcon from '@material-ui/icons/ViewComfy';
 import {useSelector, useDispatch} from "react-redux";
 import {setLayout} from "../../../store/actions/layout";
-import {GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD} from "../../../constants";
+import {GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD, DROPBOX_APP_KEY} from "../../../constants";
 import classnames from "classnames";
 import Chat from "../Chat";
 import ParticipantDetails from "../ParticipantDetails";
@@ -322,9 +322,8 @@ const Navbar = ({dominantSpeakerId}) => {
             return;
         }
         const response = await authorizeDropbox();
-        const {token} = response;
 
-        if (!token) {
+        if (!response?.token) {
             return dispatch(showNotification({
                 severity: "error",
                 message: 'Recording failed no dropbox token'
@@ -335,7 +334,9 @@ const Navbar = ({dominantSpeakerId}) => {
             file_recording_metadata: {
                 upload_credentials: {
                         service_name: "dropbox",
-                        token,
+                        token: response.token,
+                        app_key: DROPBOX_APP_KEY,
+                        r_token: response.rToken
                     }
                 }
             }

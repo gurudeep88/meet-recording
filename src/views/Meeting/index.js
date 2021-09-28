@@ -18,7 +18,7 @@ import SnackbarBox from '../../components/shared/Snackbar';
 import {unreadMessage} from '../../store/actions/chat';
 import {clearAllReducers} from "../../store/actions/conference";
 import Home from "../Home";
-import {setPresenter, setPinParticipant} from "../../store/actions/layout";
+import {setPresenter, setPinParticipant, setRaiseHand} from "../../store/actions/layout";
 import {setAudioLevel} from "../../store/actions/audioIndicator";
 import {showNotification} from "../../store/actions/notification";
 
@@ -91,6 +91,9 @@ const Meeting = () => {
                 dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
                 dispatch(setPresenter(item._id));
             }
+            if (item._properties?.handraise === "start") {
+                dispatch(setRaiseHand({ participantId: item._id, raiseHand: true}));
+            }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, (track) => {
@@ -119,6 +122,12 @@ const Meeting = () => {
             }
             if (key === "presenting" && newValue === "stop") {
                 dispatch(setPresenter(null));
+            }
+            if (key === "handraise" && newValue === "start") {
+                dispatch(setRaiseHand({ participantId: participant._id, raiseHand: true}));
+            }
+            if (key === "handraise" && newValue === "stop") {
+                dispatch(setRaiseHand({ participantId: participant._id, raiseHand: false}));
             }
         });
 
@@ -179,8 +188,6 @@ const Meeting = () => {
         return <Home/>;
     }
 
-    console.log("layoutlayoutlayout", layout);
-    
     return (
         <Box className={classes.root}>
             { layout.mode === EXIT_FULL_SCREEN_MODE && 

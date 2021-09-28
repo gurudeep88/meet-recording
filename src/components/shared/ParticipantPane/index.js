@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const PartcipantPane = ({remoteTracks, localTracks, largeVideoId, dominantSpeakerId, height}) => {
+const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, height}) => {
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state => state.layout);

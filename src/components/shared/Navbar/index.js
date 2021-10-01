@@ -321,8 +321,8 @@ const Navbar = ({dominantSpeakerId}) => {
         if (recording) {
             return;
         }
-        const response = await authorizeDropbox();
 
+        const response = await authorizeDropbox();
         if (!response?.token) {
             return dispatch(showNotification({
                 severity: "error",
@@ -333,13 +333,13 @@ const Navbar = ({dominantSpeakerId}) => {
         const appData = {
             file_recording_metadata: {
                 upload_credentials: {
-                        service_name: "dropbox",
-                        token: response.token,
-                        app_key: DROPBOX_APP_KEY,
-                        r_token: response.rToken
-                    }
+                    service_name: "dropbox",
+                    token: response.token,
+                    app_key: DROPBOX_APP_KEY,
+                    r_token: response.rToken
                 }
             }
+        }
 
         const session = await conference.startRecording({
             mode: SariskaMediaTransport.constants.recording.mode.FILE,

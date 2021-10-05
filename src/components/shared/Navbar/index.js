@@ -322,24 +322,32 @@ const Navbar = ({dominantSpeakerId}) => {
             return;
         }
 
-        const response = await authorizeDropbox();
-        if (!response?.token) {
-            return dispatch(showNotification({
-                severity: "error",
-                message: 'Recording failed no dropbox token'
-            }));
-        }
+        // const response = await authorizeDropbox();
+        // if (!response?.token) {
+        //     return dispatch(showNotification({
+        //         severity: "error",
+        //         message: 'Recording failed no dropbox token'
+        //     }));
+        // }
+
 
         const appData = {
-            file_recording_metadata: {
-                upload_credentials: {
-                    service_name: "dropbox",
-                    token: response.token,
-                    app_key: DROPBOX_APP_KEY,
-                    r_token: response.rToken
-                }
+           file_recording_metadata : {
+             'share': true
             }
         }
+
+
+        // const appData = {
+        //     file_recording_metadata: {
+        //         upload_credentials: {
+        //             service_name: "dropbox",
+        //             token: response.token,
+        //             app_key: DROPBOX_APP_KEY,
+        //             r_token: response.rToken
+        //         }
+        //     }
+        // }
 
         const session = await conference.startRecording({
             mode: SariskaMediaTransport.constants.recording.mode.FILE,
@@ -408,7 +416,6 @@ const Navbar = ({dominantSpeakerId}) => {
 
 
     useEffect(() => {
-
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.transcribing) {
                 setCaption(true);
@@ -436,9 +443,7 @@ const Navbar = ({dominantSpeakerId}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
-           
-            console.log(participant, key, oldValue, newValue)
-            
+                       
             if (key === "whiteboard" && newValue === "start") {
                 startWhiteboard(true);
             }

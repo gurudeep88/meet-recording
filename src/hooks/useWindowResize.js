@@ -15,13 +15,19 @@ export function useWindowResize() {
     }
 
     useEffect(() => {
-        setTimeout(()=>setWindowSize(getDimensions(layout.mode)), 100);
+        if (layout.mode === EXIT_FULL_SCREEN_MODE ) {
+            window.removeEventListener("resize", handleResize)
+        } else {
+            window.addEventListener("resize", handleResize)
+        }
+        setWindowSize(getDimensions(layout.mode));
     }, [layout]);
 
+    function handleResize() {
+        setWindowSize(getDimensions(layout.mode));
+    }
+
     useEffect(() => {
-        function handleResize() {
-            setWindowSize(getDimensions(layout.mode));
-        }
         handleResize();
         window.addEventListener("resize", handleResize)
         return () => window.removeEventListener("resize", handleResize);

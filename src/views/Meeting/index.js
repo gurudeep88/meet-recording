@@ -112,7 +112,11 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
-            setDominantSpeakerId(id);
+            if (conference.getParticipantCount() === 2) {
+                setDominantSpeakerId(conference.getParticipantsWithoutHidden()[0]._id);
+            } else {
+                setDominantSpeakerId(id);
+            }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {

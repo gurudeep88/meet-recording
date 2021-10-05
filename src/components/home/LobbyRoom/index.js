@@ -110,7 +110,7 @@ const LobbyRoom = ({tracks}) => {
     const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
 
     const handleTitleChange = (e) => {
-        setMeetingTitle(e.target.value);
+        setMeetingTitle(e.target.value.toLowerCase());
     };
 
     const handleUserNameChange = (e) => {
@@ -121,11 +121,12 @@ const LobbyRoom = ({tracks}) => {
         if (!meetingTitle) {
             return;
         }
+        
         setLoading(true);
         let token = localStorage.getItem(`sariska_${meetingTitle}${name}`);
         const isModerator = !queryParams.meetingId;
+
         token = token ? token : await getToken(meetingTitle, profile, name, isModerator);
-        
         if (!token) {
             return;
         }
@@ -142,7 +143,9 @@ const LobbyRoom = ({tracks}) => {
             }
         });
 
-        connection.addEventListener(SariskaMediaTransport.events.connection.PASSWORD_REQUIRED, (error) => {
+        connection.addEventListener(SariskaMediaTransport.events.connection.PASSWORD_REQUIRED, async (error) => {
+            localStorage.removeItem(`sariska_${meetingTitle}${name}`);
+            const  token = await getToken(meetingTitle, profile, name, isModerator)
             connection.setToken(token); // token expired, set a new token
         });
 
@@ -211,6 +214,7 @@ const LobbyRoom = ({tracks}) => {
     };
 
     if (iAmRecorder && !meetingTitle) {
+        setName("recorder");
         setMeetingTitle(queryParams.meetingId);
     }
     // this is required for cloud recording, make sure to allow join meeting if query params has iAmRecorder.
@@ -218,7 +222,7 @@ const LobbyRoom = ({tracks}) => {
         if (meetingTitle && iAmRecorder) {
             handleSubmit();
         }
-    }, [meetingTitle]);
+    }, [queryParams.meetingId]);
 
     useEffect(() => {
         if (queryParams.meetingId) {

@@ -157,7 +157,7 @@ const VideoBox = ({
                 {!audioTrack?.isLocal() && <Audio track={audioTrack}/>}
             </Box>
             {
-                videoTrack?.isMuted() ?
+                videoTrack?.isMuted() ? 
                     <Box className={avatarActiveClasses}>
                         <Avatar
                             src={participantDetails?.avatar ? participantDetails?.avatar: null }
@@ -171,7 +171,7 @@ const VideoBox = ({
                     </Box>
                     :
                     <Box className={borderActiveClasses} style={{width: `${width}px`, height: `${height}px`}}>
-                        <Video isTransform={isPresenter} track={videoTrack}/>
+                        <Video isPresenter={isPresenter} track={videoTrack}/>
                     </Box>
             }
             <Box className={classes.rightControls}>

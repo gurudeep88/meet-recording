@@ -108,6 +108,7 @@ const LobbyRoom = ({tracks}) => {
     const profile = useSelector(state => state.profile);
     const queryParams = useParams();
     const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
+    const isLoadTesting = queryParams.ignore_local_storage;
 
     const handleTitleChange = (e) => {
         setMeetingTitle(e.target.value.toLowerCase());
@@ -126,7 +127,12 @@ const LobbyRoom = ({tracks}) => {
         let token = localStorage.getItem(`sariska_${meetingTitle}${name}`);
         const isModerator = !queryParams.meetingId;
 
-        token = token ? token : await getToken(meetingTitle, profile, name, isModerator);
+        if (isLoadTesting) {
+            token = await getToken(meetingTitle, profile, name, isModerator, isLoadTesting);
+        } else {
+            token = token ? token : await getToken(meetingTitle, profile, name, isModerator, isLoadTesting);
+        }
+        
         if (!token) {
             return;
         }
@@ -134,6 +140,7 @@ const LobbyRoom = ({tracks}) => {
         const connection = new SariskaMediaTransport.JitsiConnection(token);
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
             dispatch(addConnection(connection));
+            console.log("CONNECTION_ESTABLISHED")
             createConference(connection);
         });
 
@@ -194,22 +201,22 @@ const LobbyRoom = ({tracks}) => {
     }
 
     const unmuteAudioLocalTrack = async () => {
-        await audioTrack.unmute();
+        await audioTrack?.unmute();
         dispatch(localTrackMutedChanged());
     };
 
     const muteAudioLocalTrack = async () => {
-        await audioTrack.mute();
+        await audioTrack?.mute();
         dispatch(localTrackMutedChanged());
     };
 
     const unmuteVideoLocalTrack = async () => {
-        await videoTrack.unmute();
+        await videoTrack?.unmute();
         dispatch(localTrackMutedChanged());
     };
 
     const muteVideoLocalTrack = async () => {
-        await videoTrack.mute();
+        await videoTrack?.mute();
         dispatch(localTrackMutedChanged());
     };
 

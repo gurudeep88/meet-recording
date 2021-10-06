@@ -2,6 +2,8 @@ import React from 'react';
 import {useSelector} from "react-redux";
 import {makeStyles} from "@material-ui/core";
 import SariskaMediaTransport from "sariska-media-transport";
+import {Tooltip} from '@material-ui/core'
+
 
 const QUALITY_TO_WIDTH = [
     // full 3 bars
@@ -27,13 +29,11 @@ const QUALITY_TO_WIDTH = [
         tip: 'connectionindicator.quality.poor',
         width: '33%'
     }
-
     // Note: we never show 0 bars as long as there is a connection.
 ];
 
 const connectionSvgIcon = <svg height="1em" width="1em" viewBox="0 0 32 32">
-    <path
-        d="M28 0a4 4 0 014 4v24a4 4 0 01-8 0V4a4 4 0 014-4zM16 8a4 4 0 014 4v16a4 4 0 01-8 0V12a4 4 0 014-4zM4 20a4 4 0 014 4v4a4 4 0 01-8 0v-4a4 4 0 014-4z"></path>
+    <path d="M28 0a4 4 0 014 4v24a4 4 0 01-8 0V4a4 4 0 014-4zM16 8a4 4 0 014 4v16a4 4 0 01-8 0V12a4 4 0 014-4zM4 20a4 4 0 014 4v4a4 4 0 01-8 0v-4a4 4 0 014-4z"></path>
 </svg>
 
 const useStyles = makeStyles((theme) => ({
@@ -104,6 +104,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ConnectionIndicator = ({participantId}) => {
+   
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const stats = conference.myUserId() === participantId ? conference.connectionQuality._localStats : conference.connectionQuality._remoteStats[participantId] || {};
@@ -115,11 +116,15 @@ const ConnectionIndicator = ({participantId}) => {
     }
 
     const visibilityClass = getVisibilityClass();
+    
     const rootClassNames = `indicator-container ${visibilityClass}`;
 
     const getConnectionColorClass = () => {
+        
         const {percent} = stats;
+        
         const {INACTIVE, INTERRUPTED} = SariskaMediaTransport.constants.participantConnectionStatus;
+        
         if (connectionStatus === INACTIVE) {
             return 'status-other';
         } else if (connectionStatus === INTERRUPTED) {
@@ -139,6 +144,7 @@ const ConnectionIndicator = ({participantId}) => {
 
 
     const renderIcon = () => {
+
         if (connectionStatus === SariskaMediaTransport.constants.participantConnectionStatus.INACTIVE) {
             return (
                 <span className='connection_ninja'>
@@ -148,6 +154,7 @@ const ConnectionIndicator = ({participantId}) => {
         }
 
         let iconWidth;
+
         let emptyIconWrapperClassName = 'connection_empty';
 
         if (connectionStatus === SariskaMediaTransport.constants.participantConnectionStatus.INTERRUPTED) {
@@ -177,14 +184,16 @@ const ConnectionIndicator = ({participantId}) => {
 
     return (
         <div className={classes.root}>
-            <div className={rootClassNames}>
-                <div className={indicatorContainerClassNames}
-                     style={{fontSize: "8px"}}>
-                    <div className='connection indicatoricon'>
-                        {renderIcon()}
+            <Tooltip title={<div style={{fontSize: "bold"}} >Connection: Good <br /> Upload Bandwidth: 4 KB/ps <br /> Download Bandwidth: 4 KB/sec</div>}>
+                <div className={rootClassNames}>
+                    <div className={indicatorContainerClassNames}
+                         style={{fontSize: "8px"}}>
+                        <div className='connection indicatoricon'>
+                            {renderIcon()}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </Tooltip>
         </div>
     );
 }

@@ -65,7 +65,7 @@ const Meeting = () => {
             if (window.navigator.onLine && !layout.disconnected) {
                 dispatch(showNotification({message: "Internet Recovered!!!", autoHide: true, severity: "info"}));
             }
-        }, 3000);
+        }, 5000);
         SariskaMediaTransport.setNetworkInfo({isOnline: window.navigator.onLine});
     };
 

@@ -9,7 +9,7 @@ const useStyles = makeStyles(() => ({
 
 const Video = props => {
     const classes = useStyles();
-    const {track, isTransform} = props;
+    const {track, isPresenter} = props;
     const videoElementRef = useRef(null);
     useEffect(() => {
         track?.attach(videoElementRef.current);
@@ -19,7 +19,7 @@ const Video = props => {
         return null;
     }
 
-    return (<video playsInline="1" autoPlay='1' className={!isTransform && classes.video} ref={videoElementRef}
+    return (<video playsInline="1" autoPlay='1' className={ !isPresenter && classes.video } ref={videoElementRef}
                                style={{width: '100%', height: '100%', objectFit: 'cover'}}/>);
 }
 

@@ -122,22 +122,22 @@ const ActionButtons = () => {
     }
 
     const muteAudio = async () => {
-        await audioTrack.mute();
+        await audioTrack?.mute();
         dispatch(localTrackMutedChanged());
     };
 
     const unmuteAudio = async () => {
-        await audioTrack.unmute();
+        await audioTrack?.unmute();
         dispatch(localTrackMutedChanged());
     };
 
     const muteVideo = async () => {
-        await videoTrack.mute();
+        await videoTrack?.mute();
         dispatch(localTrackMutedChanged());
     };
 
     const unmuteVideo = async () => {
-        await videoTrack.unmute();
+        await videoTrack?.unmute();
         dispatch(localTrackMutedChanged());
     };
 

@@ -88,37 +88,71 @@ const ActionButtons = () => {
     const profile = useSelector(state => state.profile)
     const layout = useSelector((state) => state.layout);
     const [raiseHand, setRaiseHand] = useState(false);
+    const resolution = useSelector(state => state.media?.resolution);
 
+    const FShandler = ()=>{
+        removeFullscreenListeners();
+        dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+    }
+
+    const addFullscreenListeners = ()=>{
+        document.addEventListener("fullscreenchange", FShandler);
+        document.addEventListener("webkitfullscreenchange", FShandler);
+        document.addEventListener("mozfullscreenchange", FShandler);
+        document.addEventListener("MSFullscreenChange", FShandler);
+    }
+
+    const removeFullscreenListeners = ()=>{
+        document.removeEventListener("fullscreenchange", FShandler);
+        document.removeEventListener("webkitfullscreenchange", FShandler);
+        document.removeEventListener("mozfullscreenchange", FShandler);
+        document.removeEventListener("MSFullscreenChange", FShandler);
+    }
+    
     const enterFullScreen = () => {
-        try {
-            let docElm = document.documentElement;
-            if (docElm.requestFullscreen) {
-                docElm.requestFullscreen();
-            } else if (docElm.mozRequestFullScreen) {
-                docElm.mozRequestFullScreen();
-            } else if (docElm.webkitRequestFullScreen) {
-                docElm.webkitRequestFullScreen();
-            }
-            dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE))
-        } catch (e) {}
+        var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
+        
+        let docElm = document.documentElement;
+
+        if (isInFullScreen || !docElm) {
+            return;
+        }
+
+        if (docElm.requestFullscreen) {
+            docElm.requestFullscreen();
+        } else if (docElm.mozRequestFullScreen) {
+            docElm.mozRequestFullScreen();
+        } else if (docElm.webkitRequestFullScreen) {
+            docElm.webkitRequestFullScreen();
+        } else if(docElm.msRequestFullScreen) {
+            docElm.msRequestFullScreen();
+        }
+        dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
+        setTimeout(()=>{addFullscreenListeners()},1000);
     }
 
     const exitFullScreen = () => {
-        if (document.fullscreenElement === null) {
-            dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+        var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
+        if (!isInFullScreen) {
             return;
+        }   
+
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
         }
-        try {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.webkitCancelFullScreen) {
-                document.webkitCancelFullScreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            }
-        } catch (e) {}
+        dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
     }
 
     const muteAudio = async () => {
@@ -147,18 +181,9 @@ const ActionButtons = () => {
             resolution: 720,
             devices: ["desktop"],
             desktopSharingFrameRate: {
-                min: 40,
-                max: 60
-            },
-            constraints: {
-                video: {
-                     height: {
-                         ideal: 720,
-                         max: 720,
-                         min: 720
-                     }
-                 }
-             }
+                min: 25,
+                max: 25
+            }
         });
         conference.replaceTrack(videoTrack, desktopTrack);
         desktopTrack.addEventListener(SariskaMediaTransport.events.track.LOCAL_TRACK_STOPPED, async () => {
@@ -167,14 +192,14 @@ const ActionButtons = () => {
         setPresenting(true);
         conference.setLocalParticipantProperty("presenting", "start");
         dispatch(addLocalTrack(desktopTrack));
-        dispatch(setPresenter(conference.myUserId()));
+        dispatch(setPresenter({ participantId: conference.myUserId(), presenter: true}));
     }
 
     const stopPresenting = async () => {
         const videoTrack = localTracks.find(track => track.videoType === "camera");
         const desktopTrack = localTracks.find(track => track.videoType === "desktop");
         await conference.replaceTrack(desktopTrack, videoTrack);
-        dispatch(setPresenter(null));
+        dispatch(setPresenter({ participantId: conference.myUserId(), presenter: false}));
         dispatch(removeLocalTrack(desktopTrack));
         conference.setLocalParticipantProperty("presenting", "stop");
         setPresenting(false);
@@ -193,32 +218,19 @@ const ActionButtons = () => {
     useEffect(()=>{
         setInterval(()=> {
             setTime(new Date().toLocaleTimeString().slice(0,5))
-        }, 60000 );
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreen) {
-                exitFullScreen();
-            }
-        }, false);
-        document.addEventListener('mozfullscreenchange', () => {
-            if (!document.mozFullScreen) {
-                exitFullScreen();
-            }
-        }, false);
-        document.addEventListener('webkitfullscreenchange', () => {
-            if (!document.webkitIsFullScreen) {
-                exitFullScreen();
-            }
-        }, false);
-
-        document.addEventListener('dblclick', (event) => {
-            console.log("douable click event", event)
+        }, 1000);
+        const dbClickHandler = ()=>{
             if ( layout.mode === EXIT_FULL_SCREEN_MODE ){
-              //  enterFullScreen();
+                enterFullScreen();
             } else {
-              //  exitFullScreen();
+                exitFullScreen();
             }
-        });
-    },[])
+        }
+        document.addEventListener('dblclick', dbClickHandler);                
+        return ()=>{
+            document.removeEventListener('dblclick', dbClickHandler); 
+        }
+    },[layout.mode])
 
     const leaveConference = () => {
         history.push("/leave");
@@ -235,7 +247,7 @@ const ActionButtons = () => {
                 <Tooltip title={ presenting ? "Stop Presenting": "Share Screen" }>{presenting ? <StopScreenShareIcon onClick={stopPresenting}/> : <ScreenShareIcon onClick={shareScreen}/>}</Tooltip>
                 <Tooltip title={ raiseHand ? "Hand Down" : "Raise Hand"}>{ raiseHand ? <PanTool style={{color: color.primary}} onClick={stopRaiseHand}/> : <PanTool  onClick={startRaiseHand}/> }</Tooltip>
                 <Tooltip title="Leave Call"><CallEndIcon className={classes.end} onClick={leaveConference}/></Tooltip>
-                <Tooltip title={ layout.mode ===  EXIT_FULL_SCREEN_MODE  ? "Full Screen": "Exit Full Screen" }>
+                <Tooltip title={ layout.mode === EXIT_FULL_SCREEN_MODE ? "Full Screen": "Exit Full Screen" }>
                     { layout.mode === EXIT_FULL_SCREEN_MODE ? <FullscreenIcon onClick={enterFullScreen} className={classes.subIcon}/> : <FullscreenExitOutlinedIcon onClick={exitFullScreen} className={classes.subIcon}/>}
                 </Tooltip>
             </Box>

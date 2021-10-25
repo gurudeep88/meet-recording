@@ -200,11 +200,10 @@ const Home = () => {
         resolution,
         constraints: {
             video: {
-                aspectRatio: 16 / 9,
                 height: {
-                    ideal: 360,
+                    ideal: 720,
                     max: 720,
-                    min: 180
+                    min: 720
                 }
             }
         },

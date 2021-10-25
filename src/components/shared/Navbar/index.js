@@ -18,7 +18,7 @@ import CopyLink from "../CopyLink";
 import ViewComfyIcon from '@material-ui/icons/ViewComfy';
 import {useSelector, useDispatch} from "react-redux";
 import {setLayout} from "../../../store/actions/layout";
-import {GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD, DROPBOX_APP_KEY} from "../../../constants";
+import {GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD, DROPBOX_APP_KEY, EXIT_FULL_SCREEN_MODE} from "../../../constants";
 import classnames from "classnames";
 import Chat from "../Chat";
 import ParticipantDetails from "../ParticipantDetails";
@@ -28,12 +28,13 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import {withStyles} from '@material-ui/core/styles';
 import {unreadMessage} from "../../../store/actions/chat";
 import {setPresentationtType} from "../../../store/actions/layout";
-import SettingsBox from "../../meeting/Settings";
+import SettingsBox from "../../meeting/Settings"; 
 import {showNotification} from "../../../store/actions/notification";
 import googleApi from "../../../utils/google-apis";
 import LiveStreamDialog from "../LiveStreamDialog";
 import {authorizeDropbox} from "../../../utils/dropbox-apis";
 import Whiteboard from "../Whiteboard";
+import { addSubtitle } from "../../../store/actions/subtitle";
 
 const StyledBadge = withStyles((theme) => ({
     badge: {
@@ -179,6 +180,10 @@ const useStyles = makeStyles((theme) => ({
             fontWeight: '900',
             paddingBottom: theme.spacing(2)
         }
+    },
+    noiseCancellation: {
+        width: "24px",
+        height: "24px"
     }
 }));
 
@@ -298,6 +303,13 @@ const Navbar = ({dominantSpeakerId}) => {
             dispatch(showNotification({autoHide: true, message: "Could not fetch YouTube broadcasts", severity: "error"}));
             return;
         }
+
+        dispatch(showNotification({
+            severity: "info",
+            message: 'Starting Live Streaming',
+            autoHide: false
+        }));
+
         const streamName = selectedStream.result.items[0]?.cdn?.ingestionInfo?.streamName;
         setOpenLivestreamDialog(false);
 
@@ -321,6 +333,11 @@ const Navbar = ({dominantSpeakerId}) => {
         if (recording) {
             return;
         }
+        dispatch(showNotification({
+            severity: "info",
+            message: 'Starting Recording',
+            autoHide: false
+        }));
 
         // const response = await authorizeDropbox();
         // if (!response?.token) {
@@ -336,7 +353,6 @@ const Navbar = ({dominantSpeakerId}) => {
              'share': true
             }
         }
-
 
         // const appData = {
         //     file_recording_metadata: {
@@ -365,11 +381,16 @@ const Navbar = ({dominantSpeakerId}) => {
     }
 
     const startCaption = () => {
-        conference.setLocalParticipantProperty("requestingTranscription", true);
+        dispatch(showNotification({
+            severity: "info",
+            message: 'Starting Caption',
+            autoHide: false
+        }));
+        conference.setLocalParticipantProperty("requestingTranscription",   true);
     }
 
     const stopCaption = () => {
-        conference.setLocalParticipantProperty("requestingTranscription", false);
+        conference.setLocalParticipantProperty("requestingTranscription", false);  
     }
 
     const startWhiteboard = (isRemoteEvent)=>{
@@ -414,8 +435,12 @@ const Navbar = ({dominantSpeakerId}) => {
         }
     }
 
+    const cancelNoise = async ()=>{
+        await SariskaMediaTransport.effects.createRnnoiseProcessor();
+    }
 
     useEffect(() => {
+
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.transcribing) {
                 setCaption(true);
@@ -429,8 +454,6 @@ const Navbar = ({dominantSpeakerId}) => {
                 setStreaming(true);
             }
 
-            console.log("item._properties?", item._properties);
-
             if (item._properties?.whiteboard === "start") {
                 console.log("item._propertieswhiteboard?", item._properties?.whiteboard);
                 startWhiteboard(true);
@@ -443,7 +466,6 @@ const Navbar = ({dominantSpeakerId}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
-                       
             if (key === "whiteboard" && newValue === "start") {
                 startWhiteboard(true);
             }
@@ -472,6 +494,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 setCaption(false);
                 conference.removeLocalParticipantProperty("transcribing");
                 dispatch(showNotification({autoHide: true, message: "Caption stopped"}));
+                dispatch(addSubtitle({}));
             }
         });
 
@@ -559,7 +582,7 @@ const Navbar = ({dominantSpeakerId}) => {
     );
 
     return (
-        <Box id="header" className={classes.root}>
+        <Box style={{display: layout.mode === EXIT_FULL_SCREEN_MODE ? "block": "none"}} id="header" className={classes.root}>
             <Box className={classes.navContainer}>
                 <Box className={classes.nav}>
                     <AppBar position="static">
@@ -702,6 +725,11 @@ const Navbar = ({dominantSpeakerId}) => {
                                             </Tooltip>
                                         </Button>
                                     }
+                                    <Button onClick={cancelNoise} className={classes.link}>
+                                        <Tooltip title="Cancel noise">
+                                            <svg className={classes.noiseCancellation} fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M 2.9902344 1.9902344 A 1.0001 1.0001 0 0 0 2.2929688 3.7070312 L 7.1640625 8.578125 L 6.6582031 8.7617188 C 6.2622031 8.9047188 6 9.2801719 6 9.7011719 L 6 14.298828 C 6 14.719828 6.2622031 15.095281 6.6582031 15.238281 L 8.4511719 15.888672 L 8.1679688 16.689453 C 7.9549687 17.290453 8.2690937 17.949109 8.8710938 18.162109 L 11.048828 18.933594 C 11.649828 19.146594 12.310437 18.830516 12.523438 18.228516 L 12.792969 17.462891 L 17.902344 19.316406 L 20.292969 21.707031 A 1.0001 1.0001 0 0 0 21.771484 20.361328 C 21.773734 20.357778 21.777076 20.355132 21.779297 20.351562 L 9.25 7.8222656 L 9.2402344 7.8261719 L 3.7070312 2.2929688 A 1.0001 1.0001 0 0 0 2.9902344 1.9902344 z M 20.65625 3 C 20.24125 3 19.851656 3.1915312 19.597656 3.5195312 L 19 4.2851562 L 11.324219 7.0683594 L 22 17.744141 L 22 4.34375 C 22 3.60175 21.39825 3 20.65625 3 z M 3 9 C 2.448 9 2 9.448 2 10 L 2 14 C 2 14.552 2.448 15 3 15 C 3.552 15 4 14.552 4 14 L 4 10 C 4 9.448 3.552 9 3 9 z"></path></svg>
+                                        </Tooltip>
+                                    </Button>
                                     <Drawer anchor="right" open={settingsState["right"]}
                                             onClose={toggleSettingsDrawer("right", false)} className={classes.drawer}>
                                         {settingsList("right")}

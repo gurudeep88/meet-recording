@@ -108,7 +108,6 @@ const LobbyRoom = ({tracks}) => {
     const profile = useSelector(state => state.profile);
     const queryParams = useParams();
     const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
-    const isLoadTesting = queryParams.ignore_local_storage;
 
     const handleTitleChange = (e) => {
         setMeetingTitle(e.target.value.toLowerCase());
@@ -119,20 +118,15 @@ const LobbyRoom = ({tracks}) => {
     };
 
     const handleSubmit = async () => {
+        let token;
+
         if (!meetingTitle) {
             return;
         }
-        
         setLoading(true);
-        let token = localStorage.getItem(`sariska_${meetingTitle}${name}`);
         const isModerator = !queryParams.meetingId;
 
-        if (isLoadTesting) {
-            token = await getToken(meetingTitle, profile, name, isModerator, isLoadTesting);
-        } else {
-            token = token ? token : await getToken(meetingTitle, profile, name, isModerator, isLoadTesting);
-        }
-        
+        token = await getToken(meetingTitle, profile, name, isModerator);
         if (!token) {
             return;
         }
@@ -151,15 +145,11 @@ const LobbyRoom = ({tracks}) => {
         });
 
         connection.addEventListener(SariskaMediaTransport.events.connection.PASSWORD_REQUIRED, async (error) => {
-            localStorage.removeItem(`sariska_${meetingTitle}${name}`);
             const  token = await getToken(meetingTitle, profile, name, isModerator)
             connection.setToken(token); // token expired, set a new token
         });
 
         connection.connect();
-
-        dispatch(setProfile({name}));
-        dispatch(setMeeting({meetingTitle}));
     };
 
     const createConference = async (connection) => {
@@ -172,6 +162,8 @@ const LobbyRoom = ({tracks}) => {
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, () => {
             setLoading(false);
             dispatch(addConference(conference));
+            dispatch(setProfile(conference.getLocalUser()));
+            dispatch(setMeeting({meetingTitle}));
             history.push(`/${meetingTitle}`);
         });
 
@@ -184,6 +176,9 @@ const LobbyRoom = ({tracks}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_FAILED, async (error) => {
+            
+            console.log("errorerrorerror", error);
+
             if (error === SariskaMediaTransport.errors.conference.MEMBERS_ONLY_ERROR) {
                 setButtonText("Asking to join");
                 conference.joinLobby(name);

@@ -27,8 +27,14 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state=>state.layout);
     const myUserId = conference.myUserId();
-    const largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantId || dominantSpeakerId || myUserId;
+    let largeVideoId;
+    
+    if ( conference.getParticipantCount() === 2 ) {
+        largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
+    }
 
+    largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId || myUserId;
+    
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
         "onStageEndpoints":  [largeVideoId],
@@ -48,10 +54,11 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
             <VideoBox
                 isFilmstrip={true}
                 width={viewportWidth}
-                height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight}
+                isTranscription={true}
+                height={viewportHeight}
                 isLargeVideo={true}
-                isActiveSpeaker={ largeVideoId===dominantSpeakerId}
-                isPresenter={largeVideoId===layout.presenterParticipantId}
+                isActiveSpeaker={ largeVideoId === dominantSpeakerId }
+                isPresenter={layout.presenterParticipantIds.find(item=>item===largeVideoId)}
                 participantDetails={conference.participants[largeVideoId]?._identity?.user || conference.getLocalUser()}
                 participantTracks={remoteTracks[largeVideoId] || localTracks}
                 localUserId={conference.myUserId()}

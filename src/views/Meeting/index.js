@@ -10,7 +10,7 @@ import {addRemoteTrack, removeRemoteTrack, remoteTrackMutedChanged} from "../../
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
-import {EXIT_FULL_SCREEN_MODE, SPEAKER, PRESENTATION, GRID} from "../../constants";
+import {SPEAKER, PRESENTATION, GRID, EXIT_FULL_SCREEN_MODE} from "../../constants";
 import {addMessage} from "../../store/actions/message";
 import {getUserById, preloadIframes} from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
@@ -21,6 +21,7 @@ import Home from "../Home";
 import {setPresenter, setPinParticipant, setRaiseHand} from "../../store/actions/layout";
 import {setAudioLevel} from "../../store/actions/audioIndicator";
 import {showNotification} from "../../store/actions/notification";
+import { addSubtitle } from '../../store/actions/subtitle';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -89,7 +90,7 @@ const Meeting = () => {
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.presenting === "start") {
                 dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
-                dispatch(setPresenter(item._id));
+                dispatch(setPresenter({participantId: item._id, presenter: true}));
             }
             if (item._properties?.handraise === "start") {
                 dispatch(setRaiseHand({ participantId: item._id, raiseHand: true}));
@@ -103,6 +104,10 @@ const Meeting = () => {
             dispatch(addRemoteTrack(track));
         });
 
+        conference.addEventListener(SariskaMediaTransport.events.conference.SUBTITLES_RECEIVED, (id, name, text) => {
+            dispatch(addSubtitle({name,text}));
+        });
+
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, (track) => {
             dispatch(removeRemoteTrack(track));
         });
@@ -112,24 +117,23 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
-            if (conference.getParticipantCount() === 2) {
-                setDominantSpeakerId(conference.getParticipantsWithoutHidden()[0]._id);
-            } else {
-                setDominantSpeakerId(id);
-            }
+            setDominantSpeakerId(id);
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
             if (key === "presenting" && newValue === "start") {
                 dispatch(showNotification({ autoHide: true, message: `Screen sharing started by ${participant._identity?.user?.name}`}));
-                dispatch(setPresenter(participant._id));
+                dispatch(setPresenter({participantId: participant._id, presenter: true}));
             }
+            
             if (key === "presenting" && newValue === "stop") {
-                dispatch(setPresenter(null));
+                dispatch(setPresenter({participantId: participant._id, presenter: false}));
             }
+
             if (key === "handraise" && newValue === "start") {
                 dispatch(setRaiseHand({ participantId: participant._id, raiseHand: true}));
             }
+
             if (key === "handraise" && newValue === "stop") {
                 dispatch(setRaiseHand({ participantId: participant._id, raiseHand: false}));
             }
@@ -139,8 +143,8 @@ const Meeting = () => {
             if (id === layout.pinnedParticipantId) {
                 dispatch(setPinParticipant(null))
             }
-            if (id === layout.presenterParticipantId) {
-               dispatch(setPresenter(null));
+            if ( layout.presenterParticipantIds.find(item=>item===id)) {
+                dispatch(setPresenter({participantId: id, presenter: false}));
             }
         });
 
@@ -182,6 +186,7 @@ const Meeting = () => {
         window.addEventListener("online", updateNetwork);
         window.addEventListener("beforeunload", destroy);
         preloadIframes(conference);
+        
         return () => {
             destroy();
         };
@@ -194,9 +199,7 @@ const Meeting = () => {
 
     return (
         <Box className={classes.root}>
-            { layout.mode === EXIT_FULL_SCREEN_MODE && 
-                <Navbar dominantSpeakerId={dominantSpeakerId}/>
-            }
+            <Navbar dominantSpeakerId={dominantSpeakerId}/>
             { layout.type === SPEAKER &&
                 <SpeakerLayout dominantSpeakerId={dominantSpeakerId}/>
             }

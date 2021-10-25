@@ -29,20 +29,22 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, height}) 
                 return <VideoBox localUserId={conference.myUserId()}
                                     width={218}
                                     height={123}
-                                    isPresenter={participant._id===layout.presenterParticipantId}
+                                    isPresenter={layout.presenterParticipantIds.find(item=>item===participant._id)}
                                     isFilmstrip={false}
                                     isActiveSpeaker={dominantSpeakerId===participant._id}
                                     participantDetails={participant?._identity?.user}
-                                    participantTracks={remoteTracks[participant._id] || []}/>
+                                    participantTracks={remoteTracks[participant._id] || []}
+                        />
             })}
             <VideoBox localUserId={conference.myUserId()}
-                    isPresenter={conference.myUserId()===layout.presenterParticipantId}
+                    isPresenter={layout.presenterParticipantIds.find(item=>item===conference.myUserId())}
                     isFilmstrip={false}
                     width={218}
                     height={123}
                     isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
                     participantDetails={conference.getLocalUser()}
-                    participantTracks={localTracks}/>
+                    participantTracks={localTracks}
+            />
         </Box>)
 }
 

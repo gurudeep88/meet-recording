@@ -30,8 +30,8 @@ export default function PermissionDialog({displayName, allowLobbyAccess, denyLob
             <Card>
                 <div>Someone wants to join {displayName}</div>
                 <div className={classes.controls}>
-                    <Button onClick={allowLobbyAccess}>Allow</Button>
                     <Button onClick={denyLobbyAccess}>Deny</Button>
+                    <Button onClick={allowLobbyAccess}>Allow</Button>
                 </div>
             </Card>
         </div>

@@ -47,6 +47,7 @@ export function createDeferred() {
 
 
 export async function getToken(roomName, profile, name,  isModerator) {
+    console.log("profile",         profile); 
     const body = {
         method: "POST",
         headers: {
@@ -56,7 +57,7 @@ export async function getToken(roomName, profile, name,  isModerator) {
             sessionId: roomName, // enter your sessionId
             apiKey: "27fd6f8080d512442a3694f461adb3986cda5ba39dbe368d75",
             user: {
-                id: profile.id,
+                id: name,
                 avatar: profile.avatar,
                 name: name,
                 email: profile.email,
@@ -69,7 +70,6 @@ export async function getToken(roomName, profile, name,  isModerator) {
         const response = await fetch(GENERATE_TOKEN_URL, body);
         if (response.ok) {
             const json = await response.json();
-            localStorage.setItem(`sariska_${roomName}${name}`, json.token);
             return json.token;
         } else {
             console.log(response.status);

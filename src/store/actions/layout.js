@@ -36,10 +36,10 @@ export const setDisconnected = (disconnected) => {
     }
 }
 
-export const setPresenter = (id) => {
+export const setPresenter = (payload) => {
     return {
         type: Constants.SET_PRESENTER,
-        payload: id,
+        payload,
     }
 }
 

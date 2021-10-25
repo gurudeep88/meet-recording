@@ -13,6 +13,8 @@ import BlurOnOutlinedIcon from '@material-ui/icons/BlurOnOutlined';
 import BlurLinearOutlinedIcon from '@material-ui/icons/BlurLinearOutlined';
 import ScreenShareOutlinedIcon from '@material-ui/icons/ScreenShareOutlined';
 import { color } from '../../../assets/styles/_color';
+import {useDispatch} from "react-redux";
+import {showNotification} from "../../../store/actions/notification";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -130,8 +132,14 @@ export default function VirtualBackground() {
     const videoTrack = localTracks.find(track => track.isVideoTrack());
     const [desktopTrack, setDesktopTrack] = useState(null);
     const [loading, setLoading] = useState(null);
+    var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const dispatch = useDispatch()
 
     const imageBackground = async (url) => {
+        if (isSafari) {
+            dispatch(showNotification({autoHide: true, message: "Virtual background not supported!!!", severity: "info"}));
+            return;
+        }
         await videoTrack.setEffect(undefined);
         const options = {
             backgroundEffectEnabled: true,
@@ -139,12 +147,21 @@ export default function VirtualBackground() {
             virtualSource: url
         };
         setLoading(true);
-        const effect = await SariskaMediaTransport.effects.createVirtualBackgroundEffect(options);
-        await videoTrack.setEffect(effect);
-        setLoading(false);
+        try {
+            const effect = await SariskaMediaTransport.effects.createVirtualBackgroundEffect(options);
+            await videoTrack.setEffect(effect);
+            setLoading(false);
+        } catch(e) {
+            console.log("too", e);
+        }
+
     }
 
     const lightBlurBackground = async () => {
+        if (isSafari) {
+            dispatch(showNotification({autoHide: true, message: "Virtual background not supported!!!", severity: "info"}));
+            return;
+        }
         await videoTrack.setEffect(undefined);
         const options = {
             backgroundEffectEnabled: true,
@@ -158,6 +175,10 @@ export default function VirtualBackground() {
     }
 
     const blurBackground = async () => {
+        if (isSafari) {
+            dispatch(showNotification({autoHide: true, message: "Virtual background not supported!!!", severity: "info"}));
+            return;
+        }
         await videoTrack.setEffect(undefined);
         const options = {
             backgroundEffectEnabled: true,
@@ -171,6 +192,10 @@ export default function VirtualBackground() {
     }
 
     const screenSharingBackground = async () => {
+        if (isSafari) {
+            dispatch(showNotification({autoHide: true, message: "Virtual background not supported!!!", severity: "info"}));
+            return;
+        }
         await videoTrack.setEffect(undefined);
         const [desktopTrack] = await SariskaMediaTransport.createLocalTracks({devices: ["desktop"]});
         const options = {

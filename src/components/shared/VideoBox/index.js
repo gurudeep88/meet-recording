@@ -13,6 +13,7 @@ import classnames from "classnames";
 import {videoShadow} from "../../../utils";
 import AudioLevelIndicator from "../AudioIndicator";
 import ConnectionIndicator from "../ConnectionIndicator";
+import SubTitle from "../SubTitle";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -103,7 +104,11 @@ const useStyles = makeStyles((theme) => ({
         "&:hover": {
             opacity: "0.8",
             background: `${color.red} !important`,
-        },
+        }
+    },
+    subtitle: {
+        position: "absolute",
+        bottom: 0
     }
 }));
 
@@ -117,18 +122,20 @@ const VideoBox = ({
                       isBorderSeparator,
                       isActiveSpeaker,
                       isFilmstrip,
-                      isLargeVideo
+                      isLargeVideo,
+                      isTranscription
                   }) => {
     const classes = useStyles();
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.isVideoTrack());
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
-    const { pinnedPartcipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
+    const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
     const avatarColors = useSelector(state => state.color);
     const audioIndicator = useSelector(state => state.audioIndicator);
     const dispatch = useDispatch();
     const [visiblePinParticipant, setVisiblePinPartcipant] = useState(false);
     let avatarColor = avatarColors[participantDetails?.id];
     let audioLevel = audioIndicator[participantDetails?.id];
+    const subtitle  = useSelector(state=>state.subtitle);
 
     const togglePinParticipant = (id) => {
         dispatch(setPinParticipant(id));
@@ -147,7 +154,7 @@ const VideoBox = ({
         'gridSeparator': isBorderSeparator,
         'activeSpeaker': isActiveSpeaker
     });
-
+    
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
@@ -170,13 +177,13 @@ const VideoBox = ({
                         </Avatar>
                     </Box>
                     :
-                    <Box className={borderActiveClasses} style={{width: `${width}px`, height: `${height}px`}}>
+                    <Box className={borderActiveClasses}>
                         <Video isPresenter={isPresenter} track={videoTrack}/>
                     </Box>
             }
             <Box className={classes.rightControls}>
                 {visiblePinParticipant && <>
-                    <PinParticipant participantId={participantDetails?.id} pinnedPartcipantId={pinnedPartcipantId} togglePinParticipant={togglePinParticipant}/>
+                    <PinParticipant participantId={participantDetails?.id} pinnedParticipantId={pinnedParticipantId} togglePinParticipant={togglePinParticipant}/>
                     <ConnectionIndicator participantId={participantDetails?.id} />
                 </>}
                 {raisedHandParticipantIds[participantDetails?.id] &&
@@ -189,7 +196,10 @@ const VideoBox = ({
             {!isFilmstrip && <Box>
                 <AudioLevelIndicator passedAudioLevel={audioLevel}/>
             </Box>}
-        </Box>) 
+            {isTranscription && subtitle.text && <Box className={classes.subtitle}>
+                <SubTitle subtitle={subtitle} />
+            </Box>}    
+        </Box>)
 }
 
 export default VideoBox;

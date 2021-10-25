@@ -5,7 +5,7 @@ const initialState = {
     type: SPEAKER,  //default layout,
     mode: EXIT_FULL_SCREEN_MODE, //default mode,
     pinnedParticipantId: null,
-    presenterParticipantId: null,
+    presenterParticipantIds: [],
     disconnected: false,
     raisedHandParticipantIds: {},
     presentationType: null
@@ -30,8 +30,12 @@ export const layout = (state = initialState, action) => {
             }
             return {...state};
         case SET_PRESENTER:
-            state.presenterParticipantId = action.payload;
-            return {...state};    
+            if (action.payload.presenter) {
+                state.presenterParticipantIds.push(action.payload.participantId);
+            } else {
+                state.presenterParticipantIds = state.presenterParticipantIds.filter(item=>item!==action.payload.participantId); 
+            }
+            return {...state};
         case SET_PIN_PARTICIPANT:
             state.pinnedParticipantId = action.payload;
             return {...state};

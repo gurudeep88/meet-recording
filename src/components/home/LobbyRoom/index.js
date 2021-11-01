@@ -176,9 +176,6 @@ const LobbyRoom = ({tracks}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_FAILED, async (error) => {
-            
-            console.log("errorerrorerror", error);
-
             if (error === SariskaMediaTransport.errors.conference.MEMBERS_ONLY_ERROR) {
                 setButtonText("Asking to join");
                 conference.joinLobby(name);

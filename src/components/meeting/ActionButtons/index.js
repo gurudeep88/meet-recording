@@ -179,12 +179,19 @@ const ActionButtons = () => {
         const videoTrack = localTracks.find(track => track.videoType === "camera");
         const [desktopTrack] = await SariskaMediaTransport.createLocalTracks({
             resolution: 720,
-            devices: ["desktop"],
-            desktopSharingFrameRate: {
-                min: 25,
-                max: 25
-            }
+            constraints: {
+                video: {
+                    aspectRatio: 16 / 9,
+                    height: {
+                        ideal: 720,
+                        max: 720,
+                        min: 240
+                    }
+                }
+            },
+            devices: ["desktop"]
         });
+
         conference.replaceTrack(videoTrack, desktopTrack);
         desktopTrack.addEventListener(SariskaMediaTransport.events.track.LOCAL_TRACK_STOPPED, async () => {
             stopPresenting();

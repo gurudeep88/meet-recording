@@ -10,7 +10,7 @@ import {addRemoteTrack, removeRemoteTrack, remoteTrackMutedChanged} from "../../
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
-import {SPEAKER, PRESENTATION, GRID, EXIT_FULL_SCREEN_MODE} from "../../constants";
+import {SPEAKER, PRESENTATION, GRID, EXIT_FULL_SCREEN_MODE, ENTER_FULL_SCREEN_MODE} from "../../constants";
 import {addMessage} from "../../store/actions/message";
 import {getUserById, preloadIframes} from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
@@ -26,7 +26,6 @@ import { addSubtitle } from '../../store/actions/subtitle';
 const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
-        justifyContent: "center",
         flexDirection: "column",
         background: color.secondaryDark,
         minHeight: '100vh',
@@ -197,8 +196,13 @@ const Meeting = () => {
         return <Home/>;
     }
 
+    let justifyContent = "center";
+    if ( layout.mode === ENTER_FULL_SCREEN_MODE && layout.type === SPEAKER ) {
+        justifyContent = "space-around";
+    }
+
     return (
-        <Box className={classes.root}>
+        <Box style={{ justifyContent }} className={classes.root}>
             <Navbar dominantSpeakerId={dominantSpeakerId}/>
             { layout.type === SPEAKER &&
                 <SpeakerLayout dominantSpeakerId={dominantSpeakerId}/>

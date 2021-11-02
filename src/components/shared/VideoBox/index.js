@@ -136,7 +136,7 @@ const VideoBox = ({
     let avatarColor = avatarColors[participantDetails?.id];
     let audioLevel = audioIndicator[participantDetails?.id];
     const subtitle  = useSelector(state=>state.subtitle);
-
+    window.participantTracks = participantTracks;
     const togglePinParticipant = (id) => {
         dispatch(setPinParticipant(id));
     }
@@ -154,6 +154,10 @@ const VideoBox = ({
         'gridSeparator': isBorderSeparator,
         'activeSpeaker': isActiveSpeaker
     });
+    
+    if (isPresenter) {
+        width = height*1.6;
+    }
     
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
@@ -177,7 +181,7 @@ const VideoBox = ({
                         </Avatar>
                     </Box>
                     :
-                    <Box className={borderActiveClasses}>
+                    <Box style={{width: `${width}px`, height: `${height}px`}} className={borderActiveClasses}>
                         <Video isPresenter={isPresenter} track={videoTrack}/>
                     </Box>
             }

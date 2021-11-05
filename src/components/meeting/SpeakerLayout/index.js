@@ -28,7 +28,8 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const layout = useSelector(state=>state.layout);
     const myUserId = conference.myUserId();
     let largeVideoId;
-    
+    console.log("conference.getParticipantCount()", conference.getParticipantsWithoutHidden(), conference.getParticipantCount());
+  
     if ( conference.getParticipantCount() === 2 ) {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
@@ -44,11 +45,10 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         }
     }
     conference.setReceiverConstraints(constraints);
-
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-     
+
     return (
         <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}} className={activeClasses}>
             <VideoBox

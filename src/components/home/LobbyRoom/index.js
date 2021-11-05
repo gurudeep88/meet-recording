@@ -124,7 +124,8 @@ const LobbyRoom = ({tracks}) => {
             return;
         }
         setLoading(true);
-        const isModerator = !queryParams.meetingId;
+        
+        const isModerator = !queryParams.meetingId || profile.moderator;
 
         token = await getToken(meetingTitle, profile, name, isModerator);
         if (!token) {
@@ -134,7 +135,6 @@ const LobbyRoom = ({tracks}) => {
         const connection = new SariskaMediaTransport.JitsiConnection(token);
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
             dispatch(addConnection(connection));
-            console.log("CONNECTION_ESTABLISHED")
             createConference(connection);
         });
 

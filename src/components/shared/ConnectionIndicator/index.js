@@ -181,10 +181,11 @@ const ConnectionIndicator = ({participantId}) => {
             </span>
         ];
     }
-
+    
+    const connectionRate = conference.myUserId()=== participantId ? conference.connectionQuality._localStats : conference.connectionQuality._remoteStats[participantId];
     return (
         <div className={classes.root}>
-            <Tooltip title={<div style={{fontSize: "bold"}} >Connection: Good <br /> Upload Bandwidth: 4 KB/ps <br /> Download Bandwidth: 4 KB/sec</div>}>
+            <Tooltip title={<div style={{fontSize: "bold"}} >Connection: Good <br /> Upload Bandwidth: {connectionRate?.bandwidth?.upload} <br /> Download Bandwidth: {connectionRate?.bandwidth?.download}</div>}>
                 <div className={rootClassNames}>
                     <div className={indicatorContainerClassNames}
                          style={{fontSize: "8px"}}>

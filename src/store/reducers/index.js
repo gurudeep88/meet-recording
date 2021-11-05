@@ -32,11 +32,7 @@ export const appReducer = combineReducers({
 
 export const rootReducer = (state, action) => {
     if (action.type === CLEAR_ALL) {
-        return appReducer({
-            localTrack: [],
-            remoteTrack: {},
-            profile: state.profile
-        }, action);
+        return appReducer({ profile: state.profile, localTrack: [], remoteTrack: [] }, action);
     }
     return appReducer(state, action);
 }

@@ -42,6 +42,12 @@ export const updateRemoteTrack = (track) => {
     }
 }
 
+export const participantLeft = () => {
+    return {
+        type: Constants.PARTICIPANT_LEFT
+    }
+}
+
 export const localTrackMutedChanged = () => {
     return {
         type: Constants.LOCAL_TRACK_MUTE_CHANGED

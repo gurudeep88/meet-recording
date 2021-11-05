@@ -35,6 +35,8 @@ export const layout = (state = initialState, action) => {
             } else {
                 state.presenterParticipantIds = state.presenterParticipantIds.filter(item=>item!==action.payload.participantId); 
             }
+            console.log("state.presenterParticipantIds", state.presenterParticipantIds);
+
             return {...state};
         case SET_PIN_PARTICIPANT:
             state.pinnedParticipantId = action.payload;

@@ -3,7 +3,8 @@ import {
     UPDATE_REMOTE_TRACK,
     REMOVE_REMOTE_TRACK,
     REMOVE_ALL_REMOTE_TRACK,
-    REMOTE_TRACK_MUTE_CHANGED
+    REMOTE_TRACK_MUTE_CHANGED,
+    PARTICIPANT_LEFT
 } from "../actions/types";
 
 const initialState = {};
@@ -37,6 +38,8 @@ export const remoteTrack = (state = initialState, action) => {
             return state;
         case REMOTE_TRACK_MUTE_CHANGED:
             return {...state};
+        case PARTICIPANT_LEFT:
+            return {...state};    
         default:
             return state;
     }

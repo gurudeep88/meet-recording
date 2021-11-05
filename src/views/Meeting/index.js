@@ -6,7 +6,7 @@ import SariskaMediaTransport from 'sariska-media-transport';
 import Navbar from '../../components/shared/Navbar'
 import ReconnectDialog from "../../components/shared/ReconnectDialog";
 import {useDispatch, useSelector} from "react-redux";
-import {addRemoteTrack, removeRemoteTrack, remoteTrackMutedChanged} from "../../store/actions/track";
+import {addRemoteTrack, participantLeft, removeRemoteTrack, remoteTrackMutedChanged} from "../../store/actions/track";
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
@@ -71,7 +71,7 @@ const Meeting = () => {
 
     const destroy = async () => {
         if (conference?.isJoined()) {
-            // await conference?.leave();
+             await conference?.leave();
         }
         for (const track of localTracks) {
             await track.dispose();
@@ -79,7 +79,7 @@ const Meeting = () => {
         await connection?.disconnect();
         window.removeEventListener("offline", updateNetwork);
         window.removeEventListener("online", updateNetwork);
-        dispatch(clearAllReducers());
+        // dispatch(clearAllReducers());
     }
 
     useEffect(() => {
@@ -145,6 +145,7 @@ const Meeting = () => {
             if ( layout.presenterParticipantIds.find(item=>item===id)) {
                 dispatch(setPresenter({participantId: id, presenter: false}));
             }
+            dispatch(participantLeft());
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
@@ -181,6 +182,27 @@ const Meeting = () => {
             dispatch(setAudioLevel({participantId, audioLevel}));
         });
 
+        conference.addEventListener(SariskaMediaTransport.events.connectionQuality.LOCAL_STATS_UPDATED, (a, b)=>{
+            //console.log("LOCAL_STATS_UPDATED", a, b);
+        });
+
+
+        conference.addEventListener(SariskaMediaTransport.events.connectionQuality.REMOTE_STATS_UPDATED, (a, b) => {
+            //console.log("REMOTE_STATS_UPDATED", a, b);
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_CONN_STATUS_CHANGED, (a, b) => {
+            //console.log("PARTICIPANT_CONN_STATUS_CHANGED", a, b);
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_CONN_STATUS_CHANGED, (a, b) => {
+            //console.log("PARTICIPANT_CONN_STATUS_CHANGED", a, b);
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.E2E_RTT_CHANGED, (participant, e2eRtt)=>{
+            //console.log("participant, e2eRtt", participant, e2eRtt)
+        });
+
         window.addEventListener("offline", updateNetwork);
         window.addEventListener("online", updateNetwork);
         window.addEventListener("beforeunload", destroy);
@@ -197,9 +219,12 @@ const Meeting = () => {
     }
 
     let justifyContent = "center";
-    if ( layout.mode === ENTER_FULL_SCREEN_MODE && layout.type === SPEAKER ) {
+    if ( layout.mode === ENTER_FULL_SCREEN_MODE ) {
         justifyContent = "space-around";
     }
+
+    console.log("layoutlayout", layout);
+
 
     return (
         <Box style={{ justifyContent }} className={classes.root}>

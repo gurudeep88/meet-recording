@@ -27,8 +27,8 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, height}) 
         <Box style={{height: `${height}px`}} className={activeClasses}>
             { conference.getParticipantsWithoutHidden().map(participant => {              
                 return <VideoBox localUserId={conference.myUserId()}
-                                    width={218}
-                                    height={123}
+                                    width={222}
+                                    height={222*9/16}
                                     isPresenter={layout.presenterParticipantIds.find(item=>item===participant._id)}
                                     isFilmstrip={false}
                                     isActiveSpeaker={dominantSpeakerId===participant._id}
@@ -39,8 +39,8 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, height}) 
             <VideoBox localUserId={conference.myUserId()}
                     isPresenter={layout.presenterParticipantIds.find(item=>item===conference.myUserId())}
                     isFilmstrip={false}
-                    width={218}
-                    height={123}
+                    width={222}
+                    height={222*9/16}
                     isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
                     participantDetails={conference.getLocalUser()}
                     participantTracks={localTracks}

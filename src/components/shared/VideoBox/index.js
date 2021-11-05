@@ -113,17 +113,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const VideoBox = ({
-                      participantTracks,
-                      participantDetails,
-                      localUserId,
-                      width,
-                      height,
-                      isPresenter,
-                      isBorderSeparator,
-                      isActiveSpeaker,
-                      isFilmstrip,
-                      isLargeVideo,
-                      isTranscription
+                    participantTracks,
+                    participantDetails,
+                    localUserId,
+                    width,
+                    height,
+                    isPresenter,
+                    isBorderSeparator,
+                    isActiveSpeaker,
+                    isFilmstrip,
+                    isLargeVideo,
+                    isTranscription
                   }) => {
     const classes = useStyles();
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.isVideoTrack());
@@ -136,7 +136,7 @@ const VideoBox = ({
     let avatarColor = avatarColors[participantDetails?.id];
     let audioLevel = audioIndicator[participantDetails?.id];
     const subtitle  = useSelector(state=>state.subtitle);
-    window.participantTracks = participantTracks;
+    
     const togglePinParticipant = (id) => {
         dispatch(setPinParticipant(id));
     }
@@ -155,8 +155,8 @@ const VideoBox = ({
         'activeSpeaker': isActiveSpeaker
     });
     
-    if (isPresenter) {
-        width = height*1.6;
+    if (isPresenter && isLargeVideo) {
+        width = (videoTrack?.track?.getSettings()?.aspectRatio || 1.6)*height;
     }
     
     return (
@@ -164,18 +164,15 @@ const VideoBox = ({
              onMouseEnter={() => setVisiblePinPartcipant(true)}
              onMouseLeave={() => setVisiblePinPartcipant(false)} className={classes.root}>
             <Box className={classes.audioBox}>
-                {audioTrack?.isMuted() ? <MicOffIcon/> : <MicIcon className={classes.disable}/>}
-                {!audioTrack?.isLocal() && <Audio track={audioTrack}/>}
+                { audioTrack?.isMuted() ? <MicOffIcon/> : <MicIcon className={classes.disable}/> }
+                { !audioTrack?.isLocal() && <Audio track={audioTrack}/> }
             </Box>
             {
                 videoTrack?.isMuted() ? 
                     <Box className={avatarActiveClasses}>
                         <Avatar
                             src={participantDetails?.avatar ? participantDetails?.avatar: null }
-                            style={isFilmstrip ? {
-                                boxShadow: videoShadow(audioLevel),
-                                background: avatarColor
-                            } : {background: avatarColor}}
+                            style={isFilmstrip ? { boxShadow: videoShadow(audioLevel), background: avatarColor } : {background: avatarColor}}
                             className={audioIndicatorActiveClasses}>
                             {participantDetails?.name.slice(0, 1).toUpperCase()}
                         </Avatar>
@@ -202,7 +199,7 @@ const VideoBox = ({
             </Box>}
             {isTranscription && subtitle.text && <Box className={classes.subtitle}>
                 <SubTitle subtitle={subtitle} />
-            </Box>}    
+            </Box>}
         </Box>)
 }
 

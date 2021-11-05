@@ -12,7 +12,7 @@ export function useWindowResize() {
         let viewportHeight, viewportWidth;
         
         if (documentHeight > documentWidth*9/16) {
-            viewportWidth = documentWidth - (layout.mode === ENTER_FULL_SCREEN_MODE ? 0 : 250);
+            viewportWidth = documentWidth - (layout.mode === ENTER_FULL_SCREEN_MODE ||  documentWidth < 1025 ? 0 : 250);
             viewportHeight = viewportWidth*9/16;
         } else {
             viewportHeight = documentHeight- (layout.mode === ENTER_FULL_SCREEN_MODE ? 64 : 128) 

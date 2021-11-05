@@ -2,7 +2,6 @@ import {Box, makeStyles, Tooltip} from "@material-ui/core";
 import React from "react";
 import {color} from "../../../assets/styles/_color";
 
-
 const useStyles = makeStyles((theme) => ({
     root: {
         boxSizing: "border-box",
@@ -18,33 +17,29 @@ const useStyles = makeStyles((theme) => ({
         color: "white",
         height: "24px",
         width: "24px"
+    },
+    unpin: {
+        color: "#27CED7"
+    },
+    pin: {
+        color: "white"
     }
 }));
 
 const PinParticipant =  ({pinnedParticipantId, togglePinParticipant, participantId})=>{
+
     const classes = useStyles();
     return (<Box className={classes.controls}>
         { pinnedParticipantId === participantId ? 
             <Tooltip title="Unpin Partcipant">
-                <svg 
-                    onClick={()=>togglePinParticipant(null)}  
-                    width="24px" 
-                    height="24px"   
-                    aria-hidden="true" 
-                    role="img" 
-                    preserveAspectRatio="xMidYMid meet" 
-                    viewBox="0 0 24 24"><path d="M2 5.27L3.28 4L20 20.72L18.73 22l-5.93-5.93V22h-1.6v-6H6v-2l2-2v-.73l-6-6M16 12l2 2v2h-.18L8 6.18V4H7V2h10v2h-1v8z" fill="currentColor"/>
-                </svg>
+                <Box onClick={()=>togglePinParticipant(null)} className={classes.unpin}>
+                    <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-1om0hkc" focusable="false" viewBox="0 0 24 24" aria-hidden="true" data-testid="PushPinIcon"><path fill-rule="evenodd" d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"></path></svg>
+                </Box>
             </Tooltip> :
             <Tooltip title="Pin Partcipant">
-                 <svg  
-                      onClick={()=>togglePinParticipant(participantId)} 
-                      width="24px"  
-                      height="24px"  
-                      aria-hidden="true" 
-                      role="img" 
-                      preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z" fill="currentColor"/>
-                  </svg>
+                 <Box onClick={()=>togglePinParticipant(participantId)} className={classes.pin}>
+                    <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-1om0hkc" focusable="false" viewBox="0 0 24 24" aria-hidden="true" data-testid="PushPinIcon"><path fill-rule="evenodd" d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"></path></svg>
+                </Box>
             </Tooltip>}
     </Box>);
 }

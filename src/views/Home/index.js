@@ -239,6 +239,9 @@ const Home = () => {
         const createNewLocalTracks = async () => {
             const localTracks = await SariskaMediaTransport.createLocalTracks(options);
             setLocalTracks(localTracks);
+            
+            console.log("track", localTracks);
+
             localTracks?.forEach(track => dispatch(addLocalTrack(track)));
         };
 
@@ -259,13 +262,12 @@ const Home = () => {
 
         const microsoftLogin = async () => {
             try {
-                const response = await microsoftCalendarApi.isSignedIn();
+                const response = await microsoftCalendarApi?.isSignedIn();
                 console.log("response", response);
-            } catch (e) {
-                console.log("e", e);
-            }
+            } catch (e) {}
             setLoading(false);
         }
+
         createNewLocalTracks();
         googleLogin();
         microsoftLogin();

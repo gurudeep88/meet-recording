@@ -7,15 +7,17 @@ const initialState = {
     googleAPIState: 0,
     avatar: persistedData.avatar,
     email: persistedData.email,
-    id: persistedData.id
+    id: persistedData.id,
+    moderator: persistedData.moderator
 };
 
 export const profile = (state = initialState, action) => {
     switch (action.type) {
         case SET_PROFILE:
-            const {name, email, avatar, id} = action.payload;
+            const {name, email, avatar, id, moderator} = action.payload;
             state.name = name;
             state.email = email;
+            state.moderator = moderator;
             state.avatar = avatar;
             state.id = id;
             return {...state};

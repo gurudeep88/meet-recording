@@ -32,15 +32,15 @@ const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, 
                     return <VideoBox localUserId={conference.myUserId()}
                                      isPresenter={layout.presenterParticipantIds.find(item=>item===conference.myUserId())}
                                      isFilmstrip={false}
-                                     width={225}
-                                     height={225*9/16}
+                                     width={222}
+                                     height={222*9/16}
                                      isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
                                      participantDetails={conference.getLocalUser()}
                                      participantTracks={localTracks}/>
                 } else {
                     return <VideoBox localUserId={conference.myUserId()}
-                                     width={225}
-                                     height={225*9/16}
+                                     width={222}
+                                     height={222*9/16}
                                      isPresenter={layout.presenterParticipantIds.find(item=>item===participant._id)}
                                      isFilmstrip={false}
                                      isActiveSpeaker={dominantSpeakerId===participant._id}

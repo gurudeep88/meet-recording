@@ -4,7 +4,7 @@ import {conference} from "./conference";
 import {connection} from "./connection";
 import {remoteTrack} from "./remoteTrack";
 import {localTrack} from "./localTrack";
-import {layout} from "./layout";
+import {layout, layoutInitialState} from "./layout";
 import {profile} from "./profile";
 import {message} from "./message";
 import {chat} from "./chat";
@@ -31,8 +31,9 @@ export const appReducer = combineReducers({
 });
 
 export const rootReducer = (state, action) => {
-    if (action.type === CLEAR_ALL) {
-        return appReducer({ profile: state.profile, localTrack: [], remoteTrack: [] }, action);
+    if (action.type === 'CLEAR_ALL') {
+        layoutInitialState.presenterParticipantIds = [];
+        return appReducer({ localTrack: [], layout: layoutInitialState, profile: state.profile, remoteTrack:{} }, action);
     }
     return appReducer(state, action);
 }

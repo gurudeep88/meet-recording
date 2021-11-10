@@ -1,7 +1,7 @@
 import {SET_FULLSCREEN_MODE, SET_LAYOUT, SET_HAND_RAISE, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE} from "../actions/types";
 import {EXIT_FULL_SCREEN_MODE, SPEAKER} from "../../constants";
 
-const initialState = {
+export const layoutInitialState = {
     type: SPEAKER,  //default layout,
     mode: EXIT_FULL_SCREEN_MODE, //default mode,
     pinnedParticipantId: null,
@@ -11,7 +11,7 @@ const initialState = {
     presentationType: null
 };
 
-export const layout = (state = initialState, action) => {
+export const layout = (state = layoutInitialState, action) => {
     switch (action.type) {
         case SET_LAYOUT:
             state.type = action.payload;
@@ -35,8 +35,6 @@ export const layout = (state = initialState, action) => {
             } else {
                 state.presenterParticipantIds = state.presenterParticipantIds.filter(item=>item!==action.payload.participantId); 
             }
-            console.log("state.presenterParticipantIds", state.presenterParticipantIds);
-
             return {...state};
         case SET_PIN_PARTICIPANT:
             state.pinnedParticipantId = action.payload;

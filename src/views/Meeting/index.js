@@ -22,6 +22,7 @@ import {setPresenter, setPinParticipant, setRaiseHand} from "../../store/actions
 import {setAudioLevel} from "../../store/actions/audioIndicator";
 import {showNotification} from "../../store/actions/notification";
 import { addSubtitle } from '../../store/actions/subtitle';
+import {useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Meeting = () => {
+    const history = useHistory();
     const classes = useStyles();
     const dispatch = useDispatch();
     const localTracks = useSelector(state => state.localTrack);
@@ -79,7 +81,6 @@ const Meeting = () => {
         await connection?.disconnect();
         window.removeEventListener("offline", updateNetwork);
         window.removeEventListener("online", updateNetwork);
-        // dispatch(clearAllReducers());
     }
 
     useEffect(() => {

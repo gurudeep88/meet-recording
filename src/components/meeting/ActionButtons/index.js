@@ -24,7 +24,7 @@ import FullscreenIcon from "@material-ui/icons/Fullscreen";
 import PanTool from '@material-ui/icons/PanTool';
 import FullscreenExitOutlinedIcon from "@material-ui/icons/FullscreenExitOutlined";
 import {setFullScreen, setPresenter} from "../../../store/actions/layout";
-import {clearAllTokens} from "../../../utils";
+import {clearAllReducers} from "../../../store/actions/conference";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -240,8 +240,8 @@ const ActionButtons = () => {
     },[layout.mode])
 
     const leaveConference = () => {
+        dispatch(clearAllReducers());
         history.push("/leave");
-        clearAllTokens();
     };
 
     return (

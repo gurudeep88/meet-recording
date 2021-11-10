@@ -42,9 +42,6 @@ const Leave = () => {
     const meetingTitle  = useSelector(state=>state.profile?.meetingTitle);
     const classes = useStyles();
     const layout  = useSelector(state=>state.layout);
-    
-    console.log("layout", layout);
-
 
     return (
         <Box className={classes.root}>

@@ -156,9 +156,10 @@ const LobbyRoom = ({tracks}) => {
         const conference = connection.initJitsiConference({
             createVADProcessor: SariskaMediaTransport.effects.createRnnoiseProcessor
         });
-
-        conference.addTrack(audioTrack);
-        conference.addTrack(videoTrack);
+        await conference.addTrack(audioTrack);
+        if (!videoTrack?.isMuted()) {
+            await conference.addTrack(videoTrack);
+        }
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, () => {
             setLoading(false);
             dispatch(addConference(conference));

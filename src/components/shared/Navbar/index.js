@@ -325,7 +325,7 @@ const Navbar = ({dominantSpeakerId}) => {
         if (!streaming) {
             return;
         }
-        await conference.stopRecording(streamingSession._sessionID);
+        await conference.stopRecording(streamingSession?._sessionID);
         setStreamingSession(null);
     }
 
@@ -390,7 +390,7 @@ const Navbar = ({dominantSpeakerId}) => {
     }
 
     const stopCaption = () => {
-        conference.setLocalParticipantProperty("requestingTranscription", false);  
+        conference.setLocalParticipantProperty("requestingTranscription", false);
     }
 
     const startWhiteboard = (isRemoteEvent)=>{
@@ -442,7 +442,7 @@ const Navbar = ({dominantSpeakerId}) => {
     useEffect(() => {
 
         conference.getParticipantsWithoutHidden().forEach(item=>{
-            if (item._properties?.transcribing) {
+            if (item._properties?.requestingTranscription) {
                 setCaption(true);
             }
 
@@ -455,12 +455,10 @@ const Navbar = ({dominantSpeakerId}) => {
             }
 
             if (item._properties?.whiteboard === "start") {
-                console.log("item._propertieswhiteboard?", item._properties?.whiteboard);
                 startWhiteboard(true);
             }
 
             if (item._properties?.sharedDocument === "start") {
-                console.log("item._propertiessharedDocument?", item._properties?.sharedDocument);
                 startSharedDocument(true);
             }
         });

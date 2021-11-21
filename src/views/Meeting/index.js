@@ -104,6 +104,10 @@ const Meeting = () => {
             dispatch(addRemoteTrack(track));
         });
 
+        conference.addEventListener(SariskaMediaTransport.events.conference.FACIAL_EXPRESSION_ADDED, (expression) => {
+            console.log("FACIAL_EXPRESSION_ADDED", expression);
+        });
+
         conference.addEventListener(SariskaMediaTransport.events.conference.SUBTITLES_RECEIVED, (id, name, text) => {
             dispatch(addSubtitle({name,text}));
         });
@@ -113,6 +117,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_MUTE_CHANGED, (track) => {
+            console.log("TRACK_MUTE_CHANGED", "TRACK_MUTE_CHANGED");
             dispatch(remoteTrackMutedChanged());
         });
 
@@ -161,6 +166,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.MESSAGE_RECEIVED, (id, text, ts) => {
+            console.log("id, text, ts", id, text, ts);
             dispatch(addMessage({text: text, user: getUserById(id, conference)}));
             if (id !== conference.myUserId()) {
                 dispatch(unreadMessage(1))

@@ -168,7 +168,7 @@ const VideoBox = ({
                 { !audioTrack?.isLocal() && <Audio track={audioTrack}/> }
             </Box>
             {
-                videoTrack?.isMuted() ? 
+                videoTrack?.isMuted() || !videoTrack ? 
                     <Box className={avatarActiveClasses}>
                         <Avatar
                             src={participantDetails?.avatar ? participantDetails?.avatar: null }

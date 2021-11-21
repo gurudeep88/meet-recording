@@ -25,6 +25,7 @@ import PanTool from '@material-ui/icons/PanTool';
 import FullscreenExitOutlinedIcon from "@material-ui/icons/FullscreenExitOutlined";
 import {setFullScreen, setPresenter} from "../../../store/actions/layout";
 import {clearAllReducers} from "../../../store/actions/conference";
+import {formatAMPM} from "../../../utils";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -84,7 +85,7 @@ const ActionButtons = () => {
     const conference = useSelector(state => state.conference);
     const localTracks = useSelector(state => state.localTrack);
     const [presenting, setPresenting] = useState(false);
-    const [time, setTime] = useState(new Date().toLocaleTimeString().slice(0,5));
+    const [time, setTime] = useState(formatAMPM(new Date()));
     const profile = useSelector(state => state.profile)
     const layout = useSelector((state) => state.layout);
     const [raiseHand, setRaiseHand] = useState(false);
@@ -172,6 +173,7 @@ const ActionButtons = () => {
 
     const unmuteVideo = async () => {
         await videoTrack?.unmute();
+        conference.addTrack(videoTrack);
         dispatch(localTrackMutedChanged());
     };
 
@@ -179,16 +181,6 @@ const ActionButtons = () => {
         const videoTrack = localTracks.find(track => track.videoType === "camera");
         const [desktopTrack] = await SariskaMediaTransport.createLocalTracks({
             resolution: 720,
-            constraints: {
-                video: {
-                    aspectRatio: 16 / 9,
-                    height: {
-                        ideal: 720,
-                        max: 720,
-                        min: 240
-                    }
-                }
-            },
             devices: ["desktop"]
         });
 
@@ -223,9 +215,11 @@ const ActionButtons = () => {
     };
 
     useEffect(()=>{
-        setInterval(()=> {
-            setTime(new Date().toLocaleTimeString().slice(0,5))
+
+        const interval = setInterval(()=> {
+            setTime(formatAMPM(new Date()));
         }, 1000);
+
         const dbClickHandler = ()=>{
             if ( layout.mode === EXIT_FULL_SCREEN_MODE ){
                 enterFullScreen();
@@ -233,10 +227,13 @@ const ActionButtons = () => {
                 exitFullScreen();
             }
         }
+
         document.addEventListener('dblclick', dbClickHandler);                
         return ()=>{
+            clearInterval(interval);
             document.removeEventListener('dblclick', dbClickHandler); 
         }
+
     },[layout.mode])
 
     const leaveConference = () => {

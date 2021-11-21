@@ -84,6 +84,7 @@ const ChatPanel = ({setUnread}) => {
     const messages = useSelector((state) => state.message);
     const [currentMessage, setCurrentMessage] = useState("");
     const avatarColors = useSelector(state=>state.color);
+    const refEl = useRef(null);
 
 
     const handleChange = (event) => {
@@ -108,12 +109,25 @@ const ChatPanel = ({setUnread}) => {
         event.preventDefault();
     };
 
+    useEffect(()=>{
+        const handler  = (e)=>{
+            if (refEl?.current?.contains(e.target)) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+        document.addEventListener('dblclick', handler, true);
+        return ()=>{
+            document.removeEventListener('dblclick', handler);
+        }
+    },[])
+
     useEffect(() => {
         scrollToBottom();
     }, [messages.length])
 
     return (
-        <Box className={classes.root}>
+        <Box  ref={refEl} className={classes.root}>
             <List className={classes.chatList}>
                 {messages.map((newMessage, index) => (
                     <ListItem key={index}>

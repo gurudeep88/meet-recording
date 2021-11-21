@@ -402,6 +402,7 @@ const Navbar = ({dominantSpeakerId}) => {
             conference.setLocalParticipantProperty("sharedDocument", "stop");
         }
         if (isRemoteEvent !== true) {
+            console.log("property set00000");
             conference.setLocalParticipantProperty("whiteboard", "start");
         }
     }
@@ -485,13 +486,13 @@ const Navbar = ({dominantSpeakerId}) => {
             if (status === "ON") {
                 setCaption(true);
                 conference.setLocalParticipantProperty("transcribing");
-                dispatch(showNotification({autoHide: true, message: "Caption started"}));
+                dispatch(showNotification({autoHide: false, message: "Caption started"}));
             }
 
             if (status === "OFF") {
                 setCaption(false);
                 conference.removeLocalParticipantProperty("transcribing");
-                dispatch(showNotification({autoHide: true, message: "Caption stopped"}));
+                dispatch(showNotification({autoHide: false, message: "Caption stopped"}));
                 dispatch(addSubtitle({}));
             }
         });
@@ -500,27 +501,27 @@ const Navbar = ({dominantSpeakerId}) => {
             if (data._status === "on" && data._mode === "stream") {
                 setStreaming(true);
                 conference.setLocalParticipantProperty("streaming");
-                dispatch(showNotification({autoHide: true, message: "Live streaming started"}));
+                dispatch(showNotification({autoHide: false, message: "Live streaming started"}));
             }
 
             if (data._status === "off" && data._mode === "stream") {
                 setStreaming(false);
                 setStreamingSession(null);
                 conference.removeLocalParticipantProperty("streaming");
-                dispatch(showNotification({autoHide: true, message: "Live streaming stopped"}));
+                dispatch(showNotification({autoHide: false, message: "Live streaming stopped"}));
             }
 
             if (data._status === "on" && data._mode === "file") {
                 setRecording(true);
                 conference.setLocalParticipantProperty("recording");
-                dispatch(showNotification({autoHide: true, message: "Recording started"}));
+                dispatch(showNotification({autoHide: false, message: "Recording started"}));
             }
 
             if (data._status === "off" && data._mode === "file") {
                 setRecordingSession(null);
                 setRecording(false);
                 conference.removeLocalParticipantProperty("recording");
-                dispatch(showNotification({autoHide: true, message: "Recording stopped"}));
+                dispatch(showNotification({autoHide: false, message: "Recording stopped"}));
             }
         });
 

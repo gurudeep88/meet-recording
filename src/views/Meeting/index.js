@@ -10,13 +10,12 @@ import {addRemoteTrack, participantLeft, removeRemoteTrack, remoteTrackMutedChan
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
-import {SPEAKER, PRESENTATION, GRID, EXIT_FULL_SCREEN_MODE, ENTER_FULL_SCREEN_MODE} from "../../constants";
+import {SPEAKER, PRESENTATION, GRID, ENTER_FULL_SCREEN_MODE} from "../../constants";
 import {addMessage} from "../../store/actions/message";
 import {getUserById, preloadIframes} from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
 import SnackbarBox from '../../components/shared/Snackbar';
 import {unreadMessage} from '../../store/actions/chat';
-import {clearAllReducers} from "../../store/actions/conference";
 import Home from "../Home";
 import {setPresenter, setPinParticipant, setRaiseHand} from "../../store/actions/layout";
 import {setAudioLevel} from "../../store/actions/audioIndicator";
@@ -117,7 +116,6 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_MUTE_CHANGED, (track) => {
-            console.log("TRACK_MUTE_CHANGED", "TRACK_MUTE_CHANGED");
             dispatch(remoteTrackMutedChanged());
         });
 
@@ -166,7 +164,6 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.MESSAGE_RECEIVED, (id, text, ts) => {
-            console.log("id, text, ts", id, text, ts);
             dispatch(addMessage({text: text, user: getUserById(id, conference)}));
             if (id !== conference.myUserId()) {
                 dispatch(unreadMessage(1))
@@ -229,10 +226,7 @@ const Meeting = () => {
     if ( layout.mode === ENTER_FULL_SCREEN_MODE ) {
         justifyContent = "space-around";
     }
-
-    console.log("layoutlayout", layout);
-
-
+    
     return (
         <Box style={{ justifyContent }} className={classes.root}>
             <Navbar dominantSpeakerId={dominantSpeakerId}/>

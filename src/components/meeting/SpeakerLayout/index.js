@@ -28,7 +28,6 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const layout = useSelector(state=>state.layout);
     const myUserId = conference.myUserId();
     let largeVideoId;
-    console.log("conference.getParticipantCount()", conference.getParticipantsWithoutHidden(), conference.getParticipantCount());
   
     if ( conference.getParticipantCount() === 2 ) {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;

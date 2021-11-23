@@ -10,14 +10,8 @@ export function useWindowResize() {
         let documentWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
         let documentHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
         let viewportHeight, viewportWidth;
-        
-        if (documentHeight > documentWidth*9/16) {
-            viewportWidth = documentWidth - (layout.mode === ENTER_FULL_SCREEN_MODE ||  documentWidth < 1025 ? 0 : 250);
-            viewportHeight = viewportWidth*9/16;
-        } else {
-            viewportHeight = documentHeight- (layout.mode === ENTER_FULL_SCREEN_MODE ? 64 : 128) 
-            viewportWidth = viewportHeight*16/9;
-        }
+        viewportHeight = documentHeight- (layout.mode === ENTER_FULL_SCREEN_MODE ? 64 : 128) 
+        viewportWidth = viewportHeight*16/9;
         return {viewportWidth, viewportHeight};
     }
 

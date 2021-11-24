@@ -13,6 +13,7 @@ import {color} from "./color";
 import {audioIndicator} from "./audioIndicator";
 import {notification} from "./notification";
 import {subtitle} from "./subtitle";
+import {snackbar} from "./snackbar";
 
 export const appReducer = combineReducers({
     conference,
@@ -27,7 +28,8 @@ export const appReducer = combineReducers({
     color,
     audioIndicator,
     notification,
-    subtitle
+    subtitle,
+    snackbar
 });
 
 export const rootReducer = (state, action) => {

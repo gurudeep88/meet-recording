@@ -35,6 +35,7 @@ import LiveStreamDialog from "../LiveStreamDialog";
 import {authorizeDropbox} from "../../../utils/dropbox-apis";
 import Whiteboard from "../Whiteboard";
 import { addSubtitle } from "../../../store/actions/subtitle";
+import { showSnackbar } from "../../../store/actions/snackbar";
 
 const StyledBadge = withStyles((theme) => ({
     badge: {
@@ -282,6 +283,9 @@ const Navbar = ({dominantSpeakerId}) => {
         if (streaming) {
             return;
         }
+        
+        await googleApi.signInIfNotSignedIn();
+
         const youtubeBroadcasts = await googleApi.requestAvailableYouTubeBroadcasts();
 
         if (youtubeBroadcasts.status !== 200) {
@@ -304,7 +308,7 @@ const Navbar = ({dominantSpeakerId}) => {
             return;
         }
 
-        dispatch(showNotification({
+        dispatch(showSnackbar({
             severity: "info",
             message: 'Starting Live Streaming',
             autoHide: false
@@ -333,7 +337,7 @@ const Navbar = ({dominantSpeakerId}) => {
         if (recording) {
             return;
         }
-        dispatch(showNotification({
+        dispatch(showSnackbar({
             severity: "info",
             message: 'Starting Recording',
             autoHide: false
@@ -376,12 +380,12 @@ const Navbar = ({dominantSpeakerId}) => {
         if (!recording) {
             return;
         }
+        await conference.stopRecording(recordingSession?._sessionID);
         setRecordingSession(null);
-        await conference.stopRecording(recordingSession._sessionID);
     }
 
     const startCaption = () => {
-        dispatch(showNotification({
+        dispatch(showSnackbar({
             severity: "info",
             message: 'Starting Caption',
             autoHide: false
@@ -486,42 +490,41 @@ const Navbar = ({dominantSpeakerId}) => {
             if (status === "ON") {
                 setCaption(true);
                 conference.setLocalParticipantProperty("transcribing");
-                dispatch(showNotification({autoHide: true, message: "Caption started"}));
+                dispatch(showSnackbar({autoHide: true, message: "Caption started"}));
             }
 
             if (status === "OFF") {
                 setCaption(false);
                 conference.removeLocalParticipantProperty("transcribing");
-                dispatch(showNotification({autoHide: true, message: "Caption stopped"}));
+                dispatch(showSnackbar({autoHide: true, message: "Caption stopped"}));
                 dispatch(addSubtitle({}));
             }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
+            console.log("RECORDER_STATE_CHANGED", data);
             if (data._status === "on" && data._mode === "stream") {
                 setStreaming(true);
                 conference.setLocalParticipantProperty("streaming");
-                dispatch(showNotification({autoHide: true, message: "Live streaming started"}));
+                dispatch(showSnackbar({autoHide: true, message: "Live streaming started"}));
             }
 
             if (data._status === "off" && data._mode === "stream") {
                 setStreaming(false);
-                setStreamingSession(null);
                 conference.removeLocalParticipantProperty("streaming");
-                dispatch(showNotification({autoHide: true, message: "Live streaming stopped"}));
+                dispatch(showSnackbar({autoHide: true, message: "Live streaming stopped"}));
             }
 
             if (data._status === "on" && data._mode === "file") {
                 setRecording(true);
                 conference.setLocalParticipantProperty("recording");
-                dispatch(showNotification({autoHide: true, message: "Recording started"}));
+                dispatch(showSnackbar({autoHide: true, message: "Recording started"}));
             }
 
             if (data._status === "off" && data._mode === "file") {
-                setRecordingSession(null);
                 setRecording(false);
                 conference.removeLocalParticipantProperty("recording");
-                dispatch(showNotification({autoHide: true, message: "Recording stopped"}));
+                dispatch(showSnackbar({autoHide: true, message: "Recording stopped"}));
             }
         });
 

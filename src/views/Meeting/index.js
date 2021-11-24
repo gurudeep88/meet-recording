@@ -10,6 +10,7 @@ import {addRemoteTrack, participantLeft, removeRemoteTrack, remoteTrackMutedChan
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
+import Notification from "../../components/shared/Notification";
 import {SPEAKER, PRESENTATION, GRID, ENTER_FULL_SCREEN_MODE} from "../../constants";
 import {addMessage} from "../../store/actions/message";
 import {getUserById, preloadIframes} from "../../utils";
@@ -41,6 +42,8 @@ const Meeting = () => {
     const connection = useSelector(state => state.connection);
     const layout = useSelector(state => state.layout);
     const notification = useSelector(state => state.notification);
+    const snackbar = useSelector(state => state.snackbar);
+
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUserJoined, setLobbyUserJoined] = useState({});
 
@@ -185,28 +188,6 @@ const Meeting = () => {
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_AUDIO_LEVEL_CHANGED, (participantId, audioLevel) => {
             dispatch(setAudioLevel({participantId, audioLevel}));
         });
-
-        conference.addEventListener(SariskaMediaTransport.events.connectionQuality.LOCAL_STATS_UPDATED, (a, b)=>{
-            //console.log("LOCAL_STATS_UPDATED", a, b);
-        });
-
-
-        conference.addEventListener(SariskaMediaTransport.events.connectionQuality.REMOTE_STATS_UPDATED, (a, b) => {
-            //console.log("REMOTE_STATS_UPDATED", a, b);
-        });
-
-        conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_CONN_STATUS_CHANGED, (a, b) => {
-            //console.log("PARTICIPANT_CONN_STATUS_CHANGED", a, b);
-        });
-
-        conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_CONN_STATUS_CHANGED, (a, b) => {
-            //console.log("PARTICIPANT_CONN_STATUS_CHANGED", a, b);
-        });
-
-        conference.addEventListener(SariskaMediaTransport.events.conference.E2E_RTT_CHANGED, (participant, e2eRtt)=>{
-            //console.log("participant, e2eRtt", participant, e2eRtt)
-        });
-
         window.addEventListener("offline", updateNetwork);
         window.addEventListener("online", updateNetwork);
         window.addEventListener("beforeunload", destroy);
@@ -245,8 +226,9 @@ const Meeting = () => {
                 allowLobbyAccess={allowLobbyAccess}
                 displayName={lobbyUserJoined.displayName}/>}
 
-            <SnackbarBox notification={notification}/>
+            <SnackbarBox notification={notification}  />
             <ReconnectDialog open={layout.disconnected}/>
+            <Notification snackbar={snackbar} />
         </Box>
     )
 }

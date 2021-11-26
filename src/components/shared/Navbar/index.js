@@ -1,5 +1,5 @@
 import {Badge, Box, Drawer, makeStyles, Tooltip, Typography} from "@material-ui/core";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import SariskaMediaTransport from "sariska-media-transport";
 import {color} from "../../../assets/styles/_color";
 import AppBar from "@material-ui/core/AppBar";
@@ -193,11 +193,10 @@ const Navbar = ({dominantSpeakerId}) => {
     const dispatch = useDispatch()
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state => state.layout);
-    const avatarColors = useSelector(state => state.color);
-    const [streamingSession, setStreamingSession] = useState(false);
-    const [recordingSession, setRecordingSession] = useState(false);
     const unread = useSelector(state => state.chat.unreadMessage);
     const classes = useStyles();
+    const recordingSession = useRef(null);
+    const streamingSession = useRef(null);
 
     const [state, setState] = React.useState({
         right: false,
@@ -322,66 +321,64 @@ const Navbar = ({dominantSpeakerId}) => {
             mode: SariskaMediaTransport.constants.recording.mode.STREAM,
             streamId: streamName
         });
-        setStreamingSession(session);
+        streamingSession.current = session;
     }
 
     const stopStreaming = async () => {
         if (!streaming) {
             return;
         }
-        await conference.stopRecording(streamingSession?._sessionID);
-        setStreamingSession(null);
+        await conference.stopRecording(streamingSession?.current?._sessionID);
     }
 
     const startRecording = async () => {
         if (recording) {
             return;
         }
+        const response = await authorizeDropbox();
+        if (!response?.token) {
+            return dispatch(showNotification({
+                severity: "error",
+                message: 'Recording failed no dropbox token'
+            }));
+        }
+
+
+        // const appData = {
+        //    file_recording_metadata : {
+        //      'share': true
+        //     }
+        // }
+
+        const appData = {
+            file_recording_metadata: {
+                upload_credentials: {
+                    service_name: "dropbox",
+                    token: response.token,
+                    app_key: DROPBOX_APP_KEY,
+                    r_token: response.rToken
+                }
+            }
+        }
+
         dispatch(showSnackbar({
             severity: "info",
             message: 'Starting Recording',
             autoHide: false
         }));
 
-        // const response = await authorizeDropbox();
-        // if (!response?.token) {
-        //     return dispatch(showNotification({
-        //         severity: "error",
-        //         message: 'Recording failed no dropbox token'
-        //     }));
-        // }
-
-
-        const appData = {
-           file_recording_metadata : {
-             'share': true
-            }
-        }
-
-        // const appData = {
-        //     file_recording_metadata: {
-        //         upload_credentials: {
-        //             service_name: "dropbox",
-        //             token: response.token,
-        //             app_key: DROPBOX_APP_KEY,
-        //             r_token: response.rToken
-        //         }
-        //     }
-        // }
-
         const session = await conference.startRecording({
             mode: SariskaMediaTransport.constants.recording.mode.FILE,
             appData: JSON.stringify(appData)
         });
-        setRecordingSession(session);
+        recordingSession.current = session;
     }
 
     const stopRecording = async () => {
         if (!recording) {
             return;
         }
-        await conference.stopRecording(recordingSession?._sessionID);
-        setRecordingSession(null);
+        await conference.stopRecording(recordingSession?.current?._sessionID);
     }
 
     const startCaption = () => {
@@ -431,7 +428,7 @@ const Navbar = ({dominantSpeakerId}) => {
             conference.setLocalParticipantProperty("sharedDocument", "start");
         }
     }
-
+  
     const stopSharedDocument = (isRemoteEvent)=>{
         dispatch(setLayout(SPEAKER));
         setSharedDocument(false);
@@ -447,7 +444,7 @@ const Navbar = ({dominantSpeakerId}) => {
     useEffect(() => {
 
         conference.getParticipantsWithoutHidden().forEach(item=>{
-            if (item._properties?.requestingTranscription) {
+            if (item._properties?.transcribing) {
                 setCaption(true);
             }
 
@@ -488,43 +485,42 @@ const Navbar = ({dominantSpeakerId}) => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED, (status) => {
             if (status === "ON") {
-                setCaption(true);
-                conference.setLocalParticipantProperty("transcribing");
+                conference.setLocalParticipantProperty("transcribing", true);
                 dispatch(showSnackbar({autoHide: true, message: "Caption started"}));
+                setCaption(true);
             }
 
             if (status === "OFF") {
-                setCaption(false);
                 conference.removeLocalParticipantProperty("transcribing");
                 dispatch(showSnackbar({autoHide: true, message: "Caption stopped"}));
                 dispatch(addSubtitle({}));
+                setCaption(false);
             }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
-            console.log("RECORDER_STATE_CHANGED", data);
             if (data._status === "on" && data._mode === "stream") {
-                setStreaming(true);
-                conference.setLocalParticipantProperty("streaming");
+                conference.setLocalParticipantProperty("streaming", true);
                 dispatch(showSnackbar({autoHide: true, message: "Live streaming started"}));
+                setStreaming(true);
             }
 
-            if (data._status === "off" && data._mode === "stream") {
-                setStreaming(false);
+            if (data._status === "off" && data._mode === "stream" && data?._sessionID === streamingSession?.current?._sessionID) {
                 conference.removeLocalParticipantProperty("streaming");
                 dispatch(showSnackbar({autoHide: true, message: "Live streaming stopped"}));
+                setStreaming(false);
             }
 
             if (data._status === "on" && data._mode === "file") {
-                setRecording(true);
-                conference.setLocalParticipantProperty("recording");
+                conference.setLocalParticipantProperty("recording", true);
                 dispatch(showSnackbar({autoHide: true, message: "Recording started"}));
+                setRecording(true);
             }
 
-            if (data._status === "off" && data._mode === "file") {
-                setRecording(false);
+            if (data._status === "off" && data._mode === "file" && data?._sessionID === recordingSession?.current?._sessionID) {
                 conference.removeLocalParticipantProperty("recording");
                 dispatch(showSnackbar({autoHide: true, message: "Recording stopped"}));
+                setRecording(false);
             }
         });
 

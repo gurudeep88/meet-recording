@@ -5,8 +5,11 @@ import {
     GOOGLE_SCOPE_CALENDAR,
     GOOGLE_SCOPE_YOUTUBE,
     GOOGLE_API_STATES,
-    GOOGLE_API_CLIENT_LIBRARY_URL
+    GOOGLE_API_CLIENT_LIBRARY_URL,
+    CREATE_YOUTUBE_LIVE_STREAMS,
+    CREATE_YOUTUBE_LIVE_BROADCASTS
 } from '../constants';
+
 import {store} from "../store";
 import {setGoogleAPIState} from "../store/actions/profile";
 
@@ -126,7 +129,30 @@ const googleApi = {
             .then(api => api.client.request(API_URL_LIVE_BROADCASTS));
     },
 
-    requestLiveStreamsForYouTubeBroadcast(boundStreamID) {
+    createLiveStreams(title) {
+        
+        return this._getGoogleApiClient()?.client?.youtube?.liveStreams?.insert({
+            "part": [
+                "snippet,cdn,contentDetails,status"
+            ],
+            "resource": {
+                "snippet": {
+                "title": title,
+                "description": "A description of your video stream. This field is optional."
+                },
+                "cdn": {
+                "frameRate": "60fps",
+                "ingestionType": "rtmp",
+                "resolution": "1080p"
+                },
+                "contentDetails": {
+                "isReusable": true
+                }
+            }
+            })
+    },
+
+    async requestLiveStreamsForYouTubeBroadcast(boundStreamID) {
         return this.get()
             .then(api => api.client.request(
                 `${API_URL_BROADCAST_STREAMS}${boundStreamID}`));
@@ -291,3 +317,21 @@ const googleApi = {
 };
 
 export default googleApi;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

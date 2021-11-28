@@ -286,24 +286,41 @@ const Navbar = ({dominantSpeakerId}) => {
         await googleApi.signInIfNotSignedIn();
 
         const youtubeBroadcasts = await googleApi.requestAvailableYouTubeBroadcasts();
-
         if (youtubeBroadcasts.status !== 200) {
-            dispatch(showNotification({autoHide: true, message: "Could not fetch YouTube broadcasts", severity: "error"}));
+            dispatch(showNotification({autoHide: true, message : "Could not fetch YouTube broadcasts", severity: "info"}));
             return;
         }
-
-        if (youtubeBroadcasts.result.items.length === 0) {
-            dispatch(showNotification({autoHide: true, message : "No live streams found", severity: "info"}));
-        }
-
-        setBroadcasts(youtubeBroadcasts.result.items);
+        setBroadcasts([]);
         setOpenLivestreamDialog(true);
     }
 
-    const selectedBroadcast = async (boundStreamID, streamKey) => {
+    const createLiveStream = async()=>{
+        const title = `test__${Date.now()}`;
+        const resposne = await googleApi.createLiveStreams(title);
+        console.log("resposne", resposne);
+        const streamName = resposne.cdn?.ingestionInfo?.streamName;
+        if (!streamName) {
+            return;
+        }
+
+        dispatch(showSnackbar({
+            severity: "info",
+            message: 'Starting Live Streaming',
+            autoHide: false
+        }));
+        const session = await conference.startRecording({
+            mode: SariskaMediaTransport.constants.recording.mode.STREAM,
+            streamId: `rtmp://a.rtmp.youtube.com/live2/${streamName}`
+        });
+        streamingSession.current = session;
+        setOpenLivestreamDialog(false);
+    }
+
+    const selectedBroadcast = async (boundStreamID) => {
         const selectedStream = await googleApi.requestLiveStreamsForYouTubeBroadcast(boundStreamID);
+
         if (selectedStream.status !== 200) {
-            dispatch(showNotification({autoHide: true, message: "Could not fetch YouTube broadcasts", severity: "error"}));
+            dispatch(showNotification({autoHide: true, message: "No live streams found", severity: "error"}));
             return;
         }
 
@@ -315,11 +332,9 @@ const Navbar = ({dominantSpeakerId}) => {
 
         const streamName = selectedStream.result.items[0]?.cdn?.ingestionInfo?.streamName;
         setOpenLivestreamDialog(false);
-
         const session = await conference.startRecording({
-            broadcastId: boundStreamID,
             mode: SariskaMediaTransport.constants.recording.mode.STREAM,
-            streamId: streamName
+            streamId: `rtmp://a.rtmp.youtube.com/live2/${streamName}`
         });
         streamingSession.current = session;
     }
@@ -403,7 +418,6 @@ const Navbar = ({dominantSpeakerId}) => {
             conference.setLocalParticipantProperty("sharedDocument", "stop");
         }
         if (isRemoteEvent !== true) {
-            console.log("property set00000");
             conference.setLocalParticipantProperty("whiteboard", "start");
         }
     }
@@ -505,7 +519,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 setStreaming(true);
             }
 
-            if (data._status === "off" && data._mode === "stream" && data?._sessionID === streamingSession?.current?._sessionID) {
+            if (data._status === "off" && data._mode === "stream") {
                 conference.removeLocalParticipantProperty("streaming");
                 dispatch(showSnackbar({autoHide: true, message: "Live streaming stopped"}));
                 setStreaming(false);
@@ -517,7 +531,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 setRecording(true);
             }
 
-            if (data._status === "off" && data._mode === "file" && data?._sessionID === recordingSession?.current?._sessionID) {
+            if (data._status === "off" && data._mode === "file") {
                 conference.removeLocalParticipantProperty("recording");
                 dispatch(showSnackbar({autoHide: true, message: "Recording stopped"}));
                 setRecording(false);
@@ -578,6 +592,10 @@ const Navbar = ({dominantSpeakerId}) => {
             <SettingsBox/>
         </Box>
     );
+    
+    const closeLiveStreamDialog = ()=>{
+        setOpenLivestreamDialog(false);
+    }
 
     return (
         <Box style={{display: layout.mode === EXIT_FULL_SCREEN_MODE ? "block": "none"}} id="header" className={classes.root}>
@@ -738,7 +756,7 @@ const Navbar = ({dominantSpeakerId}) => {
                     </AppBar>
                 </Box>
             </Box>
-            <LiveStreamDialog open={openLivestreamDialog} broadcasts={broadcasts}
+            <LiveStreamDialog close={closeLiveStreamDialog} createLiveStream={createLiveStream} open={openLivestreamDialog} broadcasts={broadcasts}
                               selectedBroadcast={selectedBroadcast}/>
         </Box>
     );

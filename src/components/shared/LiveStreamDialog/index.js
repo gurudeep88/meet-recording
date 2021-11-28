@@ -7,9 +7,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
 import Dialog from '@material-ui/core/Dialog';
 import PersonIcon from '@material-ui/icons/Person';
 import { blue } from '@material-ui/core/colors';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles({
     avatar: {
@@ -20,7 +23,7 @@ const useStyles = makeStyles({
 
 function SimpleDialog(props) {
     const classes = useStyles();
-    const { onClose, selectedValue, open, broadcasts, selectedBroadcast } = props;
+    const { onClose, selectedValue, open, broadcasts, selectedBroadcast, createLiveStream } = props;
 
     const handleClose = () => {
         onClose(selectedValue);
@@ -40,19 +43,38 @@ function SimpleDialog(props) {
 
     return (
         <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
-            <DialogTitle id="simple-dialog-title">Choose a live stream</DialogTitle>
-            <List>
-                {filterBroadcasts.map((broadcast) => (
-                    <ListItem button onClick={() => handleListItemClick(broadcast)} key={broadcast.snippet.title}>
-                        <ListItemAvatar>
-                            <Avatar className={classes.avatar}>
-                                <PersonIcon />
-                            </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText primary={broadcast.snippet.title} />
-                    </ListItem>
-                ))}
-            </List>
+            <DialogTitle id="simple-dialog-title">
+                { filterBroadcasts.length > 0 ? "Choose a live stream" : "No Live streams found!!!"}
+            </DialogTitle>
+            { filterBroadcasts.length > 0 && 
+                <List>
+                    {filterBroadcasts.map((broadcast) => (
+                        <ListItem button onClick={() => handleListItemClick(broadcast)} key={broadcast.snippet.title}>
+                            <ListItemAvatar>
+                                <Avatar className={classes.avatar}>
+                                    <PersonIcon />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={broadcast.snippet.title} />
+                        </ListItem>
+                    ))}
+                </List> 
+            }
+            {filterBroadcasts.length === 0 && <List>
+                        <ListItem button onClick={() => createLiveStream()}>
+                            <ListItemAvatar>
+                                <Avatar className={classes.avatar}>
+                                    <PersonIcon />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={"Create Live Stream"} />
+                        </ListItem>
+                 </List>
+ 
+            }
+            <DialogActions>
+                <Button onClick={handleClose}>Close</Button>
+            </DialogActions>
         </Dialog>
     );
 }
@@ -63,15 +85,8 @@ SimpleDialog.propTypes = {
     selectedValue: PropTypes.string.isRequired,
 };
 
-export default function LiveStreamDialog({broadcasts, selectedBroadcast, open}) {
-    const [selectedValue, setSelectedValue] = React.useState(null);
-
-
-    const handleClose = (value) => {
-        setSelectedValue(value);
-    };
-
+export default function LiveStreamDialog({broadcasts, selectedBroadcast, open, createLiveStream, close}) {
     return (
-        <SimpleDialog open={open} selectedBroadcast={selectedBroadcast} broadcasts={broadcasts} selectedValue={selectedValue} onClose={handleClose} />
+        <SimpleDialog createLiveStream={createLiveStream} open={open} selectedBroadcast={selectedBroadcast} broadcasts={broadcasts}  onClose={close} />
     );
 }

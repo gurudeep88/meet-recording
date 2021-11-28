@@ -10,6 +10,9 @@ export const GOOGLE_API_CLIENT_LIBRARY_URL = 'https://apis.google.com/js/api.js'
 export const API_URL_BROADCAST_STREAMS = 'https://content.googleapis.com/youtube/v3/liveStreams?part=id%2Csnippet%2Ccdn%2Cstatus&id=';
 export const API_URL_LIVE_BROADCASTS = 'https://content.googleapis.com/youtube/v3/liveBroadcasts?broadcastType=all&mine=true&part=id%2Csnippet%2CcontentDetails%2Cstatus';
 export const DISCOVERY_DOCS = [ 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest' ];
+export const CREATE_YOUTUBE_LIVE_STREAMS = "https://www.googleapis.com/youtube/v3/liveStreams";
+export const CREATE_YOUTUBE_LIVE_BROADCASTS = "https://www.googleapis.com/youtube/v3/liveBroadcasts";
+
 export const GOOGLE_API_STATES = {
     NEEDS_LOADING: 0,
     LOADED: 1,
@@ -17,7 +20,7 @@ export const GOOGLE_API_STATES = {
     NOT_AVAILABLE: 3
 };
 export const GOOGLE_SCOPE_CALENDAR = 'https://www.googleapis.com/auth/calendar';
-export const GOOGLE_SCOPE_YOUTUBE = 'https://www.googleapis.com/auth/youtube.readonly';
+export const GOOGLE_SCOPE_YOUTUBE = 'https://www.googleapis.com/auth/youtube';
 export const GENERATE_TOKEN_URL = "https://api.sariska.io/api/v1/misc/generate-token";
 export const EXIT_FULL_SCREEN_MODE = "exitFullScreen";
 export const ENTER_FULL_SCREEN_MODE = "enterFullScreen";

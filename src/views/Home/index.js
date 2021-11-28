@@ -331,7 +331,7 @@ const Home = () => {
                         </Box> }
                     </Box>
                     <Box className={classes.slackContainer}>
-                        <p><img className={classes.slackBtn} src={slack}/></p>
+                        <a href="https://slack.com/oauth/v2/authorize?client_id=884180672320.2771420271893&scope=bot,commands" ><img className={classes.slackBtn} src={slack}/></a>
                     </Box>
                 </Grid>
                 <Grid className={classes.rightContainer} item md={6}>

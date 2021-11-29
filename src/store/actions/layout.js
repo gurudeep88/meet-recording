@@ -28,6 +28,12 @@ export const setRaiseHand = (payload) => {
     }
 }
 
+export const setModerator = (payload) => {
+    return {
+        type: Constants.SET_MODERATOR,
+        payload
+    }
+}
 
 export const setDisconnected = (disconnected) => {
     return {

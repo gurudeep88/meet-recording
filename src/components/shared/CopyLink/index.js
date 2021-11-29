@@ -53,7 +53,7 @@ const CopyLink = ({onClick}) => {
             <Grid item xs={12} className={classes.textFieldGrid}>
                 <form>
                     <TextField id="input-with-icon-grid"
-                       label="Generated Link"
+                       label="Meeting Link"
                        value={textToCopy}
                        variant="outlined"
                        className={classes.textField}

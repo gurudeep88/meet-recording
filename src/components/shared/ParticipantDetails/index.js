@@ -35,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
             fontSize: '0.9rem',
             paddingLeft: '15px'
         }
+    },
+    hostBox: {		
+        width: 'auto !important',		
+        marginLeft: '10px'		
     }
 }))
 
@@ -44,15 +48,17 @@ const ParticipantDetails = () => {
     const avatarColors = useSelector(state => state.color);
     const remoteTracks = useSelector(state => state.remoteTrack);
     const localTracks = useSelector(state => state.localTrack);
+    const layout = useSelector(state => state.layout);
     const localUser = conference.getLocalUser();
 
     return (
         <Box className={classes.root}>
-            <Typography className={classes.title}>In Meet</Typography>
             <Box className={classes.localBox}>
                 <Box className={classes.userBox}>
                     <Avatar src={ localUser?.avatar ? localUser?.avatar: null}  >{localUser?.name?.slice(0, 1).toUpperCase()}</Avatar>
+                    <Box className={classes.hostBox}></Box>
                     <Typography>{ localUser?.name } (You)</Typography>
+                    <Typography variant="caption">{!Object.keys(layout.moderator)?.length && <b> (Host)</b>}</Typography>
                 </Box>
                 {localTracks.find(track=>track.isAudioTrack())?.isMuted() ? <MicOffOutlinedIcon/> : <MicNoneOutlinedIcon/> }
             </Box>
@@ -61,7 +67,10 @@ const ParticipantDetails = () => {
                     <Box className={classes.localBox}>
                         <Box className={classes.userBox}>
                             <Avatar src={ participant?._identity?.user?.avatar ? participant?._identity?.user?.avatar: null} style={{background: avatarColors[participant._id]}} >{participant?._identity?.user?.name.toUpperCase().slice(0, 1)}</Avatar>
-                            <Typography>{participant?._identity?.user?.name}</Typography>
+                            <Box className={classes.hostBox}>		                            <Typography>{participant?._identity?.user?.name}</Typography>
+                                <Typography>{participant?._identity?.user?.name}</Typography>		
+                                <Typography variant="caption">{layout.moderator[participant?._identity?.user?.id] && <b> (Host)</b>}</Typography>		
+                            </Box>
                         </Box>
                         {remoteTracks[participant._id]?.find(track=>track.isAudioTrack())?.isMuted() ? <MicOffOutlinedIcon/> : <MicNoneOutlinedIcon/> }
                     </Box>

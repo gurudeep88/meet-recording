@@ -23,7 +23,7 @@ import {useParams} from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import TextInput from "../../shared/TextInput";
 import {setProfile, setMeeting} from "../../../store/actions/profile";
-import {setDisconnected} from "../../../store/actions/layout";
+import {setDisconnected, setModerator} from "../../../store/actions/layout";
 import JoinTrack from "../JoinTrack";
 
 const useStyles = makeStyles((theme) => ({
@@ -157,6 +157,9 @@ const LobbyRoom = ({tracks}) => {
             createVADProcessor: SariskaMediaTransport.effects.createRnnoiseProcessor
         });
         await conference.addTrack(audioTrack);
+        if(!queryParams.meetingId){		
+            conference.setLocalParticipantProperty("isModerator", "true");		
+            }
         if (!videoTrack?.isMuted()) {
             await conference.addTrack(videoTrack);
         }

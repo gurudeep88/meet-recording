@@ -1,4 +1,4 @@
-import {SET_FULLSCREEN_MODE, SET_LAYOUT, SET_HAND_RAISE, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE} from "../actions/types";
+import {SET_FULLSCREEN_MODE, SET_LAYOUT, SET_HAND_RAISE, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE, SET_MODERATOR} from "../actions/types";
 import {EXIT_FULL_SCREEN_MODE, SPEAKER} from "../../constants";
 
 export const layoutInitialState = {
@@ -8,7 +8,8 @@ export const layoutInitialState = {
     presenterParticipantIds: [],
     disconnected: false,
     raisedHandParticipantIds: {},
-    presentationType: null
+    presentationType: null,
+    moderator: {}
 };
 
 export const layout = (state = layoutInitialState, action) => {
@@ -29,6 +30,11 @@ export const layout = (state = layoutInitialState, action) => {
                 delete state.raisedHandParticipantIds[action.payload.participantId]; 
             }
             return {...state};
+            case SET_MODERATOR:
+                if (action.payload.isModerator) {
+                    state.moderator[action.payload.participantId] = action.payload.participantId;
+                }
+                return {...state};
         case SET_PRESENTER:
             if (action.payload.presenter) {
                 state.presenterParticipantIds.push(action.payload.participantId);

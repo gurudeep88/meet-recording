@@ -18,11 +18,12 @@ import PermissionDialog from "../../components/shared/PermissionDialog";
 import SnackbarBox from '../../components/shared/Snackbar';
 import {unreadMessage} from '../../store/actions/chat';
 import Home from "../Home";
-import {setPresenter, setPinParticipant, setRaiseHand} from "../../store/actions/layout";
+import {setPresenter, setPinParticipant, setRaiseHand, setModerator} from "../../store/actions/layout";
 import {setAudioLevel} from "../../store/actions/audioIndicator";
 import {showNotification} from "../../store/actions/notification";
 import { addSubtitle } from '../../store/actions/subtitle';
 import {useHistory} from 'react-router-dom';
+import { setProfile } from '../../store/actions/profile';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -97,6 +98,9 @@ const Meeting = () => {
             if (item._properties?.handraise === "start") {
                 dispatch(setRaiseHand({ participantId: item._id, raiseHand: true}));
             }
+            if (item._properties?.isModerator === "true") {		
+                dispatch(setModerator({ participantId: item._id, isModerator: true}));		
+            }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, (track) => {
@@ -143,6 +147,9 @@ const Meeting = () => {
             if (key === "handraise" && newValue === "stop") {
                 dispatch(setRaiseHand({ participantId: participant._id, raiseHand: false}));
             }
+            if (key === "isModerator" && newValue === "true") {		
+                dispatch(setModerator({ participantId: participant._id, isModerator: true}));		
+            }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_LEFT, (id) => {
@@ -167,7 +174,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.MESSAGE_RECEIVED, (id, text, ts) => {
-            dispatch(addMessage({text: text, user: getUserById(id, conference)}));
+            dispatch(addMessage({text: text, user: getUserById(id, conference), time: new Date()}));
             if (id !== conference.myUserId()) {
                 dispatch(unreadMessage(1))
             }

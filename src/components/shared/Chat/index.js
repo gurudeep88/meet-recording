@@ -7,6 +7,7 @@ import {
     ListItemText,
     ListItemAvatar,
     makeStyles,
+    Typography
 } from "@material-ui/core";
 import {useDispatch, useSelector} from "react-redux";
 import clsx from "clsx";
@@ -17,6 +18,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import SendIcon from "@material-ui/icons/Send";
 import {color} from "../../../assets/styles/_color";
+import { formatAMPM } from "../../../utils";		
 
 
 const useStyles = makeStyles((theme) => ({
@@ -99,13 +101,13 @@ const ChatPanel = ({setUnread}) => {
         }, 0);
     }
 
-    const handleClickShowPassword = (e) => {
+    const handleClickSubmit = (e) => {
         e.preventDefault();
         conference.sendMessage(currentMessage);
         setCurrentMessage("");
     }
 
-    const handleMouseDownPassword = (event) => {
+    const handleMouseDown = (event) => {
         event.preventDefault();
     };
 
@@ -132,36 +134,37 @@ const ChatPanel = ({setUnread}) => {
                 {messages.map((newMessage, index) => (
                     <ListItem key={index}>
                         <ListItemAvatar>
-                            <Avatar src={ newMessage?.user?.avatar ? newMessage?.user?.avatar : null } style={{background: avatarColors[newMessage?.user?.id]}} >{newMessage?.user?.name?.toUpperCase().slice(0, 1)}</Avatar>
+                            <Avatar src={ newMessage?.user?.avatar ? newMessage?.user?.avatar : null } style={{background: avatarColors[newMessage?.user?.id]}} >{newMessage?.user?.name?.toUpperCase()?.slice(0, 1)}</Avatar>
                         </ListItemAvatar>
                         <ListItemText
-                            primary={newMessage.name}
-                            secondary={newMessage.text}
+                            primary={newMessage?.user?.name}
+                            secondary={newMessage?.text}
                         />
+                        <Typography variant = "caption">{formatAMPM(newMessage?.time)}</Typography>
                     </ListItem>
                 ))}
                 <ListItem ref={scrollRef} style={{height: '18px'}}></ListItem>
             </List>
-            <form onSubmit={handleClickShowPassword} className={classes.form}>
+            <form onSubmit={handleClickSubmit} className={classes.form}>
                 <FormControl
                     className={clsx(classes.margin, classes.textField)}
                     variant="outlined"
                 >
-                    <InputLabel htmlFor="outlined-adornment-password">
+                    <InputLabel htmlFor="outlined-adornment-submit">
                         Type Here
                     </InputLabel>
                     <OutlinedInput
                         autoComplete='off'
-                        id="outlined-adornment-password"
+                        id="outlined-adornment-submit"
                         value={currentMessage}
                         onChange={handleChange}
                         className={classes.input}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
+                                    aria-label="handle submit"
+                                    onClick={handleClickSubmit}
+                                    onMouseDown={handleMouseDown}
                                     edge="end"
                                 >
                                     <SendIcon/>

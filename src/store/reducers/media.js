@@ -9,7 +9,7 @@ const initialState = {
   microphone: "",
   speaker: "",
   camera: "",
-  resolution: 360,
+  resolution: 720,
   aspectRatio: 9/16
 };
 export const media = (state = initialState, action) => {

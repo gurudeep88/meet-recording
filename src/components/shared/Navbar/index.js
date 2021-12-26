@@ -278,6 +278,14 @@ const Navbar = ({dominantSpeakerId}) => {
        }
     }
 
+    const startStreamingCaption = async () => {
+        dispatch(showSnackbar({
+            severity: "info",
+            message: 'Live Streaming to be Launched Soon',
+            autoHide: true
+        }));
+    }
+
     const startStreaming = async () => {
         if (streaming) {
             return;
@@ -290,7 +298,7 @@ const Navbar = ({dominantSpeakerId}) => {
             dispatch(showNotification({autoHide: true, message : "Could not fetch YouTube broadcasts", severity: "info"}));
             return;
         }
-        setBroadcasts([]);
+        setBroadcasts(youtubeBroadcasts.result.items);
         setOpenLivestreamDialog(true);
     }
 
@@ -665,7 +673,7 @@ const Navbar = ({dominantSpeakerId}) => {
                                             </Tooltip>
                                         </Button>
                                     }
-                                    {caption ?
+                                    { caption ?
                                         <Button onClick={stopCaption} className={classes.link}>
                                             <Tooltip title="Turn off captions">
                                                 <ClosedCaptionIcon style={{color: color.red}}/>

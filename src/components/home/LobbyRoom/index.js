@@ -16,7 +16,7 @@ import {useHistory} from "react-router-dom";
 import {localTrackMutedChanged} from "../../../store/actions/track";
 import {addConference} from "../../../store/actions/conference";
 import {addConnection} from "../../../store/actions/connection";
-import {getToken,getRandomColor} from "../../../utils";
+import {getToken,getRandomColor, checkRoom} from "../../../utils";
 import {addThumbnailColor} from "../../../store/actions/color";
 import {useDispatch, useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
@@ -124,9 +124,13 @@ const LobbyRoom = ({tracks}) => {
             return;
         }
         setLoading(true);
-        
-        const isModerator = !queryParams.meetingId || profile.moderator;
+        let isModerator;
 
+        if ( !await checkRoom(meetingTitle)) {
+            isModerator = true;
+        } else {
+            isModerator = false;
+        }
         token = await getToken(meetingTitle, profile, name, isModerator);
         if (!token) {
             return;
@@ -169,6 +173,17 @@ const LobbyRoom = ({tracks}) => {
             dispatch(setProfile(conference.getLocalUser()));
             dispatch(setMeeting({meetingTitle}));
             history.push(`/${meetingTitle}`);
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
+            if (conference.isModerator()) {
+                console.log("conference is", conference.isJoined());
+                conference.enableLobby();
+            }
+        });
+        
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, () => {
+            console.log("TRACK_ADDEDTRACK_ADDED");
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_ERROR, () => {

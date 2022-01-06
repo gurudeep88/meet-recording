@@ -164,12 +164,6 @@ const Meeting = () => {
             dispatch(participantLeft());
         });
 
-        conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
-            if (conference.isModerator()) {
-                conference.enableLobby();
-            }
-        });
-
         conference.addEventListener(SariskaMediaTransport.events.conference.LOBBY_USER_JOINED, (id, displayName) => {
             new Audio("https://sdk.sariska.io/knock_0b1ea0a45173ae6c10b084bbca23bae2.ogg").play();
             setLobbyUserJoined({id, displayName});

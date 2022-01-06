@@ -96,3 +96,4 @@ export const images = [
 
 
 export const DROPBOX_APP_KEY = "hey9dkz8x8s3x74";
+export const CHECK_ROOM_URL = "https://api.sariska.io/api/v1/misc/room"

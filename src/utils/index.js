@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import {GENERATE_TOKEN_URL} from "../constants";
+import {GENERATE_TOKEN_URL, CHECK_ROOM_URL} from "../constants";
 
 export function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -45,6 +45,19 @@ export function createDeferred() {
     return deferred;
 }
 
+export async function checkRoom(room) {
+    try {
+        const response = await fetch(`${CHECK_ROOM_URL}/${room}`);
+        if (response.ok) {
+            const json = await response.json();
+            return json.id;
+        } else {
+            console.log(response.status);
+        }
+    } catch (error) {
+        console.log('error', error);
+    }
+}
 
 export async function getToken(roomName, profile, name,  isModerator) {
     const body = {

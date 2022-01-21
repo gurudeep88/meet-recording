@@ -119,19 +119,19 @@ const LobbyRoom = ({tracks}) => {
 
     const handleSubmit = async () => {
         let token;
-
         if (!meetingTitle) {
             return;
         }
-        setLoading(true);
-        let isModerator;
 
+        setLoading(true);
+        let isModerator = false;
+        
         if ( !await checkRoom(meetingTitle)) {
             isModerator = true;
-        } else {
-            isModerator = false;
-        }
+        } 
+        
         token = await getToken(meetingTitle, profile, name, isModerator);
+        
         if (!token) {
             return;
         }
@@ -177,7 +177,6 @@ const LobbyRoom = ({tracks}) => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
             if (conference.isModerator()) {
-                console.log("conference is", conference.isJoined());
                 conference.enableLobby();
             }
         });

@@ -108,6 +108,7 @@ const LobbyRoom = ({tracks}) => {
     const profile = useSelector(state => state.profile);
     const queryParams = useParams();
     const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
+    const isLoadTesting = window.location.hash.indexOf("isLoadTesting") >= 0;
 
     const handleTitleChange = (e) => {
         setMeetingTitle(e.target.value.toLowerCase());
@@ -119,9 +120,7 @@ const LobbyRoom = ({tracks}) => {
 
     const handleSubmit = async () => {
         let token;
-        if (!meetingTitle) {
-            return;
-        }
+        console.log("meetingTitle", meetingTitle);
 
         setLoading(true);
         let isModerator = false;
@@ -176,7 +175,8 @@ const LobbyRoom = ({tracks}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
-            if (conference.isModerator()) {
+            console.log("isLoadTesting", isLoadTesting);
+            if (conference.isModerator() && !isLoadTesting) {
                 conference.enableLobby();
             }
         });
@@ -236,10 +236,14 @@ const LobbyRoom = ({tracks}) => {
     }
     // this is required for cloud recording, make sure to allow join meeting if query params has iAmRecorder.
     useEffect(() => {
+        
+        if (meetingTitle && isLoadTesting) {
+            handleSubmit();
+        }
         if (meetingTitle && iAmRecorder) {
             handleSubmit();
         }
-    }, [queryParams.meetingId]);
+    }, [meetingTitle]);
 
     useEffect(() => {
         if (queryParams.meetingId) {

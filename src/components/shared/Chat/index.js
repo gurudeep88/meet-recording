@@ -77,6 +77,17 @@ const useStyles = makeStyles((theme) => ({
         "& p": {
             fontSize: "0.75rem"
         }
+    },
+    listItem: {
+        alignItems: 'flex-start'
+    },
+    listItemText: {
+        paddingRight: '5px',
+        wordBreak: 'break-word',
+        marginTop: 0
+    },
+    time: {
+        whiteSpace: 'nowrap'
     }
 }));
 
@@ -129,18 +140,19 @@ const ChatPanel = ({setUnread}) => {
     }, [messages.length])
 
     return (
-        <Box  ref={refEl} className={classes.root}>
+        <Box ref={refEl} className={classes.root}>
             <List className={classes.chatList}>
                 {messages.map((newMessage, index) => (
-                    <ListItem key={index}>
+                    <ListItem key={index} className={classes.listItem}>
                         <ListItemAvatar>
-                            <Avatar src={ newMessage?.user?.avatar ? newMessage?.user?.avatar : null } style={{background: avatarColors[newMessage?.user?.id]}} >{newMessage?.user?.name?.toUpperCase()?.slice(0, 1)}</Avatar>
+                            <Avatar src={ newMessage?.user?.avatar ? newMessage?.user?.avatar : null } style={{background: avatarColors[newMessage?.user?.id], marginTop: '5px'}} >{newMessage?.user?.name?.toUpperCase()?.slice(0, 1)}</Avatar>
                         </ListItemAvatar>
                         <ListItemText
                             primary={newMessage?.user?.name}
                             secondary={newMessage?.text}
+                            className={classes.listItemText}
                         />
-                        <Typography variant = "caption">{formatAMPM(newMessage?.time)}</Typography>
+                        <Typography variant = "caption" className={classes.time}>{formatAMPM(newMessage?.time)}</Typography>
                     </ListItem>
                 ))}
                 <ListItem ref={scrollRef} style={{height: '18px'}}></ListItem>

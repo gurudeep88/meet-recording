@@ -132,14 +132,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const resolutionList = [
-    {value: "fullhd", label: "Full High Definition (1080p)", aspectRatio: 9 / 16},
-    {value: 720, label: "High Definition (720p)", aspectRatio: 9 / 16},
-    {value: 360, label: "Standard Definition (360p)", aspectRatio: 9 / 16},
-    {value: 180, label: "Low Definition (180p)", aspectRatio: 9 / 16},
-];
-
-
 const SettingsBox = () => {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
@@ -219,8 +211,9 @@ const SettingsBox = () => {
         });
         conference.replaceTrack(videoTrack, newVideoTrack);
         dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+        console.log('new track', newVideoTrack, videoTrack)
     };
-
+    console.log('resolution', resolutionValue, resolution)
     const handleResolutionClose = () => {
         setResolutionOpen(false);
     };
@@ -273,10 +266,10 @@ const SettingsBox = () => {
     };
 
     const resolutionList = [
-        { value: 1080, label: "Ultra High Definition (1080p)" },
-        { value: 720, label: "High Definition (720p)" },
-        { value: 480, label: "Ultra Standard Definition (480p)" },
-        { value: 360, label: "Standard Definition (360p)" },
+        { value: 1080, label: "Ultra High Definition (1080p)", aspectRatio: 9 / 16 },
+        { value: 720, label: "High Definition (720p)", aspectRatio: 9 / 16 },
+        { value: 480, label: "Ultra Standard Definition (480p)", aspectRatio: 9 / 16 },
+        { value: 360, label: "Standard Definition (360p)", aspectRatio: 9 / 16 },
     ];
     const resolutionData = {
         label: "Change Resolution",

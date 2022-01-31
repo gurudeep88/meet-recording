@@ -195,20 +195,6 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [updateCalenderLoader, setUpdateCalenderLoader] = useState(null);
 
-    const options = {
-        devices: ["audio", "video"],
-        resolution,
-        constraints: {
-            video: {
-                height: {
-                    ideal: 720,
-                    max: 720,
-                    min: 720
-                }
-            }
-        },
-    };
-
     const signInIfNotSignedIn = async () => {
         await googleApi.signInIfNotSignedIn();
         const profile = await googleApi.getCurrentUserProfile();
@@ -237,12 +223,25 @@ const Home = () => {
 
     useEffect(() => {
         const createNewLocalTracks = async () => {
-            const localTracks = await SariskaMediaTransport.createLocalTracks(options);
-            setLocalTracks(localTracks);
-            
-            console.log("track", localTracks);
+            const options = {
+                devices: ["video"],
+                resolution,
+                constraints: {
+                    video: {
+                        height: {
+                            ideal: 720,
+                            max: 720,
+                            min: 720
+                        }
+                    }
+                }
+            };
 
-            localTracks?.forEach(track => dispatch(addLocalTrack(track)));
+            const [ videoTrack ] = await SariskaMediaTransport.createLocalTracks(options);
+            const [ audioTrack ] = await SariskaMediaTransport.createLocalTracks({ devices: ["audio"]});
+            setLocalTracks([audioTrack, videoTrack]);
+            dispatch(addLocalTrack(audioTrack));
+            dispatch(addLocalTrack(videoTrack));
         };
 
         const googleLogin = async () => {

@@ -43,7 +43,9 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
             [largeVideoId]: { "maxHeight": 720 }
         }
     }
+
     conference.setReceiverConstraints(constraints);
+    
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });

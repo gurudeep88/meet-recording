@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ParticipantGrid = ({dominantSpeakerId}) => {
     const {viewportWidth, viewportHeight} = useWindowResize();
+    
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const localTracks = useSelector(state => state.localTrack);

@@ -207,7 +207,7 @@ const Home = () => {
 
     const addMeetingLink = async (item) => {
         setUpdateCalenderLoader(item.id);
-        const meetingUrl = `https://meet.sariska.io/${getMeetingId()}`;
+        const meetingUrl = `https://${process.env.REACT_APP_API_SERVICE_HOST_NAME}/${getMeetingId()}`;
         const text = `Click the following link to join the meeting:\n${meetingUrl}`;
         await googleApi.updateCalendarEntry(item.id, item.calendarId, meetingUrl, text);
         googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);
@@ -295,7 +295,7 @@ const Home = () => {
                                             <span className={classes.rightContainer}>{item.location}</span>
                                         </div>
                                         <Tooltip
-                                            title={item.location?.indexOf("meet.sariska.io") > 0 ? "Join" : "Add a meeting link"}>{item.location?.indexOf("meet.sariska.io") ?
+                                            title={item.location?.indexOf(`${process.env.REACT_APP_API_SERVICE_HOST_NAME}`) > 0 ? "Join" : "Add a meeting link"}>{item.location?.indexOf(`${process.env.REACT_APP_API_SERVICE_HOST_NAME}`) ?
                                             <AddIcon className={classes.joinBtn}
                                                      onClick={() => Join(item.location)}/> :
                                             (updateCalenderLoader !== item.id ?

@@ -241,7 +241,7 @@ export const microsoftCalendarApi = {
      * @returns {function(Dispatch<any>): Promise<string|never>}
      */
     updateCalendarEvent(id, calendarId, location) {
-        const text  = "https://meet.sariska.io";
+        const text  = `https://${process.env.REACT_APP_API_SERVICE_HOST_NAME}`;
         const token = state.msAuthState && state.msAuthState.accessToken;
         if (!token) {
             return Promise.reject('Not authorized, please sign in!');

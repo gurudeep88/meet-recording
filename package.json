@@ -15,6 +15,7 @@
     "base64-js": "^1.5.1",
     "classnames": "^2.3.1",
     "dropbox": "^10.7.0",
+    "env-cmd": "^10.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.4",
@@ -32,10 +33,12 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:development": "env-cmd -f .env.development npm run build",
+    "build:production": "env-cmd -f .env.production npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "aws s3 cp build s3://meet.sariska.io --recursive --acl public-read && aws cloudfront create-invalidation --distribution-id EG507YR0NNTZF --paths / /bundle.js /index.html",
-    "deploy-analytics": "aws s3 cp build s3://dev.sariska.io --recursive --acl public-read && aws cloudfront create-invalidation --distribution-id EITMHLTHLYEHH --paths / /bundle.js /index.html"
+    "deploy:development": "aws s3 cp build s3://meet.dev.sariska.io --recursive --acl public-read && aws cloudfront create-invalidation --distribution-id EITMHLTHLYEHH --paths / /bundle.js /index.html",
+    "deploy:production": "aws s3 cp build s3://meet.sariska.io --recursive --acl public-read && aws cloudfront create-invalidation --distribution-id EG507YR0NNTZF --paths / /bundle.js /index.html"
   },
   "eslintConfig": {
     "extends": [

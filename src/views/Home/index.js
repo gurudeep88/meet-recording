@@ -194,6 +194,7 @@ const Home = () => {
     const [localTracks, setLocalTracks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [updateCalenderLoader, setUpdateCalenderLoader] = useState(null);
+    const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
 
     const signInIfNotSignedIn = async () => {
         await googleApi.signInIfNotSignedIn();
@@ -239,9 +240,16 @@ const Home = () => {
 
             const [ videoTrack ] = await SariskaMediaTransport.createLocalTracks(options);
             const [ audioTrack ] = await SariskaMediaTransport.createLocalTracks({ devices: ["audio"]});
-            setLocalTracks([audioTrack, videoTrack]);
-            dispatch(addLocalTrack(audioTrack));
-            dispatch(addLocalTrack(videoTrack));
+            if (!iAmRecorder) {
+                setLocalTracks([audioTrack, videoTrack]);
+            }
+
+            if (audioTrack) {
+                dispatch(addLocalTrack(audioTrack));
+            }
+            if (videoTrack) {
+                dispatch(addLocalTrack(videoTrack));
+            }
         };
 
         const googleLogin = async () => {

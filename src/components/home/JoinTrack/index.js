@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
 
 const JoinTrack = ({tracks}) => {
     
-    const videoTrack = tracks.find(track => track.isVideoTrack());
+    const videoTrack = tracks.find(track => track && track.isVideoTrack());
     const classes = useStyles();
     const [dimensions, setDimensions] = useState({width: 0 , height: 0 });
 

@@ -123,7 +123,7 @@ const LobbyRoom = ({tracks}) => {
 
     const handleSubmit = async () => {
         const token = localStorage.getItem("SARISKA_TOKEN") ? localStorage.getItem("SARISKA_TOKEN")  : await getToken(profile, name, moderator);
-        const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle);
+        const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle, true);
         
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
             dispatch(addConnection(connection));

@@ -59,14 +59,13 @@ export async function checkRoom(room) {
     }
 }
 
-export async function getToken(roomName, profile, name,  isModerator) {
+export async function getToken(profile, name, isModerator) {
     const body = {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            sessionId: roomName, // enter your sessionId
             apiKey: "27fd6f8080d512442a3694f461adb3986cda5ba39dbe368d75",
             user: {
                 id: profile.id,
@@ -82,6 +81,7 @@ export async function getToken(roomName, profile, name,  isModerator) {
         const response = await fetch(GENERATE_TOKEN_URL, body);
         if (response.ok) {
             const json = await response.json();
+            localStorage.setItem("SARISKA_TOKEN", json.token)
             return json.token;
         } else {
             console.log(response.status);

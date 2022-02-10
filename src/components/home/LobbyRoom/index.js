@@ -15,7 +15,6 @@ import {color} from "../../../assets/styles/_color";
 import {useHistory} from "react-router-dom";
 import {localTrackMutedChanged} from "../../../store/actions/track";
 import {addConference} from "../../../store/actions/conference";
-import {addConnection} from "../../../store/actions/connection";
 import {getToken,getRandomColor, checkRoom} from "../../../utils";
 import {addThumbnailColor} from "../../../store/actions/color";
 import {useDispatch, useSelector} from "react-redux";
@@ -23,8 +22,11 @@ import {useParams} from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import TextInput from "../../shared/TextInput";
 import {setProfile, setMeeting} from "../../../store/actions/profile";
-import {setDisconnected, setModerator} from "../../../store/actions/layout";
 import JoinTrack from "../JoinTrack";
+import Switch from '@mui/material/Switch';
+import {addConnection} from "../../../store/actions/connection"
+
+const label = { inputProps: { 'aria-label': 'Moderator?' } };
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -102,6 +104,7 @@ const LobbyRoom = ({tracks}) => {
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const [meetingTitle, setMeetingTitle] = useState("");
+    const [moderator, setModerator] = useState(false);
     const [name, setName] = useState("");
     const [buttonText, setButtonText] = useState("Create Meeting");
     const [accessDenied, setAccessDenied] = useState(false);
@@ -119,54 +122,39 @@ const LobbyRoom = ({tracks}) => {
     };
 
     const handleSubmit = async () => {
-        let token;
-        console.log("meetingTitle", meetingTitle);
-
-        setLoading(true);
-        let isModerator = true;
+        const token = localStorage.getItem("SARISKA_TOKEN") ? localStorage.getItem("SARISKA_TOKEN")  : await getToken(profile, name, moderator);
+        const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle);
         
-        // if ( !await checkRoom(meetingTitle)) {
-        //     isModerator = true;
-        // } 
-        
-        token = await getToken(meetingTitle, profile, name, isModerator);
-        
-        if (!token) {
-            return;
-        }
-
-        const connection = new SariskaMediaTransport.JitsiConnection(token);
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
             dispatch(addConnection(connection));
             createConference(connection);
+            console.log("createConference")
         });
-
-        connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_FAILED, (error) => {
-            if (error === SariskaMediaTransport.errors.connection.CONNECTION_DROPPED_ERROR) {
-                dispatch(setDisconnected(true));
+        
+        connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_FAILED, async(error) => {
+            if (error === SariskaMediaTransport.errors.connection.PASSWORD_REQUIRED) {
+                const  token = await getToken(profile, name, moderator)
+                connection.setToken(token); // token expired, set a new token
             }
         });
-
-        connection.addEventListener(SariskaMediaTransport.events.connection.PASSWORD_REQUIRED, async (error) => {
-            const  token = await getToken(meetingTitle, profile, name, isModerator)
-            connection.setToken(token); // token expired, set a new token
+          
+        connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_DISCONNECTED, (error) => {
+            console.log('connection disconnect!!!', error);
         });
-
+          
         connection.connect();
-    };
+    }
 
-    const createConference = async (connection) => {
+    const createConference = async (connection)=>{   
         const conference = connection.initJitsiConference({
             createVADProcessor: SariskaMediaTransport.effects.createRnnoiseProcessor
         });
+        
         await conference.addTrack(audioTrack);
-        if(!queryParams.meetingId){		
-            conference.setLocalParticipantProperty("isModerator", "true");		
-            }
-        if (!videoTrack?.isMuted()) {
-            await conference.addTrack(videoTrack);
-        }
+        await conference.addTrack(videoTrack);
+
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, () => {
+            console.log("CONFERENCE_JOINED")
             setLoading(false);
             dispatch(addConference(conference));
             dispatch(setProfile(conference.getLocalUser()));
@@ -233,13 +221,9 @@ const LobbyRoom = ({tracks}) => {
         setName("recorder");
         setMeetingTitle(queryParams.meetingId);
     }
-    // this is required for cloud recording, make sure to allow join meeting if query params has iAmRecorder.
+    
     useEffect(() => {
-        
-        if (meetingTitle && isLoadTesting) {
-            handleSubmit();
-        }
-        if (meetingTitle && iAmRecorder) {
+        if (meetingTitle && (isLoadTesting || iAmRecorder)) {
             handleSubmit();
         }
     }, [meetingTitle]);
@@ -282,6 +266,7 @@ const LobbyRoom = ({tracks}) => {
                         </Tooltip>
                     )}
                 </Box>
+                <Switch {...label} defaultChecked />
             </Box>
             <Box className={classes.action}>
                 <div className={classes.wrapper}>

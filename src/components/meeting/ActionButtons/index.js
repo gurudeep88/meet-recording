@@ -184,7 +184,7 @@ const ActionButtons = () => {
             devices: ["desktop"]
         });
 
-        conference.replaceTrack(videoTrack, desktopTrack);
+        conference.addTrack(desktopTrack);
         desktopTrack.addEventListener(SariskaMediaTransport.events.track.LOCAL_TRACK_STOPPED, async () => {
             stopPresenting();
         });

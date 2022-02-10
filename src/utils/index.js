@@ -66,7 +66,7 @@ export async function getToken(profile, name, isModerator) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            apiKey: "27fd6f8080d512442a3694f461adb3986cda5ba39dbe368d75",
+            apiKey: `${process.env.REACT_APP_API_KEY}`,
             user: {
                 id: profile.id,
                 avatar: profile.avatar,

@@ -41,11 +41,11 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### `npm run deploy:development`
 
-Deploys the builds, generated in development mode, to the S3 bucket of [Sariska Dev Meet](https://meet.dev.sariska.io). Thus deployed build is distributed through Sariska Dev Meet Cloudfront.
+Deploys the build, generated in development mode, to the S3 bucket of [Sariska Dev Meet](https://meet.dev.sariska.io). Thus deployed build is distributed through Sariska Dev Meet Cloudfront.
 
 ### `npm run deploy:production`
 
-Deploys the builds, generated in production mode, to the S3 bucket of [Sariska Meet](https://meet.sariska.io). Thus deployed build is distributed through Sariska Meet Cloudfront.
+Deploys the build, generated in production mode, to the S3 bucket of [Sariska Meet](https://meet.sariska.io). Thus deployed build is distributed through Sariska Meet Cloudfront.
 
 ### `yarn eject`
 

@@ -28,7 +28,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const layout = useSelector(state=>state.layout);
     const myUserId = conference.myUserId();
     let largeVideoId;
-  
+    console.log('localtrackss', localTracks, remoteTracks, myUserId, conference.getParticipantsWithoutHidden())
     if ( conference.getParticipantCount() === 2 ) {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }

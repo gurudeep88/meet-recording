@@ -52,7 +52,7 @@ const Meeting = () => {
         conference.lobbyApproveAccess(lobbyUserJoined.id)
         setLobbyUserJoined({});
     }
-
+    
     const denyLobbyAccess = () => {
         conference.lobbyDenyAccess(lobbyUserJoined.id);
         setLobbyUserJoined({});
@@ -92,6 +92,7 @@ const Meeting = () => {
         }
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.presenting === "start") {
+                console.log('start presentingss',item)
                 dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
                 dispatch(setPresenter({participantId: item._id, presenter: true}));
             }
@@ -170,6 +171,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.MESSAGE_RECEIVED, (id, text, ts) => {
+
             dispatch(addMessage({text: text, user: getUserById(id, conference), time: new Date()}));
             if (id !== conference.myUserId()) {
                 dispatch(unreadMessage(1))
@@ -191,6 +193,12 @@ const Meeting = () => {
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_AUDIO_LEVEL_CHANGED, (participantId, audioLevel) => {
             dispatch(setAudioLevel({participantId, audioLevel}));
         });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.ANALYTICS_EVENT_RECEIVED, (payload) => {
+            const { name, action, actionSubject, source, attributes } = payload;
+            console.log('namrtye', name, action, actionSubject, source, attributes)
+        });
+
         window.addEventListener("offline", updateNetwork);
         window.addEventListener("online", updateNetwork);
         window.addEventListener("beforeunload", destroy);

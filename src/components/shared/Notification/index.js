@@ -24,7 +24,7 @@ const useStyles = makeStyles(()=>({
 const Notification = ({snackbar}) => {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
-
+    
     useEffect(()=>{
         if (!snackbar) {
             return;

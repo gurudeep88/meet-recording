@@ -15,7 +15,7 @@ import {color} from "../../../assets/styles/_color";
 import {useHistory} from "react-router-dom";
 import {localTrackMutedChanged} from "../../../store/actions/track";
 import {addConference} from "../../../store/actions/conference";
-import {getToken,getRandomColor, checkRoom} from "../../../utils";
+import {getToken,getRandomColor, checkRoom, trimSpace, detectUpperCaseChar} from "../../../utils";
 import {addThumbnailColor} from "../../../store/actions/color";
 import {useDispatch, useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
@@ -23,8 +23,10 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import TextInput from "../../shared/TextInput";
 import {setProfile, setMeeting} from "../../../store/actions/profile";
 import JoinTrack from "../JoinTrack";
-import Switch from '@mui/material/Switch';
-import {addConnection} from "../../../store/actions/connection"
+import {addConnection} from "../../../store/actions/connection";
+import SnackbarBox from "../../shared/Snackbar";
+import { showNotification } from "../../../store/actions/notification";
+import IOSSwitch from "../../shared/IOSSwitch";
 
 const label = { inputProps: { 'aria-label': 'Moderator?' } };
 
@@ -62,6 +64,13 @@ const useStyles = makeStyles((theme) => ({
     textBox: {
         width: "100%",
     },
+    moderatorBox: {
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        color: color.lightgray1, 
+        alignItems: 'center', 
+        padding: '0px 8px 8px'
+    },
     anchor: {
         color: color.secondary,
         textDecoration: "none",
@@ -91,9 +100,8 @@ const useStyles = makeStyles((theme) => ({
     buttonProgress: {
         color: color.primary,
         position: "absolute",
-        top: "50%",
+        top: "85%",
         left: "50%",
-        marginTop: -12,
         marginLeft: -12,
     },
 }));
@@ -112,9 +120,10 @@ const LobbyRoom = ({tracks}) => {
     const queryParams = useParams();
     const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
     const isLoadTesting = window.location.hash.indexOf("isLoadTesting") >= 0;
-
+    const notification = useSelector(state => state.notification);
+    console.log('globalga', window.ga);
     const handleTitleChange = (e) => {
-        setMeetingTitle(e.target.value.toLowerCase());
+        setMeetingTitle(trimSpace(e.target.value.toLowerCase()));
     };
 
     const handleUserNameChange = (e) => {
@@ -122,6 +131,15 @@ const LobbyRoom = ({tracks}) => {
     };
 
     const handleSubmit = async () => {
+        if(!meetingTitle){
+            dispatch(showNotification({
+                message: "Meeting Title is required",
+                severity: "warning",
+                autoHide: true
+            }))
+            return;
+        }
+        setLoading(true);
         const token = localStorage.getItem("SARISKA_TOKEN") ? localStorage.getItem("SARISKA_TOKEN")  : await getToken(profile, name, moderator);
         const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle, true);
         
@@ -236,6 +254,7 @@ const LobbyRoom = ({tracks}) => {
         setName(profile.name);
     }, [profile]);
 
+    console.log('loadingre', loading)
     return (
         <Box className={classes.root}>
             <Box className={classes.videoContainer}>
@@ -266,7 +285,6 @@ const LobbyRoom = ({tracks}) => {
                         </Tooltip>
                     )}
                 </Box>
-                <Switch {...label} defaultChecked />
             </Box>
             <Box className={classes.action}>
                 <div className={classes.wrapper}>
@@ -274,8 +292,24 @@ const LobbyRoom = ({tracks}) => {
                         <TextInput
                             onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
+                                    e.preventDefault();
                                     handleSubmit();
                                 }
+                                if(e.charCode === 32){
+                                    dispatch(showNotification({
+                                        message: "Space is not allowed",
+                                        severity: "warning",
+                                        autoHide: true
+                                    }))
+                                }
+                                else if(detectUpperCaseChar(e.key)){
+                                    dispatch(showNotification({
+                                        message: "Capital Letter is not allowed",
+                                        severity: "warning",
+                                        autoHide: true
+                                    }))
+                                }
+                                console.log(e)
                             }}
                             label="Meeting Title"
                             width="35ch"
@@ -285,6 +319,7 @@ const LobbyRoom = ({tracks}) => {
                         <TextInput
                             onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
+                                    e.preventDefault();
                                     handleSubmit();
                                 }
                             }}
@@ -293,6 +328,10 @@ const LobbyRoom = ({tracks}) => {
                             value={name}
                             onChange={handleUserNameChange}
                         />
+                        <Box className={classes.moderatorBox}>
+                            <p>Are you a Moderator? </p>
+                            <IOSSwitch />
+                        </Box>
                     </Box>
                     <Button
                         className={classes.anchor}
@@ -316,6 +355,7 @@ const LobbyRoom = ({tracks}) => {
                 open={accessDenied}
                 message="Conference access denied by moderator"
             />
+            <SnackbarBox notification={notification}  />
         </Box>
     );
 };

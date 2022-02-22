@@ -3,6 +3,8 @@ import { Box, makeStyles } from '@material-ui/core'
 import React, {useEffect, useState} from 'react'
 import { color } from '../../../assets/styles/_color';
 import MuiAlert from '@material-ui/lab/Alert';
+import { useDispatch } from "react-redux";
+import { showNotification } from "../../../store/actions/notification";
 
 const useStyles = makeStyles(()=>({
     logo: {
@@ -37,13 +39,22 @@ function Alert(props) {
 
 const SnackbarBox = ({notification}) => {
     const  [open, setOpen] = useState({open: false});
+    const dispatch = useDispatch();
+
     useEffect(()=>{
         setOpen(true);
         if (!notification?.autoHide) {
             return;
         }
-        setTimeout(()=>setOpen(false), 2000);
-    }, [notification]);
+        setTimeout(()=>{
+            setOpen(false);
+            dispatch(showNotification({
+            message: "",
+            severity: "warning",
+            autoHide: true
+        }))
+        }, 2000);
+    }, [notification?.message]);
 
     if (!notification?.message) {
         return null;

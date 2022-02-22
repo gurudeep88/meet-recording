@@ -82,7 +82,7 @@ function SimpleDialog(props) {
 SimpleDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    selectedValue: PropTypes.string.isRequired,
+    selectedValue: PropTypes.string
 };
 
 export default function LiveStreamDialog({broadcasts, selectedBroadcast, open, createLiveStream, close}) {

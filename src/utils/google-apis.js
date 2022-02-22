@@ -238,7 +238,7 @@ const googleApi = {
                         accessRole: en.accessRole
                     };
                 });
-                console.log("calendarIds", calendarList);
+                
 
                 const promises = calendarIds.map(({id, accessRole}) => {
                     const startDate = new Date();
@@ -248,8 +248,6 @@ const googleApi = {
                     endDate.setDate(endDate.getDate() + fetchEndDays);
 
                     // retrieve the events and adds to the result the calendarId
-
-                    console.log("startDatestartDate", startDate, endDate);
 
                     return this._getGoogleApiClient().client.calendar.events.list({
                         'calendarId': id,

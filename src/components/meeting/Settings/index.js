@@ -211,9 +211,8 @@ const SettingsBox = () => {
         });
         conference.replaceTrack(videoTrack, newVideoTrack);
         dispatch(updateLocalTrack(videoTrack, newVideoTrack));
-        console.log('new track', newVideoTrack, videoTrack)
     };
-    console.log('resolution', resolutionValue, resolution)
+    
     const handleResolutionClose = () => {
         setResolutionOpen(false);
     };

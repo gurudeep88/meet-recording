@@ -1,6 +1,6 @@
 import React from 'react';
 import {compressFile, getPresignedUrl, getUniqueNumber} from '../../../utils';
-import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
+import InsertPhotoOutlinedIcon from '@material-ui/icons/InsertPhotoOutlined';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { makeStyles, Tooltip } from '@material-ui/core';
 import { color } from '../../../assets/styles/_color';
@@ -12,6 +12,16 @@ const useStyles = makeStyles((theme) => ({
             color:color.secondary,
             cursor: 'pointer'
         }
+    },
+    photo: {
+        marginBottom: '-4px',
+        padding: '3px'
+    },
+    attach: {
+        fontSize: '1.3rem', 
+        marginBottom: '-4px',
+        padding: '3px',
+        transform: 'rotate(30deg)'
     }
 }))
 
@@ -60,7 +70,7 @@ const FileUpload = ({sesssionInfo, type, startFileUpload}) => {
         {type==="photos" ? (
             <Tooltip title="Add Image" placement='top'>
                 <label htmlFor="chat-images" className={classes.labelHover}>
-                    <AddPhotoAlternateIcon  style={{marginBottom: '-4px'}}/>
+                    <InsertPhotoOutlinedIcon className={classes.photo}/>
                     <input 
                         accept='image/*'
                         name='file'
@@ -75,7 +85,7 @@ const FileUpload = ({sesssionInfo, type, startFileUpload}) => {
         : (
         <Tooltip title="Add File" placement='top'>
             <label htmlFor="chat-fileAttached" className={classes.labelHover}>
-                <AttachFileIcon  style={{fontSize: '1.2rem', marginBottom: '-4px'}}/>
+                <AttachFileIcon className={classes.attach} />
                 <input 
                     name='file'
                     type='file'

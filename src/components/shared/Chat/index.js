@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap'
     },
     sendIcon: {
-        padding: '2px 12px 2px 2px',
+        padding: '2px 12px 2px 6px',
         '&:hover':{
             background: 'none'
         },
@@ -240,10 +240,10 @@ const ChatPanel = () => {
                         maxRows={1}
                         endAdornment={
                             <InputAdornment position="end">
-                                <MediaChat
+                                {!currentMessage && <MediaChat
                                     startFileUpload={startFileUpload}
                                     sessionInfo={profile}
-                                />
+                                />}
                                 <Tooltip title="Send" placement='top'>
                                     <IconButton
                                         aria-label="handle submit"

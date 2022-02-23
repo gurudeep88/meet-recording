@@ -18,16 +18,16 @@ const MediaChat = ({startFileUpload, sessionInfo}) => {
     <div className={classes.fileBox}>
         <FileUpload
             startFileUpload={startFileUpload}
-            type="photos" 
-            title="Add Photos"
-            key="uploadFile" 
+            type="attachment" 
+            title="Add Files"
+            key="uploadPhoto" 
             sessionInfo={sessionInfo}
         />
         <FileUpload
             startFileUpload={startFileUpload}
-            type="attachment" 
-            title="Add Files"
-            key="uploadPhoto" 
+            type="photos" 
+            title="Add Photos"
+            key="uploadFile" 
             sessionInfo={sessionInfo}
         />
     </div>

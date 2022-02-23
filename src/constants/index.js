@@ -40,32 +40,32 @@ export const images = [
     {
         name: 'Modern living room',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/living3_160x80_4747909f30a0f952ea27b04acaf5da74.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/${REACT_APP_API_SERVICE_HOST_NAME}/static/media/living3_1005ac162f964b5f9e8499dfc5902250.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/living3_1005ac162f964b5f9e8499dfc5902250.jpeg`
     },
     {
         name: 'Ocean in the background',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/ocean2_160x80_4fec4b6a900978ef5379547ea58e6cd4.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/${REACT_APP_API_SERVICE_HOST_NAME}/static/media/ocean2_c48fa44e731d22668107a6589ddc33db.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/ocean2_c48fa44e731d22668107a6589ddc33db.jpeg`
     },
     {
         name: 'Confetti on the pink background',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/confetti_160x80_1c34aa59548ccf5f5fd892922a4c1696.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/${REACT_APP_API_SERVICE_HOST_NAME}/static/media/confetti_1296f69171bbef53d30ef80b6f201bf6.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/confetti_1296f69171bbef53d30ef80b6f201bf6.jpeg`
     },
     {
         name: 'Room with books on the shelves',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/books2_160x80_c9fa78ee5c5d754b54aa8bf4db32f990.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/${REACT_APP_API_SERVICE_HOST_NAME}/static/media/books2_1a904eb291cb029f74c848d4604c0ed2.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/books2_1a904eb291cb029f74c848d4604c0ed2.jpeg`
     },
     {
         name: 'Trailer in the evevning',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/trailer_160x80_0aca32d5afd25eb66e6da0a3b79736e6.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/${REACT_APP_API_SERVICE_HOST_NAME}/static/media/trailer_182d4f7c61e37df010c786dfae0c879f.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/trailer_182d4f7c61e37df010c786dfae0c879f.jpeg`
     },
     {
         name: 'Mountains',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/camping_160x80_e4b8a8ddb725ff70d2b5528773404797.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/${REACT_APP_API_SERVICE_HOST_NAME}/static/media/camping_20abb6723b26f70457222e9fd0f4891d.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/camping_20abb6723b26f70457222e9fd0f4891d.jpeg`
     },
     {
         name: 'Skyscrapers with searchlights',

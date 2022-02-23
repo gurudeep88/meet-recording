@@ -27,7 +27,7 @@ const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, 
 
     return (
         <Box style={{height: `${height}px`}} className={activeClasses}>
-            {conference.getParticipantsWithoutHidden().map(participant => {
+            {conference.getParticipantsWithoutHidden().map((participant, index) => {
                 if (participant._id === largeVideoId) {
                     return <VideoBox localUserId={conference.myUserId()}
                                      isPresenter={layout.presenterParticipantIds.find(item=>item===conference.myUserId())}
@@ -36,7 +36,8 @@ const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, 
                                      height={222*9/16}
                                      isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
                                      participantDetails={conference.getLocalUser()}
-                                     participantTracks={localTracks}/>
+                                     participantTracks={localTracks}
+                                     key={index}/>
                 } else {
                     return <VideoBox localUserId={conference.myUserId()}
                                      width={222}
@@ -45,7 +46,8 @@ const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, 
                                      isFilmstrip={false}
                                      isActiveSpeaker={dominantSpeakerId===participant._id}
                                      participantDetails={participant?._identity?.user}
-                                     participantTracks={remoteTracks[participant._id] || []}/>
+                                     participantTracks={remoteTracks[participant._id] || []}
+                                     key={index}/>
                 }
             })}
         </Box>)

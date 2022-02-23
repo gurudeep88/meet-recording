@@ -46,7 +46,7 @@ function getTokenExpiresAtTimestamp(expiresIn) {
  * @returns {Promise<Object>}
  */
 export function authorizeDropbox() {
-    const redirectURI= `https://${process.env.REACT_APP_API_SERVICE_HOST_NAME}/oauth.html`;
+    const redirectURI= `https://meet.dev.sariska.io/oauth.html`;
     const dropbox = new DropboxAuth({ clientId: DROPBOX_APP_KEY });
 
     return dropbox.getAuthenticationUrl(redirectURI, undefined, 'code', 'offline', undefined, undefined, true)

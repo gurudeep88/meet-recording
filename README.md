@@ -19,15 +19,33 @@ You will also see any lint errors in the console.
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `yarn build`
+### `npm run build:development`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for development to the `build` folder.<br />
+It correctly bundles React in development mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The build is minified and the filenames include the hashes.<br />
+Your app is ready to be deployed in development mode!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run build:production`
+
+Builds the app for production to the `build` folder.<br />
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.<br />
+Your app is ready to be deployed in production mode!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run deploy:development`
+
+Deploys the build, generated in development mode, to the S3 bucket of [Sariska Dev Meet](https://meet.dev.sariska.io). Thus deployed build is distributed through Sariska Dev Meet Cloudfront.
+
+### `npm run deploy:production`
+
+Deploys the build, generated in production mode, to the S3 bucket of [Sariska Meet](https://meet.sariska.io). Thus deployed build is distributed through Sariska Meet Cloudfront.
 
 ### `yarn eject`
 

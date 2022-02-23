@@ -1,29 +1,28 @@
-import {Box, makeStyles} from '@material-ui/core';
-import React, {useEffect, useState} from 'react'
-import {color} from '../../assets/styles/_color';
+import { Box, makeStyles } from '@material-ui/core';
+import React, { useEffect, useState } from 'react'
+import { color } from '../../assets/styles/_color';
 import ActionButtons from '../../components/meeting/ActionButtons';
 import SariskaMediaTransport from 'sariska-media-transport';
 import Navbar from '../../components/shared/Navbar'
 import ReconnectDialog from "../../components/shared/ReconnectDialog";
-import {useDispatch, useSelector} from "react-redux";
-import {addRemoteTrack, participantLeft, removeRemoteTrack, remoteTrackMutedChanged} from "../../store/actions/track";
+import { useDispatch, useSelector } from "react-redux";
+import { addRemoteTrack, participantLeft, removeRemoteTrack, remoteTrackMutedChanged } from "../../store/actions/track";
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
 import Notification from "../../components/shared/Notification";
-import {SPEAKER, PRESENTATION, GRID, ENTER_FULL_SCREEN_MODE} from "../../constants";
-import {addMessage} from "../../store/actions/message";
-import {getUserById, preloadIframes} from "../../utils";
+import { SPEAKER, PRESENTATION, GRID, ENTER_FULL_SCREEN_MODE } from "../../constants";
+import { addMessage } from "../../store/actions/message";
+import { getUserById, preloadIframes } from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
 import SnackbarBox from '../../components/shared/Snackbar';
-import {unreadMessage} from '../../store/actions/chat';
+import { unreadMessage } from '../../store/actions/chat';
 import Home from "../Home";
-import {setPresenter, setPinParticipant, setRaiseHand, setModerator} from "../../store/actions/layout";
-import {setAudioLevel} from "../../store/actions/audioIndicator";
-import {showNotification} from "../../store/actions/notification";
+import { setPresenter, setPinParticipant, setRaiseHand, setModerator } from "../../store/actions/layout";
+import { setAudioLevel } from "../../store/actions/audioIndicator";
+import { showNotification } from "../../store/actions/notification";
 import { addSubtitle } from '../../store/actions/subtitle';
-import {useHistory} from 'react-router-dom';
-import { setProfile } from '../../store/actions/profile';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -62,21 +61,15 @@ const Meeting = () => {
         if (!window.navigator.onLine) {
             dispatch(showNotification({
                 message: "You lost your internet connection. Trying to reconnect...",
-                severity: "info",
-                autoHide: false
+                severity: "info"
             }));
         }
-        setTimeout(() => {
-            if (window.navigator.onLine && !layout.disconnected) {
-                dispatch(showNotification({message: "Internet Recovered!!!", autoHide: true, severity: "info"}));
-            }
-        }, 5000);
-        SariskaMediaTransport.setNetworkInfo({isOnline: window.navigator.onLine});
+        SariskaMediaTransport.setNetworkInfo({ isOnline: window.navigator.onLine });
     };
 
     const destroy = async () => {
         if (conference?.isJoined()) {
-             await conference?.leave();
+            await conference?.leave();
         }
         for (const track of localTracks) {
             await track.dispose();
@@ -90,16 +83,18 @@ const Meeting = () => {
         if (!conference) {
             return;
         }
-        conference.getParticipantsWithoutHidden().forEach(item=>{
+
+        conference.getParticipantsWithoutHidden().forEach(item => {
             if (item._properties?.presenting === "start") {
-                dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
-                dispatch(setPresenter({participantId: item._id, presenter: true}));
+                console.log('start presentingss', item)
+                dispatch(showNotification({ autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}` }));
+                dispatch(setPresenter({ participantId: item._id, presenter: true }));
             }
             if (item._properties?.handraise === "start") {
-                dispatch(setRaiseHand({ participantId: item._id, raiseHand: true}));
+                dispatch(setRaiseHand({ participantId: item._id, raiseHand: true }));
             }
-            if (item._properties?.isModerator === "true") {		
-                dispatch(setModerator({ participantId: item._id, isModerator: true}));		
+            if (item._properties?.isModerator === "true") {
+                dispatch(setModerator({ participantId: item._id, isModerator: true }));
             }
         });
 
@@ -107,7 +102,6 @@ const Meeting = () => {
             if (track.isLocal()) {
                 return;
             }
-            console.log("TRACK_ADDEDTRACK_ADDEDTRACK_ADDEDTRACK_ADDED", track)
             dispatch(addRemoteTrack(track));
         });
 
@@ -116,7 +110,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.SUBTITLES_RECEIVED, (id, name, text) => {
-            dispatch(addSubtitle({name,text}));
+            dispatch(addSubtitle({ name, text }));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, (track) => {
@@ -134,23 +128,23 @@ const Meeting = () => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
             if (key === "presenting" && newValue === "start") {
-                dispatch(showNotification({ autoHide: true, message: `Screen sharing started by ${participant._identity?.user?.name}`}));
-                dispatch(setPresenter({participantId: participant._id, presenter: true}));
+                dispatch(showNotification({ autoHide: true, message: `Screen sharing started by ${participant._identity?.user?.name}` }));
+                dispatch(setPresenter({ participantId: participant._id, presenter: true }));
             }
-            
+
             if (key === "presenting" && newValue === "stop") {
-                dispatch(setPresenter({participantId: participant._id, presenter: false}));
+                dispatch(setPresenter({ participantId: participant._id, presenter: false }));
             }
 
             if (key === "handraise" && newValue === "start") {
-                dispatch(setRaiseHand({ participantId: participant._id, raiseHand: true}));
+                dispatch(setRaiseHand({ participantId: participant._id, raiseHand: true }));
             }
 
             if (key === "handraise" && newValue === "stop") {
-                dispatch(setRaiseHand({ participantId: participant._id, raiseHand: false}));
+                dispatch(setRaiseHand({ participantId: participant._id, raiseHand: false }));
             }
-            if (key === "isModerator" && newValue === "true") {		
-                dispatch(setModerator({ participantId: participant._id, isModerator: true}));		
+            if (key === "isModerator" && newValue === "true") {
+                dispatch(setModerator({ participantId: participant._id, isModerator: true }));
             }
         });
 
@@ -158,44 +152,52 @@ const Meeting = () => {
             if (id === layout.pinnedParticipantId) {
                 dispatch(setPinParticipant(null))
             }
-            if ( layout.presenterParticipantIds.find(item=>item===id)) {
-                dispatch(setPresenter({participantId: id, presenter: false}));
+            if (layout.presenterParticipantIds.find(item => item === id)) {
+                dispatch(setPresenter({ participantId: id, presenter: false }));
             }
             dispatch(participantLeft());
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.LOBBY_USER_JOINED, (id, displayName) => {
+            console.log("LOBBY_USER_JOINED");
             new Audio("https://sdk.sariska.io/knock_0b1ea0a45173ae6c10b084bbca23bae2.ogg").play();
-            setLobbyUserJoined({id, displayName});
+            setLobbyUserJoined({ id, displayName });
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.MESSAGE_RECEIVED, (id, text, ts) => {
-            dispatch(addMessage({text: text, user: getUserById(id, conference), time: new Date()}));
+            dispatch(addMessage({ text: text, user: getUserById(id, conference), time: new Date() }));
             if (id !== conference.myUserId()) {
                 dispatch(unreadMessage(1))
             }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.NOISY_MIC, () => {
-            dispatch(showNotification({autoHide: true, message: "Your mic seems to be noisy", severity: "info"}));
+            dispatch(showNotification({ autoHide: true, message: "Your mic seems to be noisy", severity: "info" }));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TALK_WHILE_MUTED, () => {
-            dispatch(showNotification({autoHide: true, message: "Trying to speak?  your are muted!!!", severity: "info"}));
+            dispatch(showNotification({ autoHide: true, message: "Trying to speak?  your are muted!!!", severity: "info" }));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.NO_AUDIO_INPUT, () => {
-            dispatch(showNotification({autoHide: true, message: "Looks like device has no audio input", severity: "warning"}));
+            dispatch(showNotification({ autoHide: true, message: "Looks like device has no audio input", severity: "warning" }));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_AUDIO_LEVEL_CHANGED, (participantId, audioLevel) => {
-            dispatch(setAudioLevel({participantId, audioLevel}));
+            dispatch(setAudioLevel({ participantId, audioLevel }));
         });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.ANALYTICS_EVENT_RECEIVED, (payload) => {
+            const { name, action, actionSubject, source, attributes } = payload;
+            console.log('namrtye', name, action, actionSubject, source, attributes)
+        });
+
         window.addEventListener("offline", updateNetwork);
         window.addEventListener("online", updateNetwork);
         window.addEventListener("beforeunload", destroy);
+
         preloadIframes(conference);
-        
+
         return () => {
             destroy();
         };
@@ -203,34 +205,34 @@ const Meeting = () => {
 
 
     if (!conference || !conference.isJoined()) {
-        return <Home/>;
+        return <Home />;
     }
 
     let justifyContent = "center";
-    if ( layout.mode === ENTER_FULL_SCREEN_MODE ) {
+    if (layout.mode === ENTER_FULL_SCREEN_MODE) {
         justifyContent = "space-around";
     }
-    
+
     return (
         <Box style={{ justifyContent }} className={classes.root}>
-            <Navbar dominantSpeakerId={dominantSpeakerId}/>
-            { layout.type === SPEAKER &&
-                <SpeakerLayout dominantSpeakerId={dominantSpeakerId}/>
+            <Navbar dominantSpeakerId={dominantSpeakerId} />
+            {layout.type === SPEAKER &&
+                <SpeakerLayout dominantSpeakerId={dominantSpeakerId} />
             }
-            { layout.type === GRID &&
-                <GridLayout dominantSpeakerId={dominantSpeakerId}/>
+            {layout.type === GRID &&
+                <GridLayout dominantSpeakerId={dominantSpeakerId} />
             }
-            { layout.type === PRESENTATION && 
-                <PresentationLayout dominantSpeakerId={dominantSpeakerId}/>
+            {layout.type === PRESENTATION &&
+                <PresentationLayout dominantSpeakerId={dominantSpeakerId} />
             }
-            <ActionButtons dominantSpeakerId={dominantSpeakerId}/>
+            <ActionButtons dominantSpeakerId={dominantSpeakerId} />
             {lobbyUserJoined.id && <PermissionDialog
                 denyLobbyAccess={denyLobbyAccess}
                 allowLobbyAccess={allowLobbyAccess}
-                displayName={lobbyUserJoined.displayName}/>}
+                displayName={lobbyUserJoined.displayName} />}
 
-            <SnackbarBox notification={notification}  />
-            <ReconnectDialog open={layout.disconnected}/>
+            <SnackbarBox notification={notification} />
+            <ReconnectDialog open={layout.disconnected} />
             <Notification snackbar={snackbar} />
         </Box>
     )

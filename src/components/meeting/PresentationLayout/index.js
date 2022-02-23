@@ -42,7 +42,7 @@ const PresentationLayout = ({dominantSpeakerId}) => {
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-     
+     console.log('remotre', remoteTracks)
     return (
         <Box  className={activeClasses}>
             <SharedDocument

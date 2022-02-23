@@ -183,7 +183,6 @@ const ActionButtons = () => {
             resolution: 720,
             devices: ["desktop"]
         });
-        console.log("replace track", desktopTrack, videoTrack);
         await conference.replaceTrack(videoTrack, desktopTrack);
         desktopTrack.addEventListener(SariskaMediaTransport.events.track.LOCAL_TRACK_STOPPED, async () => {
             stopPresenting();

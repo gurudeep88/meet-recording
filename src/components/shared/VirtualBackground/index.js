@@ -152,7 +152,7 @@ export default function VirtualBackground() {
             await videoTrack.setEffect(effect);
             setLoading(false);
         } catch(e) {
-            console.log("too", e);
+            console.log("e", e);
         }
 
     }

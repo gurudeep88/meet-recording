@@ -1,5 +1,8 @@
 import { useLocation } from "react-router-dom";
-import {GENERATE_TOKEN_URL, CHECK_ROOM_URL} from "../constants";
+import {GENERATE_TOKEN_URL, CHECK_ROOM_URL, GET_PRESIGNED_URL} from "../constants";
+
+const Compressor = require('compressorjs');
+
 
 export function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -66,7 +69,7 @@ export async function getToken(profile, name, isModerator) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            apiKey: `${process.env.REACT_APP_API_KEY}`,
+            apiKey: `27fd6f87d5cc0e49702bc2f665abe692798b46a987a3729e2b`,
             user: {
                 id: profile.id,
                 avatar: profile.avatar,
@@ -186,4 +189,113 @@ export function formatAMPM(date) {
 export function preloadIframes(conference) {
     appendLinkTags("whiteboard", conference);
     appendLinkTags("sharedDocument", conference);
+}
+
+export const trimSpace = (str) => {
+    return str.replace(/\s/g,'');
+}
+
+export const detectUpperCaseChar = (char) => {
+    return char === char.toUpperCase() && char !== char.toLowerCase();
+}
+
+export const linkify=(inputText) =>{
+    var replacedText, replacePattern1, replacePattern2, replacePattern3;
+
+    //URLs starting with http://, https://, or ftp://
+    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+    replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank" style="color:#27CED7, margin-top: 15px">$1</a>');
+
+    //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+    replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank" style="color:#27CED7, margin-top: 15px">$2</a>');
+
+    //Change email addresses to mailto:: links.
+    replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+    replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1" style="color:#27CED7, margin-top: 15px">$1</a>');
+    return replacedText;
+}
+
+export function encodeHTML(str){
+    return str.replace(/([\u00A0-\u9999<>&])(.|$)/g, function(full, char, next) {
+        if(char !== '&' || next !== '#'){
+            if(/[\u00A0-\u9999<>&]/.test(next))
+                next = '&#' + next.charCodeAt(0) + ';';
+
+            return '&#' + char.charCodeAt(0) + ';' + next;
+        }
+
+        return full;
+    });
+}
+
+
+export function getPresignedUrl(params) {
+    return new Promise((resolve, reject) => {
+        const body = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem("SARISKA_TOKEN")}`
+            },
+            body: JSON.stringify({
+                fileType: params.fileType,
+                fileName: params.fileName
+            })
+        };
+
+        fetch(GET_PRESIGNED_URL, body)
+            .then((response) => {
+                if (response.ok) {
+                    return response.json(); //then consume it again, the error happens
+                }
+            })
+            .then(function (response) {
+                resolve(response);
+            }).catch((error) => {
+            reject(error)
+        })
+    });
+}
+
+
+export function compressFile(file, type) {
+    return new Promise((resolve, reject) => {
+        if (type === "attachment") {
+            resolve(file);
+        } else {
+            new Compressor(file, {
+                quality: 0.6,
+                success(result) {
+                    resolve(result);
+                },
+                error(err) {
+                    reject(err.message);
+                }
+            });
+        }
+    });
+}
+
+export function getUniqueNumber() {
+    return Math.floor(100000 + Math.random() * 900000);
+}
+
+
+export function formatBytes(bytes) {
+    var marker = 1024; // Change to 1000 if required
+    var decimal = 3; // Change as required
+    var kiloBytes = marker; // One Kilobyte is 1024 bytes
+    var megaBytes = marker * marker; // One MB is 1024 KB
+    var gigaBytes = marker * marker * marker; // One GB is 1024 MB
+    var teraBytes = marker * marker * marker * marker; // One TB is 1024 GB
+
+    // return bytes if less than a KB
+    if (bytes < kiloBytes) return bytes + " Bytes";
+    // return KB if less than a MB
+    else if (bytes < megaBytes) return (bytes / kiloBytes).toFixed(decimal) + " KB";
+    // return MB if less than a GB
+    else if (bytes < gigaBytes) return (bytes / megaBytes).toFixed(decimal) + " MB";
+    // return GB if less than a TB
+    else return (bytes / gigaBytes).toFixed(decimal) + " GB";
 }

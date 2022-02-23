@@ -305,7 +305,7 @@ const Navbar = ({dominantSpeakerId}) => {
     const createLiveStream = async()=>{
         const title = `test__${Date.now()}`;
         const resposne = await googleApi.createLiveStreams(title);
-        console.log("resposne", resposne);
+        
         const streamName = resposne.cdn?.ingestionInfo?.streamName;
         if (!streamName) {
             return;

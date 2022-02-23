@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState} from "react";
 import {
     Avatar,
     Box,
@@ -7,7 +7,8 @@ import {
     ListItemText,
     ListItemAvatar,
     makeStyles,
-    Typography
+    Typography,
+    Tooltip
 } from "@material-ui/core";
 import {useDispatch, useSelector} from "react-redux";
 import clsx from "clsx";
@@ -18,7 +19,9 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
 import SendIcon from "@material-ui/icons/Send";
 import {color} from "../../../assets/styles/_color";
-import { formatAMPM } from "../../../utils";		
+import { encodeHTML, formatAMPM, linkify } from "../../../utils";		
+import MediaChat from "../MediaChat";
+import FileAttached from "../FileAttached";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -88,15 +91,26 @@ const useStyles = makeStyles((theme) => ({
     },
     time: {
         whiteSpace: 'nowrap'
+    },
+    sendIcon: {
+        padding: '2px 12px 2px 2px',
+        '&:hover':{
+            background: 'none'
+        },
+        '&:hover svg':{
+            color: color.secondary
+        }
     }
 }));
 
-const ChatPanel = ({setUnread}) => {
+const ChatPanel = () => {
     const classes = useStyles();
     const conference = useSelector((state) => state.conference);
     const messages = useSelector((state) => state.message);
     const [currentMessage, setCurrentMessage] = useState("");
+    let [fileAttached, setFileAttached] = useState([]);
     const avatarColors = useSelector(state=>state.color);
+    const profile = useSelector(state => state.profile);
     const refEl = useRef(null);
 
 
@@ -112,12 +126,44 @@ const ChatPanel = ({setUnread}) => {
         }, 0);
     }
 
-    const handleClickSubmit = (e) => {
-        e.preventDefault();
-        conference.sendMessage(currentMessage);
-        setCurrentMessage("");
-    }
+    const startFileUpload =(fileData)=> {
+        const index = fileAttached.findIndex(item=>fileData.id === item.id);
+        console.log('startindex', index, fileAttached);
+        if ( index >= 0 ) {
+           const item  = fileAttached[index];
+           console.log('items', item)
+           item.status = fileData.status;
+           item.url = fileData.url;
+           console.log('itemsw', item)
+           fileAttached[index] = item;
+        } else {
+           setFileAttached([...fileAttached, fileData]);
+        }
+     }
 
+     const removeAttachment = (id) => {
+        setFileAttached(fileAttached.filter(file => file.id !== id));
+     }
+    const handleClickSubmit = (e) => {
+        if(fileAttached.find(item => item.status === 'loading')){
+            return;
+        }
+        if(currentMessage){
+            conference.sendMessage(encodeHTML(currentMessage));
+        }
+        if(fileAttached.length){
+            fileAttached.map(item => {
+                if(item.status === 'done'){
+                    conference.sendMessage(encodeHTML(item.url));
+                }
+            })
+        }
+
+    console.log('aatchedfiible', fileAttached)
+        setCurrentMessage("");
+        setFileAttached([]);
+    }
+    console.log('aatchedfile', fileAttached)
     const handleMouseDown = (event) => {
         event.preventDefault();
     };
@@ -134,7 +180,7 @@ const ChatPanel = ({setUnread}) => {
             document.removeEventListener('dblclick', handler);
         }
     },[])
-
+    
     useEffect(() => {
         scrollToBottom();
     }, [messages.length])
@@ -142,21 +188,40 @@ const ChatPanel = ({setUnread}) => {
     return (
         <Box ref={refEl} className={classes.root}>
             <List className={classes.chatList}>
-                {messages.map((newMessage, index) => (
+                {messages.map((newMessage, index) => {
+                    return (
                     <ListItem key={index} className={classes.listItem}>
                         <ListItemAvatar>
                             <Avatar src={ newMessage?.user?.avatar ? newMessage?.user?.avatar : null } style={{background: avatarColors[newMessage?.user?.id], marginTop: '5px'}} >{newMessage?.user?.name?.toUpperCase()?.slice(0, 1)}</Avatar>
                         </ListItemAvatar>
-                        <ListItemText
-                            primary={newMessage?.user?.name}
-                            secondary={newMessage?.text}
-                            className={classes.listItemText}
-                        />
+                        <ListItemText 
+                            className={classes.listItemText}>
+                            <span className="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock">{newMessage?.user?.name}</span>
+                            <p className="MuiTypography-root MuiListItemText-secondary MuiTypography-body2 MuiTypography-colorTextSecondary MuiTypography-displayBlock"
+                            dangerouslySetInnerHTML={{__html: linkify(newMessage?.text)}} style={{whiteSpace: 'pre-wrap', marginTop: index === 0 ? 'inherit' : '-15px'}}>
+                            </p>
+                        </ListItemText>
                         <Typography variant = "caption" className={classes.time}>{formatAMPM(newMessage?.time)}</Typography>
                     </ListItem>
-                ))}
+                    )}
+                )}
                 <ListItem ref={scrollRef} style={{height: '18px'}}></ListItem>
             </List>
+            {
+                fileAttached.length>0 && (
+                    <Box className={classes.cb__chatWrapper__attachements}>
+                        {
+                            fileAttached.map((file, index)=>(
+                                <FileAttached 
+                                    key={index}
+                                    fileData={file}
+                                    removeAttachment={removeAttachment}
+                                />
+                            ))
+                        }
+                    </Box>
+                )
+            }
             <form onSubmit={handleClickSubmit} className={classes.form}>
                 <FormControl
                     className={clsx(classes.margin, classes.textField)}
@@ -171,21 +236,36 @@ const ChatPanel = ({setUnread}) => {
                         value={currentMessage}
                         onChange={handleChange}
                         className={classes.input}
+                        multiline
+                        maxRows={1}
                         endAdornment={
                             <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="handle submit"
-                                    onClick={handleClickSubmit}
-                                    onMouseDown={handleMouseDown}
-                                    edge="end"
-                                >
-                                    <SendIcon/>
-                                </IconButton>
+                                <MediaChat
+                                    startFileUpload={startFileUpload}
+                                    sessionInfo={profile}
+                                />
+                                <Tooltip title="Send" placement='top'>
+                                    <IconButton
+                                        aria-label="handle submit"
+                                        onClick={handleClickSubmit}
+                                        onMouseDown={handleMouseDown}
+                                        edge="end"
+                                        className={classes.sendIcon}
+                                    >
+                                        <SendIcon />
+                                    </IconButton>
+                                </Tooltip>
                             </InputAdornment>
                         }
                         labelWidth={70}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                handleClickSubmit();
+                            }
+                        }}
                     />
                 </FormControl>
+
             </form>
         </Box>
     );

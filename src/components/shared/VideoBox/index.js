@@ -126,9 +126,7 @@ const VideoBox = ({
                     isTranscription
                   }) => {
     const classes = useStyles();
-    const remoteTrackse = useSelector(state => state.remoteTrack);
-
-    const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.isVideoTrack());
+    const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
     const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
     const avatarColors = useSelector(state => state.color);
@@ -138,7 +136,7 @@ const VideoBox = ({
     let avatarColor = avatarColors[participantDetails?.id];
     let audioLevel = audioIndicator[participantDetails?.id];
     const subtitle  = useSelector(state=>state.subtitle);
-    
+
     const togglePinParticipant = (id) => {
         dispatch(setPinParticipant(id));
     }

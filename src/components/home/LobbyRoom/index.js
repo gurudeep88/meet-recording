@@ -122,8 +122,8 @@ const LobbyRoom = ({tracks}) => {
     };
 
     const handleSubmit = async () => {
-        const token = localStorage.getItem("SARISKA_TOKEN") ? localStorage.getItem("SARISKA_TOKEN")  : await getToken(profile, name, moderator);
-        const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle, true);
+        const token = await getToken(profile, name, moderator);
+        const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle);
         
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
             dispatch(addConnection(connection));
@@ -151,7 +151,9 @@ const LobbyRoom = ({tracks}) => {
         });
         
         await conference.addTrack(audioTrack);
-        await conference.addTrack(videoTrack);
+        if (!videoTrack?.isMuted()) {
+            await conference.addTrack(videoTrack);
+        }
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, () => {
             console.log("CONFERENCE_JOINED")
@@ -166,10 +168,6 @@ const LobbyRoom = ({tracks}) => {
             if (conference.isModerator() && !isLoadTesting) {
                 //conference.enableLobby();
             }
-        });
-        
-        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, () => {
-            console.log("TRACK_ADDEDTRACK_ADDED");
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_ERROR, () => {

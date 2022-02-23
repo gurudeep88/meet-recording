@@ -107,7 +107,7 @@ const Meeting = () => {
             if (track.isLocal()) {
                 return;
             }
-            console.log("TRACK_ADDEDTRACK_ADDEDTRACK_ADDEDTRACK_ADDED")
+            console.log("TRACK_ADDEDTRACK_ADDEDTRACK_ADDEDTRACK_ADDED", track)
             dispatch(addRemoteTrack(track));
         });
 
@@ -120,7 +120,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, (track) => {
-            console.log("TRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVED")
+            console.log("TRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVED", track)
             dispatch(removeRemoteTrack(track));
         });
 

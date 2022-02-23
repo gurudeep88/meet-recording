@@ -188,7 +188,7 @@ const Home = () => {
     const dispatch = useDispatch();
     const resolution = useSelector(state => state.media?.resolution);
     SariskaMediaTransport.initialize();
-    SariskaMediaTransport.setLogLevel(SariskaMediaTransport.logLevels.DEBUG); //TRACE ,DEBUG, INFO, LOG, WARN, ERROR
+    SariskaMediaTransport.setLogLevel(SariskaMediaTransport.logLevels.ERROR); //TRACE ,DEBUG, INFO, LOG, WARN, ERROR
     const classes = useStyles();
     const [googleAPIData, setGoogleAPIData] = useState({isSignedIn: false, calenderEntries: []});
     const [localTracks, setLocalTracks] = useState([]);

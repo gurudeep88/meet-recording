@@ -126,6 +126,8 @@ const VideoBox = ({
                     isTranscription
                   }) => {
     const classes = useStyles();
+    const remoteTrackse = useSelector(state => state.remoteTrack);
+
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.isVideoTrack());
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
     const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
@@ -158,7 +160,9 @@ const VideoBox = ({
     if (isPresenter && isLargeVideo) {
         width = (videoTrack?.track?.getSettings()?.aspectRatio || 1.6)*height;
     }
-    
+
+    // console.log("videoTrack", videoTrack, remoteTrackse);
+
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}

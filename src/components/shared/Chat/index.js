@@ -198,7 +198,7 @@ const ChatPanel = () => {
                             className={classes.listItemText}>
                             <span className="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock">{newMessage?.user?.name}</span>
                             <p className="MuiTypography-root MuiListItemText-secondary MuiTypography-body2 MuiTypography-colorTextSecondary MuiTypography-displayBlock"
-                            dangerouslySetInnerHTML={{__html: linkify(newMessage?.text)}} style={{whiteSpace: 'pre-wrap', marginTop: index === 0 ? 'inherit' : '-15px'}}>
+                            dangerouslySetInnerHTML={{__html: linkify(newMessage?.text)}}>
                             </p>
                         </ListItemText>
                         <Typography variant = "caption" className={classes.time}>{formatAMPM(newMessage?.time)}</Typography>

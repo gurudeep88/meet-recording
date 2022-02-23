@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
     form: {
         textAlign: 'center',
+        display: 'flex',
         "& fieldset": {
             border: 'none'
         }
@@ -198,7 +199,7 @@ const ChatPanel = () => {
                             className={classes.listItemText}>
                             <span className="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock">{newMessage?.user?.name}</span>
                             <p className="MuiTypography-root MuiListItemText-secondary MuiTypography-body2 MuiTypography-colorTextSecondary MuiTypography-displayBlock"
-                            dangerouslySetInnerHTML={{__html: linkify(newMessage?.text)}} style={{whiteSpace: 'pre-wrap', marginTop: index === 0 ? 'inherit' : '-15px'}}>
+                            dangerouslySetInnerHTML={{__html: linkify(newMessage?.text)}}>
                             </p>
                         </ListItemText>
                         <Typography variant = "caption" className={classes.time}>{formatAMPM(newMessage?.time)}</Typography>
@@ -223,10 +224,15 @@ const ChatPanel = () => {
                 )
             }
             <form onSubmit={handleClickSubmit} className={classes.form}>
+            {!currentMessage && <MediaChat
+                                    startFileUpload={startFileUpload}
+                                    sessionInfo={profile}
+                                />}
                 <FormControl
                     className={clsx(classes.margin, classes.textField)}
                     variant="outlined"
                 >
+                    
                     <InputLabel htmlFor="outlined-adornment-submit">
                         Type Here
                     </InputLabel>
@@ -240,10 +246,7 @@ const ChatPanel = () => {
                         maxRows={1}
                         endAdornment={
                             <InputAdornment position="end">
-                                {!currentMessage && <MediaChat
-                                    startFileUpload={startFileUpload}
-                                    sessionInfo={profile}
-                                />}
+                                
                                 <Tooltip title="Send" placement='top'>
                                     <IconButton
                                         aria-label="handle submit"

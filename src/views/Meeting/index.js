@@ -90,6 +90,7 @@ const Meeting = () => {
         if (!conference) {
             return;
         }
+        console.log('getParticipantsWithoutHidden', conference.getParticipantsWithoutHidden())
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.presenting === "start") {
                 console.log('start presentingss',item)
@@ -105,10 +106,11 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, (track) => {
+            console.log('tracklocal', track);
             if (track.isLocal()) {
                 return;
             }
-            console.log("TRACK_ADDEDTRACK_ADDEDTRACK_ADDEDTRACK_ADDED")
+            console.log("TRACK_ADDEDTRACK_ADDEDTRACK_ADDEDTRACK_ADDED", track)
             dispatch(addRemoteTrack(track));
         });
 

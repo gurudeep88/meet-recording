@@ -318,7 +318,9 @@ const Home = () => {
                             <div onClick={signInIfNotSignedIn} className={classes.googleBtn}>
                                 <div className={classes.googleIconWrapper}>
                                     <img className={classes.googleIcon}
-                                         src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+                                         src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                                         alt='uploaded logo'
+                                         />
                                 </div>
                                 <p className={classes.btnText}><b>Sign in with Google</b></p>
                             </div>
@@ -326,7 +328,9 @@ const Home = () => {
                             <div onClick={microsoftCalendarApi.signIn} className={classes.microsoftBtn}>
                                 <div className={classes.googleIconWrapper}>
                                     <img className={classes.googleIcon}
-                                         src={microsoftLogo} />
+                                         src={microsoftLogo} 
+                                         alt='microsoft logo'
+                                    />
                                 </div>
                                 <p className={classes.btnTextMicrosoft}><b>Sign in with Microsoft</b></p>
                             </div>
@@ -337,7 +341,9 @@ const Home = () => {
                         </Box> }
                     </Box>
                     <Box className={classes.slackContainer}>
-                        <a href="https://slack.com/oauth/v2/authorize?client_id=884180672320.2771420271893&scope=bot,commands" ><img className={classes.slackBtn} src={slack}/></a>
+                        <a href="https://slack.com/oauth/v2/authorize?client_id=884180672320.2771420271893&scope=bot,commands" >
+                            <img className={classes.slackBtn} src={slack} alt='slack'/>
+                        </a>
                     </Box>
                 </Grid>
                 <Grid className={classes.rightContainer} item md={6}>

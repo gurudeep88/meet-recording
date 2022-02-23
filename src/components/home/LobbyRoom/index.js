@@ -121,7 +121,7 @@ const LobbyRoom = ({tracks}) => {
     const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
     const isLoadTesting = window.location.hash.indexOf("isLoadTesting") >= 0;
     const notification = useSelector(state => state.notification);
-    console.log('globalga', window.ga);
+    
     const handleTitleChange = (e) => {
         setMeetingTitle(trimSpace(e.target.value.toLowerCase()));
     };
@@ -196,6 +196,7 @@ const LobbyRoom = ({tracks}) => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_JOINED, (id) => {
             dispatch(addThumbnailColor({participantId: id, color: getRandomColor()}));
+            console.log('user joined', id)
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_FAILED, async (error) => {
@@ -254,7 +255,6 @@ const LobbyRoom = ({tracks}) => {
         setName(profile.name);
     }, [profile]);
 
-    console.log('loadingre', loading)
     return (
         <Box className={classes.root}>
             <Box className={classes.videoContainer}>

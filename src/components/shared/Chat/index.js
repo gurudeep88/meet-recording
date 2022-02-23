@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
     form: {
         textAlign: 'center',
+        display: 'flex',
         "& fieldset": {
             border: 'none'
         }
@@ -223,10 +224,15 @@ const ChatPanel = () => {
                 )
             }
             <form onSubmit={handleClickSubmit} className={classes.form}>
+            {!currentMessage && <MediaChat
+                                    startFileUpload={startFileUpload}
+                                    sessionInfo={profile}
+                                />}
                 <FormControl
                     className={clsx(classes.margin, classes.textField)}
                     variant="outlined"
                 >
+                    
                     <InputLabel htmlFor="outlined-adornment-submit">
                         Type Here
                     </InputLabel>
@@ -240,10 +246,7 @@ const ChatPanel = () => {
                         maxRows={1}
                         endAdornment={
                             <InputAdornment position="end">
-                                {!currentMessage && <MediaChat
-                                    startFileUpload={startFileUpload}
-                                    sessionInfo={profile}
-                                />}
+                                
                                 <Tooltip title="Send" placement='top'>
                                     <IconButton
                                         aria-label="handle submit"

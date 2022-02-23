@@ -7,7 +7,8 @@ const useStyles = makeStyles((theme) => ({
     fileBox: {
         display:'flex',
         alignItems: 'center',
-        zIndex: 11
+        zIndex: 11,
+        marginRight: '4px'
     }
 }))
 

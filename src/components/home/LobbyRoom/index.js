@@ -145,10 +145,8 @@ const LobbyRoom = ({tracks}) => {
             return;
         }
         setLoading(true);
-        
-        console.log("moderator", moderator.current);
-
-        const token = await getToken(profile, name, moderator.current);
+    
+        const token = await getToken(profile, name);
         const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle);
         
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
@@ -192,7 +190,7 @@ const LobbyRoom = ({tracks}) => {
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
             console.log("isMembersOnly ", conference.isMembersOnly());
             if (conference.isModerator() && !isLoadTesting) {
-                conference.enableLobby();
+             //   conference.enableLobby();
             }
         });
 

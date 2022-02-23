@@ -172,8 +172,8 @@ const ActionButtons = () => {
     };
 
     const unmuteVideo = async () => {
+        await conference.addTrack(videoTrack);
         await videoTrack?.unmute();
-        conference.addTrack(videoTrack);
         dispatch(localTrackMutedChanged());
     };
 

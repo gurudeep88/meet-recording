@@ -11,6 +11,8 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@microsoft/microsoft-graph-client": "^3.0.0",
     "@mui/material": "^5.4.1",
+    "@sentry/react": "^6.17.9",
+    "@sentry/tracing": "^6.17.9",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -28,7 +30,7 @@
     "redux": "^4.1.0",
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
-    "sariska-media-transport": "git+https://github.com/SariskaIO/sariska-media-transport.git#release-v2.0",
+    "sariska-media-transport": "git+https://github.com/SariskaIO/sariska-media-transport.git#2.0.1",
     "source-map-explorer": "^2.5.2",
     "web-vitals": "^1.0.1",
     "windows-iana": "^5.0.2"

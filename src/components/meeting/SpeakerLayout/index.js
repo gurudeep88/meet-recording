@@ -49,7 +49,6 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
 
-    console.log('localtracksss', localTracks, remoteTracks, myUserId, conference.getParticipantsWithoutHidden(), layout, largeVideoId, layout.presenterParticipantIds.find(item=>item===largeVideoId))
     return (
         <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}} className={activeClasses}>
             <VideoBox

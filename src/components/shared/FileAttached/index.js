@@ -1,4 +1,4 @@
-import { Box, makeStyles } from '@material-ui/core';
+import { Avatar, Box, makeStyles, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import DescriptionIcon from '@material-ui/icons/Description';
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     cb_attached: {
         display: 'flex',
         height: '58px',
-        borderTop: '1px solid #d8d8d8 !important',
+        border: '1px solid #d8d8d8 !important',
         width: '100%',
         background: color.white
     },
@@ -20,12 +20,14 @@ const useStyles = makeStyles((theme) => ({
         height: '58px',
         width: '58px',
         background: '#dedede',
+    },
+    avatar: {
+        width: '58px',
+        height: '58px',
+        overflow: 'visible',
         '& img': {
-            flex: '0 0 auto',
-            height: 'auto',
-            width: 'auto',
-            maxHeight: '100%',
-            maxWidth: '100%'
+            height: '100%',
+            width: '100%'
         }
     },
     cb__attached__fileAttached: {
@@ -43,6 +45,12 @@ const useStyles = makeStyles((theme) => ({
         flex: '14',
         fontSize: '12px',
         paddingLeft: '8px!important'
+      },
+      name: {
+        whiteSpace: 'nowrap', 
+        width: '150px',
+        overflow: 'hidden !important',
+        textOverflow: 'ellipsis !important',
       },
       cb__attached__close: {
             cursor: 'pointer',
@@ -64,16 +72,16 @@ const FileAttached = ({fileData, removeAttachment}) => {
         setUrl(fileData.url);
     },[fileData?.status, fileData?.url])
 
+
     const handleClose = () => {
         removeAttachment(id);
     }
-
   return (
     <Box className={classes.cb_attached}>
         {
             type==='photos' ?
             <Box className={classes.cb_attached_thumbnail}>
-                <img src={url} alt='attached thumbnail' />
+                <Avatar src={url} alt='attached thumbnail' className={classes.avatar}/>
             </Box>
             :
             <Box className={classes.cb_attached_thumbnail}>
@@ -81,8 +89,9 @@ const FileAttached = ({fileData, removeAttachment}) => {
             </Box>
         }
         <Box className={classes.cb__attached__filename}>
-            <Box>
-                {name} &nbsp; &nbsp; {formatBytes(size)}
+            <Box style={{display:'flex'}}>
+                <Typography variant="body2" className={classes.name}>{name}</Typography> 
+                <Typography variant="caption">&nbsp; &nbsp; {formatBytes(size)}</Typography>
             </Box>
             {
                 status==='done' ?

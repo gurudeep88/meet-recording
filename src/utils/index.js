@@ -251,6 +251,7 @@ export function getPresignedUrl(params) {
                 }
             })
             .then(function (response) {
+                console.log('response', response)
                 resolve(response);
             }).catch((error) => {
             reject(error)
@@ -267,9 +268,11 @@ export function compressFile(file, type) {
             new Compressor(file, {
                 quality: 0.6,
                 success(result) {
+                    console.log('result', result)
                     resolve(result);
                 },
                 error(err) {
+                    console.log('err', err)
                     reject(err.message);
                 }
             });

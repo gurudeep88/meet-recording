@@ -33,14 +33,14 @@ const MediaChat = ({startFileUpload, sessionInfo, currentMessage}) => {
             startFileUpload={startFileUpload}
             type="attachment" 
             title="Add Files"
-            key="uploadPhoto" 
+            key="uploadFile" 
             sessionInfo={sessionInfo}
         />
         <FileUpload
             startFileUpload={startFileUpload}
             type="photos" 
             title="Add Photos"
-            key="uploadFile" 
+            key="uploadPhoto" 
             sessionInfo={sessionInfo}
         />
     </div>

@@ -126,13 +126,12 @@ const ChatPanel = () => {
             scrollRef.current.scrollIntoView({behavior: 'smooth'})
         }, 0);
     }
-
+    
     const startFileUpload =(fileData)=> {
         const index = fileAttached.findIndex(item=>fileData.id === item.id);
-        
+                
         if ( index >= 0 ) {
            const item  = fileAttached[index];
-           
            item.status = fileData.status;
            item.url = fileData.url;
            

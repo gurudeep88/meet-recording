@@ -25,7 +25,7 @@ const MediaChat = ({startFileUpload, sessionInfo, currentMessage}) => {
             transition: 'width 0.5s 0.5s, height 0.5s 0.5s, opacity 1s'
         }
     }))
-    const classes = useStyles();
+    const classes = useStyles();    
     
   return (
     <div className={!currentMessage ? classes.fileDisplay : classes.fileHide}>

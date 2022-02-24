@@ -158,7 +158,6 @@ const ChatPanel = () => {
                 }
             })
         }
-
         setCurrentMessage("");
         setFileAttached([]);
     }
@@ -262,7 +261,9 @@ const ChatPanel = () => {
                         labelWidth={70}
                         onKeyPress={(e) => {
                             if (e.key === 'Enter') {
+                                e.preventDefault();
                                 handleClickSubmit();
+                                setCurrentMessage("");
                             }
                         }}
                     />

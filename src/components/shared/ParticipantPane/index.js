@@ -22,7 +22,7 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, height}) 
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-    console.log('remotetre', remoteTracks)
+    
     return (
         <Box style={{height: `${height}px`}} className={activeClasses}>
             { conference.getParticipantsWithoutHidden().map(participant => {              

@@ -196,7 +196,7 @@ const LobbyRoom = ({tracks}) => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_JOINED, (id) => {
             dispatch(addThumbnailColor({participantId: id, color: getRandomColor()}));
-            console.log('user joined', id)
+            console.log('user joined')
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_FAILED, async (error) => {

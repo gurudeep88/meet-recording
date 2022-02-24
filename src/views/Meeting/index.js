@@ -90,10 +90,10 @@ const Meeting = () => {
         if (!conference) {
             return;
         }
-        console.log('getParticipantsWithoutHidden', conference.getParticipantsWithoutHidden())
+        
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.presenting === "start") {
-                console.log('start presentingss',item)
+                
                 dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
                 dispatch(setPresenter({participantId: item._id, presenter: true}));
             }
@@ -106,11 +106,11 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, (track) => {
-            console.log('tracklocal', track);
+            
             if (track.isLocal()) {
                 return;
             }
-            console.log("TRACK_ADDEDTRACK_ADDEDTRACK_ADDEDTRACK_ADDED", track)
+            console.log("TRACK_ADDEDTRACK_ADDEDTRACK_ADDEDTRACK_ADDED")
             dispatch(addRemoteTrack(track));
         });
 
@@ -198,7 +198,7 @@ const Meeting = () => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.ANALYTICS_EVENT_RECEIVED, (payload) => {
             const { name, action, actionSubject, source, attributes } = payload;
-            console.log('namrtye', name, action, actionSubject, source, attributes)
+            
         });
 
         window.addEventListener("offline", updateNetwork);

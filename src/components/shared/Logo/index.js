@@ -35,7 +35,7 @@ const Logo = () => {
         
         <Box>
         <Link to="/" className={classes.logo}>
-        <img src="https://www.sariska.io/sariska_logo.png" alt="logo" className={classes.logoImage}/>
+        <img src={process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/>
         <Typography className={classes.logoText}>SARISKA</Typography>
         </Link>
     </Box>

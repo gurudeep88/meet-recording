@@ -136,7 +136,7 @@ const VideoBox = ({
     let avatarColor = avatarColors[participantDetails?.id];
     let audioLevel = audioIndicator[participantDetails?.id];
     const subtitle  = useSelector(state=>state.subtitle);
-    participantTracks.length && console.log('desktoptrem', isPresenter, videoTrack, participantTracks);
+    
     const togglePinParticipant = (id) => {
         dispatch(setPinParticipant(id));
     }

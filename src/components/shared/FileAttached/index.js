@@ -59,7 +59,6 @@ const FileAttached = ({fileData, removeAttachment}) => {
     const [url, setUrl] = useState('');
     const [status, setStatus] = useState(fileData?.status);
 
-    console.log('fieldd', fileData, url, status)
     useEffect(()=>{
         setStatus(fileData?.status);
         setUrl(fileData.url);

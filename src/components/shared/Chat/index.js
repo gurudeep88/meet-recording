@@ -126,16 +126,15 @@ const ChatPanel = () => {
             scrollRef.current.scrollIntoView({behavior: 'smooth'})
         }, 0);
     }
-
+    
     const startFileUpload =(fileData)=> {
         const index = fileAttached.findIndex(item=>fileData.id === item.id);
-        console.log('startindex', index, fileAttached);
+                
         if ( index >= 0 ) {
            const item  = fileAttached[index];
-           console.log('items', item)
            item.status = fileData.status;
            item.url = fileData.url;
-           console.log('itemsw', item)
+           
            fileAttached[index] = item;
         } else {
            setFileAttached([...fileAttached, fileData]);
@@ -159,12 +158,10 @@ const ChatPanel = () => {
                 }
             })
         }
-
-    console.log('aatchedfiible', fileAttached)
         setCurrentMessage("");
         setFileAttached([]);
     }
-    console.log('aatchedfile', fileAttached)
+    
     const handleMouseDown = (event) => {
         event.preventDefault();
     };
@@ -224,9 +221,10 @@ const ChatPanel = () => {
                 )
             }
             <form onSubmit={handleClickSubmit} className={classes.form}>
-            {!currentMessage && <MediaChat
+            {<MediaChat
                                     startFileUpload={startFileUpload}
                                     sessionInfo={profile}
+                                    currentMessage={currentMessage}
                                 />}
                 <FormControl
                     className={clsx(classes.margin, classes.textField)}
@@ -263,7 +261,9 @@ const ChatPanel = () => {
                         labelWidth={70}
                         onKeyPress={(e) => {
                             if (e.key === 'Enter') {
+                                e.preventDefault();
                                 handleClickSubmit();
+                                setCurrentMessage("");
                             }
                         }}
                     />

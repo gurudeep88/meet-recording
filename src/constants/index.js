@@ -70,27 +70,27 @@ export const images = [
     {
         name: 'Skyscrapers with searchlights',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/skyskrapers_160x80_558fa6dc53e8a1b846f1d79053426373.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/skyskrapers_02f52b6cea18f5f0384b7ac8db8ad86b.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/${process.env.REACT_APP_API_SERVICE_HOST_NAME}/static/media/skyskrapers_02f52b6cea18f5f0384b7ac8db8ad86b.jpeg`
     },
     {
         name: 'Fireworks',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/fireworks_160x80_7ba37495ac5b120851fc481e77ed7238.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/fireworks_c41626c514ccf319a3edb470b4d04949.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/${process.env.REACT_APP_API_SERVICE_HOST_NAME}/static/media/fireworks_c41626c514ccf319a3edb470b4d04949.jpeg`
     },
     {
         name: 'Purple Clouds',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/clouds_160x80_a35095c2eab129225b3efc0da5bbbac7.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/clouds_bf46b8c3a1c02ee8628736254df3b587.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/${process.env.REACT_APP_API_SERVICE_HOST_NAME}/static/media/clouds_bf46b8c3a1c02ee8628736254df3b587.jpeg`
     },
     {
         name: 'Cafe at night',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/cafe_at_night_160x80_1b3efcaeb19a2d6068f238ca7f92c18f.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/cafe_at_night_de428ba989b9d616ec90ae7440b0944b.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/${process.env.REACT_APP_API_SERVICE_HOST_NAME}/static/media/cafe_at_night_de428ba989b9d616ec90ae7440b0944b.jpeg`
     },
     {
         name: 'Stylized fish in a green sea',
         thumbnail: 'https://www.gstatic.com/webrtc-video-processing/assets/ocean_160x80_5ab6b47391c6ee4f8c05aebe47630a6e.jpg',
-        url: `https://s3.ap-south-1.amazonaws.com/meet.dev.sariska.io/static/media/ocean_b26b6f03864ea9ebc1263d9c50f0c59b.jpeg`
+        url: `https://s3.ap-south-1.amazonaws.com/${process.env.REACT_APP_API_SERVICE_HOST_NAME}/static/media/ocean_b26b6f03864ea9ebc1263d9c50f0c59b.jpeg`
     }
 ]
 
@@ -98,5 +98,5 @@ export const images = [
 export const DROPBOX_APP_KEY = "hey9dkz8x8s3x74";
 export const CHECK_ROOM_URL = "https://reservation.sariska.io/room"
 
-export const GET_PRESIGNED_URL = "https://api.sariska.io/api/v1/misc/get-presigned";
+export const GET_PRESIGNED_URL = `${process.env.REACT_APP_API_SERVICE_HOST}api/v1/misc/get-presigned`;
 

@@ -197,7 +197,6 @@ const LobbyRoom = ({tracks}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_JOINED, (id) => {
-            console.log("USER_JOINED")
             dispatch(addThumbnailColor({participantId: id, color: getRandomColor()}));
         });
 

@@ -31,7 +31,7 @@ const FileUpload = ({sesssionInfo, type, startFileUpload}) => {
   const handleChange = (event) => {
     const id = getUniqueNumber();
     const file = event.target.files[0];
-    console.log('filech', file, sesssionInfo, type)
+    
     const compressOptions = {
       maxSizeMB: 1,
       maxWidthOrHeight: 1920,
@@ -55,9 +55,8 @@ const FileUpload = ({sesssionInfo, type, startFileUpload}) => {
         return fetch(signedUrl, {method: 'PUT', body: values[1], headers})
     })
     .then(res=>{
-        console.log('startres', res);
         const url = res.url.split("?")[0];
-        startFileUpload({id, url, status: 'done'});
+        startFileUpload({id, name: file.name, type: type, size: file.size, url, status: 'done'});
     })
     .catch(function (error) {
         startFileUpload({id, msg:'failed', status: 'failed'});

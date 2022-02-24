@@ -22,7 +22,7 @@ export const updateLocalTrack = (track, newTrack) => {
 }
 
 export const addRemoteTrack = (track) => {
-    console.log('remoteaction', track)
+    
     return {
         type: Constants.ADD_REMOTE_TRACK,
         payload: track

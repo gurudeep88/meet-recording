@@ -105,7 +105,6 @@ const Meeting = () => {
         });
         
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, (track) => {
-            console.log("TRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVED", track)
             dispatch(removeRemoteTrack(track));
         });
 
@@ -122,11 +121,6 @@ const Meeting = () => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.SUBTITLES_RECEIVED, (id, name, text) => {
             dispatch(addSubtitle({ name, text }));
-        });
-
-        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, (track, p) => {
-            console.log("track, p, track, p", track, p);
-            dispatch(removeRemoteTrack(track));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_MUTE_CHANGED, (track) => {
@@ -158,8 +152,7 @@ const Meeting = () => {
             if (key === "isModerator" && newValue === "true") {
                 dispatch(setModerator({ participantId: participant._id, isModerator: true }));
             }
-            console.log(participant, key, oldValue, newValue)
-
+            
             if (key === "resolution") {
                 dispatch(setResolution({ participantId: participant._id, resolution: newValue }));
             }

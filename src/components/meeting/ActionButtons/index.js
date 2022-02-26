@@ -89,7 +89,6 @@ const ActionButtons = () => {
     const profile = useSelector(state => state.profile)
     const layout = useSelector((state) => state.layout);
     const [raiseHand, setRaiseHand] = useState(false);
-    const resolution = useSelector(state => state.media?.resolution);
 
     const FShandler = ()=>{
         removeFullscreenListeners();
@@ -115,7 +114,6 @@ const ActionButtons = () => {
         (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
         (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
         (document.msFullscreenElement && document.msFullscreenElement !== null);
-        
         let docElm = document.documentElement;
 
         if (isInFullScreen || !docElm) {
@@ -213,7 +211,6 @@ const ActionButtons = () => {
     };
 
     useEffect(()=>{
-
         const interval = setInterval(()=> {
             setTime(formatAMPM(new Date()));
         }, 1000);
@@ -231,7 +228,6 @@ const ActionButtons = () => {
             clearInterval(interval);
             document.removeEventListener('dblclick', dbClickHandler); 
         }
-
     },[layout.mode])
 
     const leaveConference = () => {

@@ -34,6 +34,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
     largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId || myUserId;
+   
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
         "onStageEndpoints":  [largeVideoId],

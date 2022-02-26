@@ -464,7 +464,6 @@ const Navbar = ({dominantSpeakerId}) => {
     }
 
     useEffect(() => {
-
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.transcribing) {
                 setCaption(true);
@@ -545,7 +544,6 @@ const Navbar = ({dominantSpeakerId}) => {
                 dispatch(showSnackbar({autoHide: true, message: "Recording stopped"}));
                 setRecording(false);
             }
-            console.log("data", data);
         });
 
     }, []);

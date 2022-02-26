@@ -24,22 +24,22 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const {viewportWidth, viewportHeight} = useWindowResize();
     const localTracks = useSelector(state => state.localTrack);
     const remoteTracks = useSelector(state => state.remoteTrack);
+    const resolution = useSelector(state => state.media?.resolution);
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state=>state.layout);
     const myUserId = conference.myUserId();
     let largeVideoId;
+
     if ( conference.getParticipantCount() === 2 ) {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
-
     largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId || myUserId;
-    
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
         "onStageEndpoints":  [largeVideoId],
         "defaultConstraints": { "maxHeight":  180 },
         "constraints": {
-            [largeVideoId]: { "maxHeight": 720 }
+            [largeVideoId]: { "maxHeight": layout?.resolution[largeVideoId] || resolution }
         }
     }
 

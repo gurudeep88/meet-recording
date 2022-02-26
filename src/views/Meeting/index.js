@@ -23,6 +23,7 @@ import { setAudioLevel } from "../../store/actions/audioIndicator";
 import { showNotification } from "../../store/actions/notification";
 import { addSubtitle } from '../../store/actions/subtitle';
 import { useHistory } from 'react-router-dom';
+import { setResolution } from '../../store/actions/layout';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -97,6 +98,15 @@ const Meeting = () => {
             if (item._properties?.isModerator === "true") {
                 dispatch(setModerator({ participantId: item._id, isModerator: true }));
             }
+            
+            if (item._properties?.resolution) {
+                dispatch(setResolution({ participantId: item._id, resolution: item._properties?.resolution }));
+            }
+        });
+        
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, (track) => {
+            console.log("TRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVED", track)
+            dispatch(removeRemoteTrack(track));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, (track) => {
@@ -114,8 +124,8 @@ const Meeting = () => {
             dispatch(addSubtitle({ name, text }));
         });
 
-        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, (track) => {
-            console.log("TRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVEDTRACK_REMOVED", track)
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_REMOVED, (track, p) => {
+            console.log("track, p, track, p", track, p);
             dispatch(removeRemoteTrack(track));
         });
 
@@ -144,8 +154,14 @@ const Meeting = () => {
             if (key === "handraise" && newValue === "stop") {
                 dispatch(setRaiseHand({ participantId: participant._id, raiseHand: false }));
             }
+
             if (key === "isModerator" && newValue === "true") {
                 dispatch(setModerator({ participantId: participant._id, isModerator: true }));
+            }
+            console.log(participant, key, oldValue, newValue)
+
+            if (key === "resolution") {
+                dispatch(setResolution({ participantId: participant._id, resolution: newValue }));
             }
         });
 
@@ -155,6 +171,9 @@ const Meeting = () => {
             }
             if (layout.presenterParticipantIds.find(item => item === id)) {
                 dispatch(setPresenter({ participantId: id, presenter: false }));
+            }
+            if (layout.presenterParticipantIds.find(item => item === id)) {
+                dispatch(setResolution({ participantId: id, resolution: null }));
             }
             dispatch(participantLeft());
         });

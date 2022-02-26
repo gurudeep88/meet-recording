@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     setCamera,
     setMicrophone,
-    setResolution,
+    setYourResolution,
     setSpeaker,
 } from "../../../store/actions/media";
 import {updateLocalTrack} from "../../../store/actions/track";
@@ -203,12 +203,13 @@ const SettingsBox = () => {
     const handleResolutionChange = async (event) => {
         setResolutionValue(event.target.value);
         const item = resolutionList.find(item => item.value === event.target.value);
-        dispatch(setResolution({resolution: event.target.value, aspectRatio: item.aspectRatio}));
+        dispatch(setYourResolution({resolution: event.target.value, aspectRatio: item.aspectRatio}));
         const videoTrack = localTracks.find(track => track.videoType === "camera");
         const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
             devices: ["video"],
             resolution: event.target.value,
         });
+        conference.setLocalParticipantProperty("resolution", event.target.value.toString());
         conference.replaceTrack(videoTrack, newVideoTrack);
         dispatch(updateLocalTrack(videoTrack, newVideoTrack));
     };
@@ -263,13 +264,16 @@ const SettingsBox = () => {
                 label: device.label,
             })),
     };
-
+   
     const resolutionList = [
-        { value: 1080, label: "Ultra High Definition (1080p)", aspectRatio: 9 / 16 },
+        { value: 2160, label: "Ultra High Definition (4k)", aspectRatio: 9 / 16 },
+        { value: 1080, label: "Full High Definition (1080p)", aspectRatio: 9 / 16 },
         { value: 720, label: "High Definition (720p)", aspectRatio: 9 / 16 },
-        { value: 480, label: "Ultra Standard Definition (480p)", aspectRatio: 9 / 16 },
+        { value: 480, label: "VGA (480p)", aspectRatio: 9 / 16 },
         { value: 360, label: "Standard Definition (360p)", aspectRatio: 9 / 16 },
+        { value: 180, label: "Low Definition (180p)", aspectRatio: 9 / 16 },
     ];
+
     const resolutionData = {
         label: "Change Resolution",
         open: resolutionOpen,

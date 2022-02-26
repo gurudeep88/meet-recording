@@ -14,6 +14,7 @@ import {formatAMPM, getMeetingId} from "../../utils";
 import microsoftLogo from '../../assets/images/shared/microsoftLogo.svg'; // Tell Webpack this JS file uses this image
 import slack from '../../assets/images/shared/slack.png'; // Tell Webpack this JS file uses this image
 import { microsoftCalendarApi } from "../../utils/microsoft-apis";
+import { conference } from "../../store/reducers/conference";
 
 const useStyles = makeStyles((theme) => ({
     googleBtn: {
@@ -224,31 +225,14 @@ const Home = () => {
     useEffect(() => {
         const createNewLocalTracks = async () => {
             const options = {
-                devices: ["video"],
-                resolution,
-                constraints: {
-                    video: {
-                        height: {
-                            ideal: 720,
-                            max: 720,
-                            min: 720
-                        }
-                    }
-                }
+                devices: ["audio", "video"],
+                resolution
             };
-
-            const [ videoTrack ] = await SariskaMediaTransport.createLocalTracks(options);
-            const [ audioTrack ] = await SariskaMediaTransport.createLocalTracks({ devices: ["audio"]});
+            const tracks = await SariskaMediaTransport.createLocalTracks(options);
             if (!iAmRecorder) {
-                setLocalTracks([audioTrack, videoTrack]);
+                setLocalTracks(tracks);
             }
-
-            if (audioTrack) {
-                dispatch(addLocalTrack(audioTrack));
-            }
-            if (videoTrack) {
-                dispatch(addLocalTrack(videoTrack));
-            }
+            tracks.forEach(track=>dispatch(addLocalTrack(track)));
         };
 
         const googleLogin = async () => {

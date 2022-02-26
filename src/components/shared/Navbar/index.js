@@ -518,6 +518,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 dispatch(addSubtitle({}));
                 setCaption(false);
             }
+            console.log("status", status);
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
@@ -544,6 +545,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 dispatch(showSnackbar({autoHide: true, message: "Recording stopped"}));
                 setRecording(false);
             }
+            console.log("data", data);
         });
 
     }, []);

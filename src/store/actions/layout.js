@@ -55,3 +55,11 @@ export const setPresentationtType = (payload) => {
         payload
     }
 }
+
+
+export const setResolution = (value) => {
+    return {
+        type: Constants.SET_RESOLUTION,
+        payload: value
+    }
+}

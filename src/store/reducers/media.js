@@ -12,6 +12,7 @@ const initialState = {
   resolution: 720,
   aspectRatio: 9/16
 };
+
 export const media = (state = initialState, action) => {
   switch (action.type) {
     case SET_MICROPHONE:

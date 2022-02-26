@@ -177,13 +177,11 @@ const ActionButtons = () => {
     };
 
     const shareScreen = async () => {
-        const videoTrack = localTracks.find(track => track.videoType === "camera");
         const [desktopTrack] = await SariskaMediaTransport.createLocalTracks({
             resolution: 720,
             devices: ["desktop"]
         });
 
-        await conference.removeTrack(videoTrack);
         await conference.addTrack(desktopTrack);
 
         desktopTrack.addEventListener(SariskaMediaTransport.events.track.LOCAL_TRACK_STOPPED, async () => {
@@ -196,10 +194,8 @@ const ActionButtons = () => {
     }
 
     const stopPresenting = async () => {
-        const videoTrack = localTracks.find(track => track.videoType === "camera");
         const desktopTrack = localTracks.find(track => track.videoType === "desktop");        
         await conference.removeTrack(desktopTrack);
-        await conference.addTrack(videoTrack);
         dispatch(setPresenter({ participantId: conference.myUserId(), presenter: false}));
         dispatch(removeLocalTrack(desktopTrack));
         conference.setLocalParticipantProperty("presenting", "stop");

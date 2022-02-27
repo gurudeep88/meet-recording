@@ -105,6 +105,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: -12,
     },
 }));
+
 const LobbyRoom = ({tracks}) => {
     const classes = useStyles();
     const history = useHistory();
@@ -177,7 +178,6 @@ const LobbyRoom = ({tracks}) => {
         await conference.addTrack(videoTrack);
         
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, () => {
-            console.log("CONFERENCE_JOINED")
             setLoading(false);
             dispatch(addConference(conference));
             dispatch(setProfile(conference.getLocalUser()));
@@ -186,9 +186,8 @@ const LobbyRoom = ({tracks}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
-            console.log("isMembersOnly ", conference.isMembersOnly());
             if (conference.isModerator() && !isLoadTesting) {
-             //   conference.enableLobby();
+                conference.enableLobby();
             }
         });
 

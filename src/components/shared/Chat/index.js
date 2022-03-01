@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
     form: {
         textAlign: 'center',
         display: 'flex',
+        alignItems: 'center',
         "& fieldset": {
             border: 'none'
         }

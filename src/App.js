@@ -5,6 +5,10 @@ import Home from './views/Home';
 import Leave from './views/Leave';
 import Meeting from './views/Meeting';
 
+import ReactGA from 'react-ga4';		
+ReactGA.initialize('G-R8QNV9RCFF');		
+ReactGA.send("pageview");
+
 function App() {
     return (
         <Fragment>

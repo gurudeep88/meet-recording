@@ -12,6 +12,7 @@ export const color = {
     lightgray1: 'rgba(0,0,0,0.5)',
     lightgray2: 'rgba(0,0,0,0.05)',
     lightgray3: '#F6F7F8',
+    lightgray4: 'rgba(0,0,0,0.1)',
     lightBlue1: 'rgba(20,200,230,0.05)',
     lightBlue2: '#F4FDFD',
     gradient: 'linear-gradient(to bottom, #fff, #D6ECFA 30%, #CCFAFF 50%, #D6ECFA 70%, #fff)',

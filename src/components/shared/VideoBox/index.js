@@ -69,6 +69,10 @@ const useStyles = makeStyles((theme) => ({
         color: color.white,
         background: "transparent",
         position: "absolute",
+        "& p": {
+            background: color.lightgray4,
+            padding: '2px 4px'
+        }
     },
     avatarBox: {
         height: '100%',
@@ -158,8 +162,6 @@ const VideoBox = ({
     if (isPresenter && isLargeVideo) {
         width = (videoTrack?.track?.getSettings()?.aspectRatio || 1.6)*height;
     }
-
-    // console.log("videoTrack", videoTrack, remoteTrackse);
 
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}

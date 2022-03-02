@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import {images} from "../../../constants";
-import {Tooltip, Typography} from "@material-ui/core";
+import {Tooltip, Typography, Avatar} from "@material-ui/core";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Video from "../Video";
 import {useSelector} from "react-redux";
@@ -15,6 +15,8 @@ import ScreenShareOutlinedIcon from '@material-ui/icons/ScreenShareOutlined';
 import { color } from '../../../assets/styles/_color';
 import {useDispatch} from "react-redux";
 import {showNotification} from "../../../store/actions/notification";
+import { audioIndicator } from '../../../store/reducers/audioIndicator';
+import { videoShadow } from '../../../utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -117,7 +119,25 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "center",
         width: "360px",
         height: "206px",
-        marginBottom: '8px'
+        marginBottom: '8px',
+        background: color.secondary
+    },
+
+    avatarBox: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexGrow: 1
+    },
+    backgroundAvatar: {
+        width: '80px',
+        height: '80px',
+        "& img": {
+            width: '100%',
+            height: '100%'
+        }
     },
     buttonProgress: {
         color: color.primary
@@ -129,10 +149,13 @@ export default function VirtualBackground() {
     const totalRow = parseInt(images.length / 4);
     const extraRow = images.length % 4;
     const localTracks = useSelector(state => state.localTrack);
+    const conference = useSelector(state => state.conference);
+    const avatarColors = useSelector(state => state.color);
     const videoTrack = localTracks.find(track => track.isVideoTrack());
     const [desktopTrack, setDesktopTrack] = useState(null);
     const [loading, setLoading] = useState(null);
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    let audioLevel = audioIndicator[conference.getLocalUser()?.id];
     const dispatch = useDispatch()
 
     const imageBackground = async (url) => {
@@ -156,7 +179,7 @@ export default function VirtualBackground() {
         }
 
     }
-
+    
     const lightBlurBackground = async () => {
         if (isSafari) {
             dispatch(showNotification({autoHide: true, message: "Virtual background not supported!!!", severity: "info"}));
@@ -218,11 +241,25 @@ export default function VirtualBackground() {
         await videoTrack.setEffect(undefined);
     }
 
+    const avatarColor = avatarColors[conference.getLocalUser()?.id];
+
     return (
         <Box className={classes.root}>
             <Typography variant="h6" className={classes.backgroundTitle}>Change Background</Typography>
             <div className={classes.localVideo}>
-                { loading ? <CircularProgress className={classes.buttonProgress} /> : <Video track={videoTrack}/> }
+            {
+                videoTrack?.isMuted() || !videoTrack ? 
+                    <Box className={classes.avatarBox}>
+                        <Avatar
+                            src={conference.getLocalUser()?.avatar ? conference.getLocalUser()?.avatar: null }
+                            style={{boxShadow: videoShadow(audioLevel), background: avatarColor}}
+                            className={classes.backgroundAvatar}
+                            >
+                            {conference.getLocalUser()?.name.slice(0, 1).toUpperCase()}
+                        </Avatar>
+                    </Box>
+                    :
+                 loading ? <CircularProgress className={classes.buttonProgress} /> : <Video track={videoTrack}/> }
             </div>
             <Grid container className={classes.container}>
                 <Grid item md={6}>

@@ -31,7 +31,7 @@
     "redux": "^4.1.0",
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
-    "sariska-media-transport": "git+https://github.com/SariskaIO/sariska-media-transport.git#2.0.1",
+    "sariska-media-transport": "https://github.com/SariskaIO/sariska-media-transport.git",
     "source-map-explorer": "^2.5.2",
     "web-vitals": "^1.0.1",
     "windows-iana": "^5.0.2"
@@ -39,7 +39,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "env-cmd -f .env.development react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts --openssl-legacy-provider build",
     "build:development": "env-cmd -f .env.development npm run build",
     "build:production": "env-cmd -f .env.production npm run build",
     "test": "react-scripts test",

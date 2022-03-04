@@ -24,6 +24,7 @@ import { showNotification } from "../../store/actions/notification";
 import { addSubtitle } from '../../store/actions/subtitle';
 import { useHistory } from 'react-router-dom';
 import { setResolution } from '../../store/actions/layout';
+import ReactGA from 'react-ga4';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -202,7 +203,11 @@ const Meeting = () => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.ANALYTICS_EVENT_RECEIVED, (payload) => {
             const { name, action, actionSubject, source, attributes } = payload;
-            
+            ReactGA.event({		            
+                category: name,		
+                action,		
+                label: actionSubject		
+            })
         });
 
         window.addEventListener("offline", updateNetwork);

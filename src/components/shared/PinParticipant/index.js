@@ -16,7 +16,8 @@ const useStyles = makeStyles((theme) => ({
         cursor: "pointer",
         color: "white",
         height: "24px",
-        width: "24px"
+        width: "24px",
+        background: color.lightgray4
     },
     unpin: {
         color: "#27CED7"

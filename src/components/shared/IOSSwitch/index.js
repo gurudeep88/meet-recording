@@ -5,6 +5,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import {		
+  Box,		
+  makeStyles		
+} from "@material-ui/core";		
+
 
 const IOSTypeSwitch = withStyles((theme) => ({
   root: {
@@ -60,7 +65,16 @@ const IOSTypeSwitch = withStyles((theme) => ({
   );
 });
 
+const useStyles = makeStyles(()=>({		
+  label: {		
+    display: 'flex',		
+    flexDirection: 'row',		
+    flexWrap: 'nowrap'		
+  }		
+}))
+
 export default function IOSSwitch(props) {
+  const classes = useStyles();
   const {handleChange}  = props; 
   const [state, setState] = React.useState({
     checked: true
@@ -74,12 +88,12 @@ export default function IOSSwitch(props) {
   return (
     <FormGroup>
       <Typography component="div">
-        <Grid component="label" container alignItems="center" spacing={1}>
-          <Grid item style={{fontSize:'0.8rem'}}>No</Grid>
-          <Grid item style={{padding: '4px 0px'}}>
+        <Grid component="label" container alignItems="center" spacing={1} className={classes.label}>
+          <Typography style={{fontSize:'0.8rem'}}>No</Typography>
+          <Box style={{padding: '4px 0px'}}>
             <IOSTypeSwitch checked={state.checked} onChange={handleChangeLocal} name="checked" />
-          </Grid>
-          <Grid item style={{fontSize:'0.8rem'}}>Yes</Grid>
+          </Box>
+          <Typography style={{fontSize:'0.8rem'}}>Yes</Typography>
         </Grid>
       </Typography>
     </FormGroup>

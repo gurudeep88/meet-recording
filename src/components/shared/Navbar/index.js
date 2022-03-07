@@ -459,10 +459,6 @@ const Navbar = ({dominantSpeakerId}) => {
         }
     }
 
-    const cancelNoise = async ()=>{
-        await SariskaMediaTransport.effects.createRnnoiseProcessor();
-    }
-
     useEffect(() => {
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.transcribing) {

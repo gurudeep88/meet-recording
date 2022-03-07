@@ -244,17 +244,14 @@ const Home = () => {
                     googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);
                 }
                 setGoogleAPIData({...googleAPIData});
-            } catch (e) {
-                console.log("e", e);
-            }
+            } catch (e) { }
             setLoading(false);
         }
 
         const microsoftLogin = async () => {
             try {
                 const response = await microsoftCalendarApi?.isSignedIn();
-                console.log("response", response);
-            } catch (e) {console.log(e)}
+            } catch (e) {}
             setLoading(false);
         }
 

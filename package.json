@@ -39,7 +39,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "env-cmd -f .env.development react-scripts start",
-    "build": "react-scripts --openssl-legacy-provider build",
+    "build": "react-scripts  build",
     "build:development": "env-cmd -f .env.development npm run build",
     "build:production": "env-cmd -f .env.production npm run build",
     "test": "react-scripts test",

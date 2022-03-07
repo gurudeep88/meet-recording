@@ -333,10 +333,6 @@ const LobbyRoom = ({tracks}) => {
                             value={name}
                             onChange={handleUserNameChange}
                         />
-                        <Box className={classes.moderatorBox}>
-                            <p>Are you a Moderator? </p>
-                            <IOSSwitch handleChange={handleChange} />
-                        </Box>
                     </Box>
                     <Button
                         className={classes.anchor}

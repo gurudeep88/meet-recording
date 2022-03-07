@@ -137,6 +137,7 @@ const LobbyRoom = ({tracks}) => {
     }
 
     const handleSubmit = async () => {
+
         if(!meetingTitle){
             dispatch(showNotification({
                 message: "Meeting Title is required",
@@ -145,9 +146,11 @@ const LobbyRoom = ({tracks}) => {
             }))
             return;
         }
+        
         setLoading(true);
-    
+       
         const token = await getToken(profile, name);
+
         const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle);
         
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
@@ -169,7 +172,8 @@ const LobbyRoom = ({tracks}) => {
         connection.connect();
     }
 
-    const createConference = async (connection)=>{   
+    const createConference = async (connection)=>{
+           
         const conference = connection.initJitsiConference({
             createVADProcessor: SariskaMediaTransport.effects.createRnnoiseProcessor
         });

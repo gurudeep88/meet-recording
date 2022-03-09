@@ -169,7 +169,7 @@ export function appendLinkTags(type, conference) {
     var preloadLink = document.createElement("link");
     preloadLink.href = type === "whiteboard" ? getWhiteIframeUrl(conference) : getSharedDocumentIframeUrl(conference);
     preloadLink.rel = "preload";
-    preloadLink.as = "script";
+    preloadLink.as = "document";
     document.head.appendChild(preloadLink);
 }
 

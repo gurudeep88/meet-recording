@@ -15,7 +15,7 @@ import {color} from "../../../assets/styles/_color";
 import {useHistory} from "react-router-dom";
 import {localTrackMutedChanged} from "../../../store/actions/track";
 import {addConference} from "../../../store/actions/conference";
-import {getToken,getRandomColor, checkRoom, trimSpace, detectUpperCaseChar} from "../../../utils";
+import {getToken,getRandomColor, trimSpace, detectUpperCaseChar} from "../../../utils";
 import {addThumbnailColor} from "../../../store/actions/color";
 import {useDispatch, useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
@@ -119,7 +119,7 @@ const LobbyRoom = ({tracks}) => {
     const profile = useSelector(state => state.profile);
     const queryParams = useParams();
     const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
-    const isLoadTesting = window.location.hash.indexOf("isLoadTesting") >= 0;
+    const testMode = window.location.hash.indexOf("testMode") >= 0;
     const notification = useSelector(state => state.notification);
     const moderator = useRef(true);
 
@@ -190,7 +190,7 @@ const LobbyRoom = ({tracks}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
-            if (conference.isModerator() && !isLoadTesting) {
+            if (conference.isModerator() && !testMode) {
                 conference.enableLobby();
             }
         });
@@ -204,9 +204,6 @@ const LobbyRoom = ({tracks}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_FAILED, async (error) => {
-            
-            console.log("conference failed", error);
-
             if (error === SariskaMediaTransport.errors.conference.MEMBERS_ONLY_ERROR) {
                 setButtonText("Asking to join");
                 conference.joinLobby(name);
@@ -248,7 +245,7 @@ const LobbyRoom = ({tracks}) => {
     }
     
     useEffect(() => {
-        if (meetingTitle && (isLoadTesting || iAmRecorder)) {
+        if (meetingTitle && (testMode || iAmRecorder)) {
             handleSubmit();
         }
     }, [meetingTitle]);

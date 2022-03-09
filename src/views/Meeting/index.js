@@ -215,6 +215,7 @@ const Meeting = () => {
 
         preloadIframes(conference);
         SariskaMediaTransport.effects.createRnnoiseProcessor();
+        
         return () => {
             destroy();
         };

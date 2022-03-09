@@ -48,20 +48,6 @@ export function createDeferred() {
     return deferred;
 }
 
-export async function checkRoom(room) {
-    try {
-        const response = await fetch(`${CHECK_ROOM_URL}/${room}`);
-        if (response.ok) {
-            const json = await response.json();
-            return json.id;
-        } else {
-            console.log(response.status);
-        }
-    } catch (error) {
-        console.log('error', error);
-    }
-}
-
 export async function getToken(profile, name) {
     const body = {
         method: "POST",

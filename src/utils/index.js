@@ -75,7 +75,8 @@ export async function getToken(profile, name) {
                 avatar: profile.avatar,
                 name: name,
                 email: profile.email
-            }
+            },
+            exp: "48 hours"
         })
     };
 
@@ -83,6 +84,7 @@ export async function getToken(profile, name) {
         const response = await fetch(GENERATE_TOKEN_URL, body);
         if (response.ok) {
             const json = await response.json();
+            localStorage.setItem("SARISKA_TOKEN", json.token);
             return json.token;
         } else {
             console.log(response.status);

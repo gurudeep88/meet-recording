@@ -359,6 +359,13 @@ const Navbar = ({dominantSpeakerId}) => {
         if (!streaming) {
             return;
         }
+        if (conference?.getRole() === "none") {
+            return dispatch(showNotification({
+                severity: "info",
+                autoHide: true,
+                message: 'You are not moderator!!'
+            }));
+        }
         await conference.stopRecording(localStorage.getItem("streaming_session_id"));
     }
 
@@ -366,6 +373,7 @@ const Navbar = ({dominantSpeakerId}) => {
         if (recording) {
             return;
         }
+        
         if (conference?.getRole() === "none") {
             return dispatch(showNotification({
                 severity: "info",
@@ -416,6 +424,13 @@ const Navbar = ({dominantSpeakerId}) => {
     const stopRecording = async () => {
         if (!recording) {
             return;
+        }
+        if (conference?.getRole() === "none") {
+            return dispatch(showNotification({
+                severity: "info",
+                autoHide: true,
+                message: 'You are not moderator!!'
+            }));
         }
         await conference.stopRecording(localStorage.getItem("recording_session_id"));
     }
@@ -529,7 +544,6 @@ const Navbar = ({dominantSpeakerId}) => {
                 dispatch(addSubtitle({}));
                 setCaption(false);
             }
-            console.log("status", status);
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
@@ -537,7 +551,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 conference.setLocalParticipantProperty("streaming", true);
                 dispatch(showSnackbar({autoHide: true, message: "Live streaming started"}));
                 setStreaming(true);
-                localStorage.setItem("recording_session_id", data?._sessionID)
+                localStorage.setItem("streaming_session_id", data?._sessionID)
             }
 
             if (data._status === "off" && data._mode === "stream") {
@@ -550,7 +564,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 conference.setLocalParticipantProperty("recording", true);
                 dispatch(showSnackbar({autoHide: true, message: "Recording started"}));
                 setRecording(true);
-                localStorage.setItem("streaming_session_id", data?._sessionID)
+                localStorage.setItem("recording_session_id", data?._sessionID)
             }
 
             if (data._status === "off" && data._mode === "file") {

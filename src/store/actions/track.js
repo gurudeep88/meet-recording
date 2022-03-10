@@ -43,9 +43,10 @@ export const updateRemoteTrack = (track) => {
     }
 }
 
-export const participantLeft = () => {
+export const participantLeft = (id) => {
     return {
-        type: Constants.PARTICIPANT_LEFT
+        type: Constants.PARTICIPANT_LEFT,
+        payload: id
     }
 }
 

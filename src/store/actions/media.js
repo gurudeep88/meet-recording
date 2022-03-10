@@ -1,4 +1,4 @@
-import { SET_CAMERA, SET_MICROPHONE, SET_YOUR_RESOLUTION, SET_SPEAKER } from "./types"
+import { SET_CAMERA, SET_MICROPHONE, SET_RESOLUTION, SET_SPEAKER } from "./types"
 
 export const setMicrophone = (value) => {
     return {
@@ -24,7 +24,7 @@ export const setCamera = (value) => {
 
 export const setYourResolution = (value) => {
     return {
-        type: SET_YOUR_RESOLUTION,
+        type: SET_RESOLUTION,
         payload: value
     }
 }

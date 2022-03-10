@@ -166,6 +166,7 @@ const ConnectionIndicator = ({participantId}) => {
             iconWidth = '100%';
             connectionValue = "Connection: Good";
         } else {
+            connectionValue = "Connection: Low";
             const {percent} = stats;
             iconWidth = getDisplayConfiguration(percent).width;
         }

@@ -13,7 +13,6 @@ let participantId;
 export const remoteTrack = (state = initialState, action) => {
     switch (action.type) {
         case ADD_REMOTE_TRACK:
-            console.log("ADD_REMOTE_TRACK", action);
             participantId = action.payload.getParticipantId();
             if (!state[participantId]) {
                 state[participantId] = [];
@@ -40,6 +39,7 @@ export const remoteTrack = (state = initialState, action) => {
         case REMOTE_TRACK_MUTE_CHANGED:
             return {...state};
         case PARTICIPANT_LEFT:
+            delete state[action.payload];
             return {...state};    
         default:
             return state;

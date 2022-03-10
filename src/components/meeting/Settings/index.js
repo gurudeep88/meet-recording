@@ -205,10 +205,12 @@ const SettingsBox = () => {
         const item = resolutionList.find(item => item.value === event.target.value);
         dispatch(setYourResolution({resolution: event.target.value, aspectRatio: item.aspectRatio}));
         const videoTrack = localTracks.find(track => track.videoType === "camera");
+        
         const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
             devices: ["video"],
             resolution: event.target.value,
         });
+
         conference.setLocalParticipantProperty("resolution", event.target.value.toString());
         conference.replaceTrack(videoTrack, newVideoTrack);
         dispatch(updateLocalTrack(videoTrack, newVideoTrack));

@@ -37,11 +37,6 @@ export function useWindowResize() {
     }
 
     useEffect(() => {
-        // if (layout.mode === EXIT_FULL_SCREEN_MODE ) {
-        //     window.removeEventListener("resize", handleResize)
-        // } else {
-        //     window.addEventListener("resize", handleResize)
-        // }
         setWindowSize(getDimensions());
     }, [layout.mode]);
 

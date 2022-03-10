@@ -26,9 +26,6 @@ import JoinTrack from "../JoinTrack";
 import {addConnection} from "../../../store/actions/connection";
 import SnackbarBox from "../../shared/Snackbar";
 import { showNotification } from "../../../store/actions/notification";
-import IOSSwitch from "../../shared/IOSSwitch";
-
-const label = { inputProps: { 'aria-label': 'Moderator?' } };
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -131,13 +128,7 @@ const LobbyRoom = ({tracks}) => {
         setName(e.target.value);
     };
 
-    const handleChange = (value)=>{
-        console.log("value.checked", value.checked);
-        moderator.current = value.checked;
-    }
-
     const handleSubmit = async () => {
-
         if(!meetingTitle){
             dispatch(showNotification({
                 message: "Meeting Title is required",
@@ -192,6 +183,7 @@ const LobbyRoom = ({tracks}) => {
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
             if (conference.isModerator() && !testMode) {
                 conference.enableLobby();
+                history.push(`/${meetingTitle}`);
             }
         });
 

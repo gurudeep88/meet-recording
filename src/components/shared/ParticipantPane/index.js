@@ -15,20 +15,31 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, height}) => {
+const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeight, gridWidth}) => {
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state => state.layout);
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-    
+    const actaulWidth = gridWidth - 40;
+    const actualHeight = actaulWidth * 9/16;
+
     return (
-        <Box style={{height: `${height}px`}} className={activeClasses}>
+        <Box style={{height: `${panelHeight}px`}} className={activeClasses}>
+             <VideoBox localUserId={conference.myUserId()}
+                    isPresenter={layout.presenterParticipantIds.find(item=>item===conference.myUserId())}
+                    isFilmstrip={false}
+                    width={actaulWidth}
+                    height={actualHeight}
+                    isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
+                    participantDetails={conference.getLocalUser()}
+                    participantTracks={localTracks}
+            />
             { conference.getParticipantsWithoutHidden().map(participant => {              
                 return <VideoBox localUserId={conference.myUserId()}
-                                    width={222}
-                                    height={222*9/16}
+                                    width={actaulWidth}
+                                    height={actualHeight}
                                     isPresenter={layout.presenterParticipantIds.find(item=>item===participant._id)}
                                     isFilmstrip={false}
                                     isActiveSpeaker={dominantSpeakerId===participant._id}
@@ -36,15 +47,6 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, height}) 
                                     participantTracks={remoteTracks[participant._id] || []}
                         />
             })}
-            <VideoBox localUserId={conference.myUserId()}
-                    isPresenter={layout.presenterParticipantIds.find(item=>item===conference.myUserId())}
-                    isFilmstrip={false}
-                    width={222}
-                    height={222*9/16}
-                    isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
-                    participantDetails={conference.getLocalUser()}
-                    participantTracks={localTracks}
-            />
         </Box>)
 }
 

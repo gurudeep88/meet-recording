@@ -23,7 +23,7 @@ import { setAudioLevel } from "../../store/actions/audioIndicator";
 import { showNotification } from "../../store/actions/notification";
 import { addSubtitle } from '../../store/actions/subtitle';
 import { useHistory } from 'react-router-dom';
-import { setResolution } from '../../store/actions/layout';
+import { setUserResolution } from '../../store/actions/layout';
 import ReactGA from 'react-ga4';
 
 const useStyles = makeStyles((theme) => ({
@@ -101,7 +101,7 @@ const Meeting = () => {
             }
             
             if (item._properties?.resolution) {
-                dispatch(setResolution({ participantId: item._id, resolution: item._properties?.resolution }));
+                dispatch(setUserResolution({ participantId: item._id, resolution: item._properties?.resolution }));
             }
         });
         
@@ -155,21 +155,28 @@ const Meeting = () => {
             }
             
             if (key === "resolution") {
-                dispatch(setResolution({ participantId: participant._id, resolution: newValue }));
+                dispatch(setUserResolution({ participantId: participant._id, resolution: newValue }));
             }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_LEFT, (id) => {
+            if (id === dominantSpeakerId) {
+                setDominantSpeakerId(null);
+            }
+
             if (id === layout.pinnedParticipantId) {
                 dispatch(setPinParticipant(null))
             }
+
             if (layout.presenterParticipantIds.find(item => item === id)) {
-                dispatch(setPresenter({ participantId: id, presenter: false }));
+                dispatch(setPresenter({ participantId: id, presenter: null }));
             }
-            if (layout.presenterParticipantIds.find(item => item === id)) {
-                dispatch(setResolution({ participantId: id, resolution: null }));
+
+            if (layout.raisedHandParticipantIds[id]) {
+                dispatch(setRaiseHand({ participantId: id, raiseHand: null }));
             }
-            dispatch(participantLeft());
+                
+            dispatch(participantLeft(id));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.LOBBY_USER_JOINED, (id, displayName) => {

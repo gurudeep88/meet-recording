@@ -1,4 +1,4 @@
-import {SET_FULLSCREEN_MODE, SET_RESOLUTION, SET_LAYOUT, SET_HAND_RAISE, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE, SET_MODERATOR} from "../actions/types";
+import {SET_FULLSCREEN_MODE, SET_USER_RESOLUTION, SET_LAYOUT, SET_HAND_RAISE, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE, SET_MODERATOR} from "../actions/types";
 import {EXIT_FULL_SCREEN_MODE, SPEAKER} from "../../constants";
 
 export const layoutInitialState = {
@@ -6,16 +6,16 @@ export const layoutInitialState = {
     mode: EXIT_FULL_SCREEN_MODE, //default mode,
     pinnedParticipantId: null,
     presenterParticipantIds: [],
+    raisedHandParticipantIds: {},
     disconnected: false,
     resolution: {},
-    raisedHandParticipantIds: {},
     presentationType: null,
     moderator: {}
 };
 
 export const layout = (state = layoutInitialState, action) => {
     switch (action.type) {
-        case SET_RESOLUTION:
+        case SET_USER_RESOLUTION:
             if (action.payload.resolution) {
                 state.resolution[action.payload.participantId] = action.payload.resolution;
             } else {

@@ -159,12 +159,12 @@ const VideoBox = ({
         'activeSpeaker': isActiveSpeaker
     });
     
-    if (isPresenter && isLargeVideo) {
-        width = (videoTrack?.track?.getSettings()?.aspectRatio || 1.6)*height;
-    }
+    // if (isPresenter && isLargeVideo) {
+    //     width = (videoTrack?.track?.getSettings()?.aspectRatio || 1.6)*height;
+    // }
 
     return (
-        <Box style={{width: `${width}px`, height: `${height}px`}}
+        <Box style={{width: `${width - 4-4*16/9 }px`, height: `${height - 4}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
              onMouseLeave={() => setVisiblePinPartcipant(false)} className={classes.root}>
             <Box className={classes.audioBox}>
@@ -182,7 +182,7 @@ const VideoBox = ({
                         </Avatar>
                     </Box>
                     :
-                    <Box style={{width: `${width}px`, height: `${height}px`}} className={borderActiveClasses}>
+                    <Box style={{width: `${width - 4-4*16/9}px`, height: `${height - 4}px`}} className={borderActiveClasses}>
                         <Video isPresenter={isPresenter} track={videoTrack}/>
                     </Box>
             }

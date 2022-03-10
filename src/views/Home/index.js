@@ -200,7 +200,6 @@ const Home = () => {
     const signInIfNotSignedIn = async () => {
         await googleApi.signInIfNotSignedIn();
         const profile = await googleApi.getCurrentUserProfile();
-        console.log({id: profile.getId(), name: profile.getName(), email: profile.getEmail(), avatar: profile.getImageUrl()})
         dispatch(setProfile({id: profile.getId(), name: profile.getName(), email: profile.getEmail(), avatar: profile.getImageUrl()}));
         googleAPIData.isSignedIn = true;
         googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);

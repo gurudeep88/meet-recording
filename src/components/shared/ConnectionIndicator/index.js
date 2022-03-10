@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {useSelector} from "react-redux";
 import {makeStyles} from "@material-ui/core";
 import SariskaMediaTransport from "sariska-media-transport";
@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ConnectionIndicator = ({participantId}) => {
-   
+    let connectionValue = "Connection: Good";
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const stats = conference.myUserId() === participantId ? conference.connectionQuality._localStats : conference.connectionQuality._remoteStats[participantId] || {};
@@ -146,6 +146,7 @@ const ConnectionIndicator = ({participantId}) => {
     const renderIcon = () => {
 
         if (connectionStatus === SariskaMediaTransport.constants.participantConnectionStatus.INACTIVE) {
+            connectionValue = "Connection: Bad";
             return (
                 <span className='connection_ninja'>
                     {connectionSvgIcon}
@@ -160,12 +161,16 @@ const ConnectionIndicator = ({participantId}) => {
         if (connectionStatus === SariskaMediaTransport.constants.participantConnectionStatus.INTERRUPTED) {
             emptyIconWrapperClassName = 'connection_lost';
             iconWidth = '0%';
+            connectionValue = "Connection: Lost";
         } else if (typeof stats.percent === 'undefined') {
             iconWidth = '100%';
+            connectionValue = "Connection: Good";
         } else {
+            connectionValue = "Connection: Low";
             const {percent} = stats;
             iconWidth = getDisplayConfiguration(percent).width;
         }
+
 
         return [
             <span
@@ -185,7 +190,7 @@ const ConnectionIndicator = ({participantId}) => {
     const connectionRate = conference.myUserId()=== participantId ? conference.connectionQuality._localStats : conference.connectionQuality._remoteStats[participantId];
     return (
         <div className={classes.root}>
-            <Tooltip title={<div style={{fontSize: "bold"}} >Connection: Good <br /> {connectionRate?.bandwidth?.upload ? <span>Upload Bandwidth: {connectionRate?.bandwidth?.upload}</span> : ''} {connectionRate?.bandwidth?.download ? <><br /><span>Download Bandwidth: {connectionRate?.bandwidth?.download}</span></> : ''}</div>}>
+            <Tooltip title={<div style={{fontSize: "bold"}} >{connectionValue} <br /> {connectionRate?.bandwidth?.upload ? <span>Upload Bandwidth: {connectionRate?.bandwidth?.upload}</span> : ''} {connectionRate?.bandwidth?.download ? <><br /><span>Download Bandwidth: {connectionRate?.bandwidth?.download}</span></> : ''}</div>}>
                 <div className={rootClassNames}>
                     <div className={indicatorContainerClassNames}
                          style={{fontSize: "8px"}}>

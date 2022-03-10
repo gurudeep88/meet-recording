@@ -1,6 +1,6 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useSelector} from "react-redux";
-import {ENTER_FULL_SCREEN_MODE, EXIT_FULL_SCREEN_MODE, GRID, SPEAKER} from "../constants";
+import {ENTER_FULL_SCREEN_MODE, GRID, PRESENTATION, SPEAKER} from "../constants";
 import { useDocumentSize } from './useDocumentSize';
 
 export function useWindowResize() {
@@ -10,7 +10,6 @@ export function useWindowResize() {
 
     function getDimensions() {
         let viewportHeight, viewportWidth;
-
         if ( layout.type === GRID && layout.mode === ENTER_FULL_SCREEN_MODE  ) {
             return { viewportWidth: (documentHeight -  84) * 16/9, viewportHeight: documentHeight -  84 }
         }

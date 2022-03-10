@@ -291,6 +291,14 @@ const Navbar = ({dominantSpeakerId}) => {
             return;
         }
         
+        if (conference?.getRole() === "none") {
+            return dispatch(showNotification({
+                severity: "info",
+                autoHide: true,
+                message: 'You are not moderator!!'
+            }));
+        }
+
         await googleApi.signInIfNotSignedIn();
 
         const youtubeBroadcasts = await googleApi.requestAvailableYouTubeBroadcasts();
@@ -351,13 +359,21 @@ const Navbar = ({dominantSpeakerId}) => {
         if (!streaming) {
             return;
         }
-        await conference.stopRecording(streamingSession?.current?._sessionID);
+        await conference.stopRecording(localStorage.getItem("streaming_session_id"));
     }
 
     const startRecording = async () => {
         if (recording) {
             return;
         }
+        if (conference?.getRole() === "none") {
+            return dispatch(showNotification({
+                severity: "info",
+                autoHide: true,
+                message: 'You are not moderator!!'
+            }));
+        }
+
         const response = await authorizeDropbox();
         if (!response?.token) {
             return dispatch(showNotification({
@@ -401,7 +417,7 @@ const Navbar = ({dominantSpeakerId}) => {
         if (!recording) {
             return;
         }
-        await conference.stopRecording(recordingSession?.current?._sessionID);
+        await conference.stopRecording(localStorage.getItem("recording_session_id"));
     }
 
     const startCaption = () => {
@@ -521,6 +537,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 conference.setLocalParticipantProperty("streaming", true);
                 dispatch(showSnackbar({autoHide: true, message: "Live streaming started"}));
                 setStreaming(true);
+                localStorage.setItem("recording_session_id", data?._sessionID)
             }
 
             if (data._status === "off" && data._mode === "stream") {
@@ -533,6 +550,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 conference.setLocalParticipantProperty("recording", true);
                 dispatch(showSnackbar({autoHide: true, message: "Recording started"}));
                 setRecording(true);
+                localStorage.setItem("streaming_session_id", data?._sessionID)
             }
 
             if (data._status === "off" && data._mode === "file") {

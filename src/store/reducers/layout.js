@@ -8,6 +8,7 @@ export const layoutInitialState = {
     presenterParticipantIds: [],
     disconnected: false,
     resolution: {},
+    testMode: false,
     raisedHandParticipantIds: {},
     presentationType: null,
     moderator: {}

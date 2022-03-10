@@ -183,7 +183,7 @@ const Meeting = () => {
                 dispatch(unreadMessage(1))
             }
         });
-
+        
         conference.addEventListener(SariskaMediaTransport.events.conference.NOISY_MIC, () => {
             dispatch(showNotification({ autoHide: true, message: "Your mic seems to be noisy", severity: "info" }));
         });

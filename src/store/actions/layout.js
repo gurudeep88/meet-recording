@@ -14,6 +14,7 @@ export const setFullScreen = (mode) => {
     }
 }
 
+
 export const setPinParticipant = (id) => {
     return {
         type: Constants.SET_PIN_PARTICIPANT,

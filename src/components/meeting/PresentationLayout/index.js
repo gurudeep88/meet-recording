@@ -7,6 +7,7 @@ import {useSelector} from "react-redux";
 import {useWindowResize} from "../../../hooks/useWindowResize";
 import classnames from "classnames";
 import * as Constants from "../../../constants";
+import { useDocumentSize } from '../../../hooks/useDocumentSize';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -28,6 +29,8 @@ const useStyles = makeStyles((theme) => ({
 const PresentationLayout = ({dominantSpeakerId}) => {
     const classes = useStyles();
     const {viewportWidth, viewportHeight} = useWindowResize();
+    const {documentWidth, documentHeight} = useDocumentSize();
+
     const localTracks = useSelector(state => state.localTrack);
     const remoteTracks = useSelector(state => state.remoteTrack);
     const conference = useSelector(state => state.conference);
@@ -43,22 +46,25 @@ const PresentationLayout = ({dominantSpeakerId}) => {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
     
+    const height =  layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 84:  documentHeight -  128;
+    const width   = height*16/9;
     return (
         <Box  className={activeClasses}>
             <SharedDocument
                 isVisible={layout.presentationType === Constants.SHARED_DOCUMENT}
                 conference={conference}
-                width={viewportWidth}
-                height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight}
+                width={width - 20}
+                height={height}
             />
             <Whiteboard
                 isVisible={layout.presentationType === Constants.WHITEBOARD}
                 conference={conference}
-                width={viewportWidth}
-                height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight}
+                width={width - 20}
+                height={height}
             />
             <PartcipantPane 
-                height={viewportHeight > viewportWidth*9/16 ? viewportWidth*9/16 : viewportHeight } 
+                panelHeight = {viewportHeight}
+                gridWidth = {documentWidth - viewportWidth} 
                 dominantSpeakerId={dominantSpeakerId} 
                 localTracks={localTracks} 
                 remoteTracks={remoteTracks}/>

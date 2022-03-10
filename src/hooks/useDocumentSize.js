@@ -8,9 +8,8 @@ export function useDocumentSize() {
         let documentHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
         return {documentWidth, documentHeight};
     }
-    
+
     function handleResize() {
-        console.log("getDimensions()", getDimensions());
         setDocumentSize(getDimensions());
     }
 

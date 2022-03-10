@@ -142,7 +142,7 @@ const LobbyRoom = ({tracks}) => {
        
         const token = await getToken(profile, name);
 
-        const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle);
+        const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle, process.env.REACT_APP_ENV === "development" ? true : false);
         
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
             dispatch(addConnection(connection));

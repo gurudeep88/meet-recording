@@ -21,7 +21,7 @@ export const GOOGLE_API_STATES = {
 };
 export const GOOGLE_SCOPE_CALENDAR = 'https://www.googleapis.com/auth/calendar';
 export const GOOGLE_SCOPE_YOUTUBE = 'https://www.googleapis.com/auth/youtube';
-export const GENERATE_TOKEN_URL = `https://api.sariska.io/api/v1/misc/generate-token`;
+export const GENERATE_TOKEN_URL = `${process.env.REACT_APP_API_SERVICE_HOST}api/v1/misc/generate-token`;
 export const EXIT_FULL_SCREEN_MODE = "exitFullScreen";
 export const ENTER_FULL_SCREEN_MODE = "enterFullScreen";
 export const VIRTUAL_BACKGROUND  = "VIRTUAL_BACKGROUND";

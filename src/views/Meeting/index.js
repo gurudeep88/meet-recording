@@ -225,6 +225,9 @@ const Meeting = () => {
     }, [layout.disconnected]);
 
     useEffect(()=>{
+        if (layout.disconnected === null) {
+            return;
+        }
         SariskaMediaTransport.setNetworkInfo({ isOnline });     
         if (!isOnline) {
             return dispatch(showNotification({

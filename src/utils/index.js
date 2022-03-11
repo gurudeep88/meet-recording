@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import {GENERATE_TOKEN_URL, CHECK_ROOM_URL, GET_PRESIGNED_URL} from "../constants";
+import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL} from "../constants";
 
 const Compressor = require('compressorjs');
 

@@ -47,7 +47,7 @@ const PresentationLayout = ({dominantSpeakerId}) => {
     });
     
     const height =  layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 84:  documentHeight -  128;
-    const width   = height*16/9;
+    const width  = height*16/9;
     return (
         <Box  className={activeClasses}>
             <SharedDocument
@@ -64,7 +64,7 @@ const PresentationLayout = ({dominantSpeakerId}) => {
             />
             <PartcipantPane 
                 panelHeight = {viewportHeight}
-                gridWidth = {documentWidth - viewportWidth} 
+                gridWidth = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentWidth*20/100: documentWidth - viewportWidth} 
                 dominantSpeakerId={dominantSpeakerId} 
                 localTracks={localTracks} 
                 remoteTracks={remoteTracks}/>

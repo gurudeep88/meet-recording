@@ -304,7 +304,6 @@ const Navbar = ({dominantSpeakerId}) => {
         const youtubeBroadcasts = await googleApi.requestAvailableYouTubeBroadcasts();
         if (youtubeBroadcasts.status !== 200) {
             dispatch(showNotification({autoHide: true, message : "Could not fetch YouTube broadcasts", severity: "info"}));
-            return;
         }
         setBroadcasts(youtubeBroadcasts.result.items);
         setOpenLivestreamDialog(true);

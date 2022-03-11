@@ -22,7 +22,7 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeig
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-    const actaulWidth = gridWidth - 40;
+    const actaulWidth =  gridWidth - 40;
     const actualHeight = actaulWidth * 9/16;
 
     return (

@@ -68,7 +68,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
             {  conference.getParticipantCount() > 1 &&
                 <ParticipantPaneSpeakerLayout
                     panelHeight = {viewportHeight}
-                    gridWidth = {documentWidth - viewportWidth}    
+                    gridWidth = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentWidth*20/100: documentWidth - viewportWidth }    
                     dominantSpeakerId={dominantSpeakerId} 
                     largeVideoId={largeVideoId} 
                     localTracks={localTracks} 

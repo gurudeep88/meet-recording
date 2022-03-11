@@ -126,10 +126,13 @@ const ConnectionIndicator = ({participantId}) => {
         const {INACTIVE, INTERRUPTED} = SariskaMediaTransport.constants.participantConnectionStatus;
         
         if (connectionStatus === INACTIVE) {
+            connectionValue = "Connection :Low"
             return 'status-other';
         } else if (connectionStatus === INTERRUPTED) {
+            connectionValue = "Connection :Lost"
             return 'status-lost';
         } else if (typeof percent === 'undefined') {
+            connectionValue = "Connection :High"
             return 'status-high';
         }
         return getDisplayConfiguration(percent).colorClass;
@@ -146,7 +149,6 @@ const ConnectionIndicator = ({participantId}) => {
     const renderIcon = () => {
 
         if (connectionStatus === SariskaMediaTransport.constants.participantConnectionStatus.INACTIVE) {
-            connectionValue = "Connection: Bad";
             return (
                 <span className='connection_ninja'>
                     {connectionSvgIcon}
@@ -161,12 +163,9 @@ const ConnectionIndicator = ({participantId}) => {
         if (connectionStatus === SariskaMediaTransport.constants.participantConnectionStatus.INTERRUPTED) {
             emptyIconWrapperClassName = 'connection_lost';
             iconWidth = '0%';
-            connectionValue = "Connection: Lost";
         } else if (typeof stats.percent === 'undefined') {
             iconWidth = '100%';
-            connectionValue = "Connection: Good";
         } else {
-            connectionValue = "Connection: Low";
             const {percent} = stats;
             iconWidth = getDisplayConfiguration(percent).width;
         }
@@ -186,7 +185,7 @@ const ConnectionIndicator = ({participantId}) => {
             </span>
         ];
     }
-    
+
     const connectionRate = conference.myUserId()=== participantId ? conference.connectionQuality._localStats : conference.connectionQuality._remoteStats[participantId];
     return (
         <div className={classes.root}>

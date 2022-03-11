@@ -300,8 +300,15 @@ const Navbar = ({dominantSpeakerId}) => {
         }
 
         await googleApi.signInIfNotSignedIn();
+        let youtubeBroadcasts
+        
+        try  {
+            youtubeBroadcasts = await googleApi.requestAvailableYouTubeBroadcasts();
+        } catch(e) {
+            dispatch(showNotification({autoHide: true, message : e?.result?.error?.message , severity: "info"}));
+            return;
+        }
 
-        const youtubeBroadcasts = await googleApi.requestAvailableYouTubeBroadcasts();
         if (youtubeBroadcasts.status !== 200) {
             dispatch(showNotification({autoHide: true, message : "Could not fetch YouTube broadcasts", severity: "info"}));
         }

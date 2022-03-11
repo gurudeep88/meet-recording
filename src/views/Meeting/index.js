@@ -24,6 +24,7 @@ import { showNotification } from "../../store/actions/notification";
 import { addSubtitle } from '../../store/actions/subtitle';
 import { useHistory } from 'react-router-dom';
 import { setUserResolution } from '../../store/actions/layout';
+import {useOnlineStatus} from "../../hooks/useOnlineStatus";
 import ReactGA from 'react-ga4';
 
 const useStyles = makeStyles((theme) => ({
@@ -45,10 +46,10 @@ const Meeting = () => {
     const layout = useSelector(state => state.layout);
     const notification = useSelector(state => state.notification);
     const snackbar = useSelector(state => state.snackbar);
-
+    const isOnline = useOnlineStatus()
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUserJoined, setLobbyUserJoined] = useState({});
-
+    const [showReconnectDialog, setShowReconnectDialog] = useState(false);
     const allowLobbyAccess = () => {
         conference.lobbyApproveAccess(lobbyUserJoined.id)
         setLobbyUserJoined({});
@@ -59,16 +60,6 @@ const Meeting = () => {
         setLobbyUserJoined({});
     }
 
-    const updateNetwork = () => { // set internet connectivity status
-        if (!window.navigator.onLine) {
-            dispatch(showNotification({
-                message: "You lost your internet connection. Trying to reconnect...",
-                severity: "info"
-            }));
-        }
-        SariskaMediaTransport.setNetworkInfo({ isOnline: window.navigator.onLine });
-    };
-
     const destroy = async () => {
         if (conference?.isJoined()) {
             await conference?.leave();
@@ -77,8 +68,6 @@ const Meeting = () => {
             await track.dispose();
         }
         await connection?.disconnect();
-        window.removeEventListener("offline", updateNetwork);
-        window.removeEventListener("online", updateNetwork);
     }
 
     useEffect(() => {
@@ -216,10 +205,7 @@ const Meeting = () => {
             })
         });
 
-        window.addEventListener("offline", updateNetwork);
-        window.addEventListener("online", updateNetwork);
         window.addEventListener("beforeunload", destroy);
-
         preloadIframes(conference);
         SariskaMediaTransport.effects.createRnnoiseProcessor();
         
@@ -228,6 +214,32 @@ const Meeting = () => {
         };
     }, [conference]);
 
+    useEffect(()=> {
+        if (layout.disconnected === null) {
+            return;
+        }
+        if (layout.disconnected) {
+            setShowReconnectDialog(true);
+            return;
+        }
+    }, [layout.disconnected]);
+
+    useEffect(()=>{
+        SariskaMediaTransport.setNetworkInfo({ isOnline });     
+        if (!isOnline) {
+            return dispatch(showNotification({
+                message: "You lost your internet connection. Trying to reconnect...",
+                severity: "info"
+            }));
+        }
+        if (conference?.isJoined() && isOnline) {
+            dispatch(showNotification({
+                message: "Your Internet connection was restored",
+                autoHide: true,
+                severity: "info"
+            }));
+        } 
+    }, [isOnline])
 
     if (!conference || !conference.isJoined()) {
         return <Home />;
@@ -257,7 +269,7 @@ const Meeting = () => {
                 displayName={lobbyUserJoined.displayName} />}
 
             <SnackbarBox notification={notification} />
-            <ReconnectDialog open={layout.disconnected} />
+            <ReconnectDialog open={showReconnectDialog} />
             <Notification snackbar={snackbar} />
         </Box>
     )

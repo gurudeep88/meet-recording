@@ -26,6 +26,7 @@ import JoinTrack from "../JoinTrack";
 import {addConnection} from "../../../store/actions/connection";
 import SnackbarBox from "../../shared/Snackbar";
 import { showNotification } from "../../../store/actions/notification";
+import {setDisconnected} from "../../../store/actions/layout";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -153,6 +154,9 @@ const LobbyRoom = ({tracks}) => {
             if (error === SariskaMediaTransport.errors.connection.PASSWORD_REQUIRED) {
                 const  token = await getToken(profile, name, moderator.current)
                 connection.setToken(token); // token expired, set a new token
+            }
+            if (error === SariskaMediaTransport.errors.connection.CONNECTION_DROPPED_ERROR) {
+                dispatch(setDisconnected(true));
             }
         });
           

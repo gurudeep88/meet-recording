@@ -7,7 +7,7 @@ export const layoutInitialState = {
     pinnedParticipantId: null,
     presenterParticipantIds: [],
     raisedHandParticipantIds: {},
-    disconnected: false,
+    disconnected: null,
     resolution: {},
     presentationType: null,
     moderator: {}

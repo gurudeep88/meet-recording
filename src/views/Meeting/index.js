@@ -18,7 +18,7 @@ import PermissionDialog from "../../components/shared/PermissionDialog";
 import SnackbarBox from '../../components/shared/Snackbar';
 import { unreadMessage } from '../../store/actions/chat';
 import Home from "../Home";
-import { setPresenter, setPinParticipant, setRaiseHand, setModerator } from "../../store/actions/layout";
+import { setPresenter, setPinParticipant, setRaiseHand, setModerator, setDisconnected } from "../../store/actions/layout";
 import { setAudioLevel } from "../../store/actions/audioIndicator";
 import { showNotification } from "../../store/actions/notification";
 import { addSubtitle } from '../../store/actions/subtitle';
@@ -50,6 +50,8 @@ const Meeting = () => {
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUserJoined, setLobbyUserJoined] = useState({});
     const [showReconnectDialog, setShowReconnectDialog] = useState(false);
+    let count = 0;
+
     const allowLobbyAccess = () => {
         conference.lobbyApproveAccess(lobbyUserJoined.id)
         setLobbyUserJoined({});
@@ -74,7 +76,6 @@ const Meeting = () => {
         if (!conference) {
             return;
         }
-        
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.presenting === "start") {
                 dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
@@ -195,6 +196,25 @@ const Meeting = () => {
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_AUDIO_LEVEL_CHANGED, (participantId, audioLevel) => {
             dispatch(setAudioLevel({ participantId, audioLevel }));
         });
+        
+        conference.addEventListener(SariskaMediaTransport.events.conference.CONNECTION_INTERRUPTED, () => {
+            dispatch(showNotification({
+                message: "You lost your internet connection. Trying to reconnect...",
+                severity: "info"
+            }));
+            count = 1;
+        });
+        
+        conference.addEventListener(SariskaMediaTransport.events.conference.CONNECTION_RESTORED, () => {
+            if (count === 0) {
+                return;
+            }
+            dispatch(showNotification({
+                message: "Your Internet connection was restored",
+                autoHide: true,
+                severity: "info"
+            }));
+        });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.ANALYTICS_EVENT_RECEIVED, (payload) => {
             const { name, action, actionSubject, source, attributes } = payload;
@@ -205,44 +225,18 @@ const Meeting = () => {
             })
         });
 
-        window.addEventListener("beforeunload", destroy);
         preloadIframes(conference);
         SariskaMediaTransport.effects.createRnnoiseProcessor();
+        window.addEventListener("beforeunload", destroy);
         
         return () => {
             destroy();
         };
     }, [conference]);
 
-    useEffect(()=> {
-        if (layout.disconnected === null) {
-            return;
-        }
-        if (layout.disconnected) {
-            setShowReconnectDialog(true);
-            return;
-        }
-    }, [layout.disconnected]);
-
     useEffect(()=>{
-        if (layout.disconnected === null) {
-            return;
-        }
-        SariskaMediaTransport.setNetworkInfo({ isOnline });     
-        if (!isOnline) {
-            return dispatch(showNotification({
-                message: "You lost your internet connection. Trying to reconnect...",
-                severity: "info"
-            }));
-        }
-        if (conference?.isJoined() && isOnline) {
-            dispatch(showNotification({
-                message: "Your Internet connection was restored",
-                autoHide: true,
-                severity: "info"
-            }));
-        } 
-    }, [isOnline])
+        SariskaMediaTransport.setNetworkInfo({ isOnline });
+    }, [isOnline]);
 
     if (!conference || !conference.isJoined()) {
         return <Home />;
@@ -272,7 +266,7 @@ const Meeting = () => {
                 displayName={lobbyUserJoined.displayName} />}
 
             <SnackbarBox notification={notification} />
-            <ReconnectDialog open={showReconnectDialog} />
+            <ReconnectDialog open={layout.disconnected === "lost"} />
             <Notification snackbar={snackbar} />
         </Box>
     )

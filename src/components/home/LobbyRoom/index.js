@@ -151,12 +151,13 @@ const LobbyRoom = ({tracks}) => {
         });
         
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_FAILED, async(error) => {
+            console.log(" CONNECTION_DROPPED_ERROR", error);
             if (error === SariskaMediaTransport.errors.connection.PASSWORD_REQUIRED) {
                 const  token = await getToken(profile, name, moderator.current)
                 connection.setToken(token); // token expired, set a new token
             }
             if (error === SariskaMediaTransport.errors.connection.CONNECTION_DROPPED_ERROR) {
-                dispatch(setDisconnected(true));
+                dispatch(setDisconnected("lost"));
             }
         });
           

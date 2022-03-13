@@ -203,7 +203,7 @@ const LobbyRoom = ({tracks}) => {
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_FAILED, async (error) => {
             if (error === SariskaMediaTransport.errors.conference.MEMBERS_ONLY_ERROR) {
                 setButtonText("Asking to join");
-                conference.joinLobby(name);
+                conference.joinLobby(name || conference?.getLocalUser()?.name);
             }
 
             if (error === SariskaMediaTransport.errors.conference.CONFERENCE_ACCESS_DENIED) {

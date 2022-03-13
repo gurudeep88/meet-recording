@@ -50,7 +50,7 @@ const Meeting = () => {
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUserJoined, setLobbyUserJoined] = useState({});
     const [showReconnectDialog, setShowReconnectDialog] = useState(false);
-    let count = 0;
+    let ingoreFirstEvent = true;
 
     const allowLobbyAccess = () => {
         conference.lobbyApproveAccess(lobbyUserJoined.id)
@@ -62,6 +62,11 @@ const Meeting = () => {
         setLobbyUserJoined({});
     }
 
+    const deviceListChanged = async (devices) => {
+
+        console.log("devices", devices);
+    }
+
     const destroy = async () => {
         if (conference?.isJoined()) {
             await conference?.leave();
@@ -70,12 +75,14 @@ const Meeting = () => {
             await track.dispose();
         }
         await connection?.disconnect();
+        SariskaMediaTransport.mediaDevices.removeEventListener(SariskaMediaTransport.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
     }
 
     useEffect(() => {
         if (!conference) {
             return;
         }
+
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.presenting === "start") {
                 dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
@@ -202,11 +209,11 @@ const Meeting = () => {
                 message: "You lost your internet connection. Trying to reconnect...",
                 severity: "info"
             }));
-            count = 1;
+            ingoreFirstEvent = false;
         });
         
         conference.addEventListener(SariskaMediaTransport.events.conference.CONNECTION_RESTORED, () => {
-            if (count === 0) {
+            if (ingoreFirstEvent) {
                 return;
             }
             dispatch(showNotification({
@@ -228,7 +235,8 @@ const Meeting = () => {
         preloadIframes(conference);
         SariskaMediaTransport.effects.createRnnoiseProcessor();
         window.addEventListener("beforeunload", destroy);
-        
+        SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
+
         return () => {
             destroy();
         };

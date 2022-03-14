@@ -25,6 +25,8 @@ import { addSubtitle } from '../../store/actions/subtitle';
 import { useHistory } from 'react-router-dom';
 import { setUserResolution } from '../../store/actions/layout';
 import {useOnlineStatus} from "../../hooks/useOnlineStatus";
+import { updateLocalTrack } from '../../store/actions/track';
+
 import ReactGA from 'react-ga4';
 
 const useStyles = makeStyles((theme) => ({
@@ -47,9 +49,9 @@ const Meeting = () => {
     const notification = useSelector(state => state.notification);
     const snackbar = useSelector(state => state.snackbar);
     const isOnline = useOnlineStatus()
+    const resolution = useSelector(state=>state.media?.resolution);
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUserJoined, setLobbyUserJoined] = useState({});
-    const [showReconnectDialog, setShowReconnectDialog] = useState(false);
     let ingoreFirstEvent = true;
 
     const allowLobbyAccess = () => {
@@ -63,8 +65,21 @@ const Meeting = () => {
     }
 
     const deviceListChanged = async (devices) => {
-
-        console.log("devices", devices);
+        const [audioTrack, videoTrack] = localTracks;
+        const options = {
+            devices: ["audio", "video"],
+            resolution
+        };
+        const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
+        await conference.replaceTrack(audioTrack, newAudioTrack);
+        await conference.replaceTrack(videoTrack, newVideoTrack);
+        dispatch(updateLocalTrack(audioTrack, newAudioTrack));
+        dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+    }
+    
+    const audioOutputDeviceChanged = (deviceId)=> {
+         console.log("audio output deviceId", deviceId);
+         SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
     }
 
     const destroy = async () => {
@@ -234,8 +249,10 @@ const Meeting = () => {
 
         preloadIframes(conference);
         SariskaMediaTransport.effects.createRnnoiseProcessor();
+        SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
+        SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.AUDIO_OUTPUT_DEVICE_CHANGED, audioOutputDeviceChanged);
+
         window.addEventListener("beforeunload", destroy);
-        SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
 
         return () => {
             destroy();

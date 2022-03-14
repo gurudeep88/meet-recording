@@ -182,12 +182,13 @@ const LobbyRoom = ({tracks}) => {
             dispatch(addConference(conference));
             dispatch(setProfile(conference.getLocalUser()));
             dispatch(setMeeting({meetingTitle}));
-            history.push(`/${meetingTitle}`);
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
             if (conference.isModerator() && !testMode) {
                 conference.enableLobby();
+                history.push(`/${meetingTitle}`);
+            } else {
                 history.push(`/${meetingTitle}`);
             }
         });

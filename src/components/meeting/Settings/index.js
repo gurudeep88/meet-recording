@@ -162,12 +162,13 @@ const SettingsBox = () => {
         setValue(newValue);
     };
     const handleMicrophoneChange = async (event) => {
-        setMicrophoneValue(event.target.value);
-        dispatch(setMicrophone(event.target.value));
+        const microphoneDeviceId = event.target.value;
+        setMicrophoneValue(microphoneDeviceId);
+        dispatch(setMicrophone(microphoneDeviceId));
 
         const [newAudioTrack] = await SariskaMediaTransport.createLocalTracks({
             devices: ["audio"],
-            micDeviceId: event.target.value
+            micDeviceId: microphoneDeviceId
         });
         const audioTrack = localTracks.find(track => track.getType() === "audio");
         await conference.replaceTrack(audioTrack, newAudioTrack);
@@ -183,9 +184,10 @@ const SettingsBox = () => {
     };
 
     const handleSpeakerChange = (event) => {
-        setSpeakerValue(event.target.value);
-        dispatch(setSpeaker(event.target.value));
-        SariskaMediaTransport.mediaDevices.setAudioOutputDevice(event.target.value);
+        const deviceId = event.target.value;
+        setSpeakerValue(deviceId);
+        dispatch(setSpeaker(deviceId));
+        SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
     };
 
     const handleSpeakerClose = () => {
@@ -197,12 +199,14 @@ const SettingsBox = () => {
     };
 
     const handleCameraChange = async (event) => {
-        setCameraValue(event.target.value);
-        dispatch(setCamera(event.target.value));
-        
+        const deviceId  =  event.target.value;
+        setCameraValue(deviceId);
+        dispatch(setCamera(deviceId));
+
         const videoTrack = localTracks.find(track => track.videoType === "camera");
         const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
             devices: ["video"],
+            cameraDeviceId: deviceId,
             resolution,
         });
         await conference.replaceTrack(videoTrack, newVideoTrack);

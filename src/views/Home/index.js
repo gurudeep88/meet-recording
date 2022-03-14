@@ -181,7 +181,7 @@ const useStyles = makeStyles((theme) => ({
     slackContainer: {
         position: "absolute",
         left: "22px",
-        bottom: 0,
+        bottom: "22px"
     }
 }));
 

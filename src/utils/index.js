@@ -66,6 +66,7 @@ export async function getToken(profile, name) {
         })
     };
 
+    
     try {
         const response = await fetch(GENERATE_TOKEN_URL, body);
         if (response.ok) {

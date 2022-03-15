@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
         overflowY: "auto",
         alignItems: "center",
         "& > div": {
-            marginBottom: "15px"
+            marginBottom: "22px"
         }
     }
 }));

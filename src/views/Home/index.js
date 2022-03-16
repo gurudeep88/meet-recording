@@ -4,7 +4,7 @@ import {makeStyles, Box, Card, Grid, Typography, Tooltip} from "@material-ui/cor
 import {color} from "../../assets/styles/_color";
 import LobbyRoom from "../../components/home/LobbyRoom";
 import SariskaMediaTransport from "sariska-media-transport";
-import {addLocalTrack} from "../../store/actions/track";
+import {addLocalTrack,remoteAllLocalTracks} from "../../store/actions/track";
 import {useDispatch, useSelector} from "react-redux";
 import googleApi from "../../utils/google-apis";
 import {setProfile} from "../../store/actions/profile";
@@ -15,6 +15,7 @@ import microsoftLogo from '../../assets/images/shared/microsoftLogo.svg'; // Tel
 import slack from '../../assets/images/shared/slack.png'; // Tell Webpack this JS file uses this image
 import { microsoftCalendarApi } from "../../utils/microsoft-apis";
 import { conference } from "../../store/reducers/conference";
+import {clearAllReducers} from "../../store/actions/conference";
 
 const useStyles = makeStyles((theme) => ({
     googleBtn: {
@@ -222,6 +223,7 @@ const Home = () => {
     }
 
     useEffect(() => {
+        dispatch(clearAllReducers());
         const createNewLocalTracks = async () => {
             const options = {
                 devices: ["audio", "video"],

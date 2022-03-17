@@ -65,21 +65,21 @@ const Meeting = () => {
     }
 
     const deviceListChanged = async (devices) => {
-        const [audioTrack, videoTrack] = localTracks;
-        const options = {
-            devices: ["audio", "video"],
-            resolution
-        };
-        const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
-        await conference.replaceTrack(audioTrack, newAudioTrack);
-        await conference.replaceTrack(videoTrack, newVideoTrack);
-        dispatch(updateLocalTrack(audioTrack, newAudioTrack));
-        dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+        // const [audioTrack, videoTrack] = localTracks;
+        // const options = {
+        //     devices: ["audio", "video"],
+        //     resolution
+        // };
+        // const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
+        // await conference.replaceTrack(audioTrack, newAudioTrack);
+        // await conference.replaceTrack(videoTrack, newVideoTrack);
+        // dispatch(updateLocalTrack(audioTrack, newAudioTrack));
+        // dispatch(updateLocalTrack(videoTrack, newVideoTrack));
     }
     
     const audioOutputDeviceChanged = (deviceId)=> {
-         console.log("audio output deviceId", deviceId);
-         SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
+        //  console.log("audio output deviceId", deviceId);
+        //  SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
     }
 
     const destroy = async () => {
@@ -141,6 +141,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
+            console.log("DOMINANT_SPEAKER_CHANGED", id);
             setDominantSpeakerId(id);
         });
 

@@ -2,7 +2,8 @@ import { Box, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { color } from '../../../assets/styles/_color';
-
+import { profile } from "../../../store/actions/profile";
+import { useSelector } from 'react-redux';
 const useStyles = makeStyles(()=>({
 logo: {
   display: 'flex',
@@ -29,15 +30,17 @@ logoText: {
   fontSize: '1.2rem'
 },
 }))
+
 const Logo = () => {
+    const profile = useSelector(state => state.profile);
     const classes = useStyles();
+    
     return (
-        
         <Box>
-        <Link to="/" className={classes.logo}>
-        <img src={process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/>
-        <Typography className={classes.logoText}>SARISKA</Typography>
-        </Link>
+        <a href={`/${profile.meetingTitle}`} className={classes.logo}>
+            <img src={process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/>
+            <Typography className={classes.logoText}>SARISKA</Typography>
+        </a>
     </Box>
     )
 }

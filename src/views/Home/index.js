@@ -223,7 +223,7 @@ const Home = () => {
     }
 
     useEffect(() => {
-        dispatch(clearAllReducers());
+       // dispatch(clearAllReducers());
         const createNewLocalTracks = async () => {
             const options = {
                 devices: ["audio", "video"],

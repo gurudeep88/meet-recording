@@ -90,23 +90,24 @@ const ActionButtons = () => {
     const layout = useSelector((state) => state.layout);
     const [raiseHand, setRaiseHand] = useState(false);
 
-    const FShandler = ()=>{
-        removeFullscreenListeners();
-        dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+    const AddFShandler = ()=>{
+    }
+
+    const RemoveFShandler = ()=>{
     }
 
     const addFullscreenListeners = ()=>{
-        document.addEventListener("fullscreenchange", FShandler);
-        document.addEventListener("webkitfullscreenchange", FShandler);
-        document.addEventListener("mozfullscreenchange", FShandler);
-        document.addEventListener("MSFullscreenChange", FShandler);
+        document.addEventListener("fullscreenchange", AddFShandler);
+        document.addEventListener("webkitfullscreenchange", AddFShandler);
+        document.addEventListener("mozfullscreenchange", AddFShandler);
+        document.addEventListener("MSFullscreenChange", AddFShandler);
     }
 
     const removeFullscreenListeners = ()=>{
-        document.removeEventListener("fullscreenchange", FShandler);
-        document.removeEventListener("webkitfullscreenchange", FShandler);
-        document.removeEventListener("mozfullscreenchange", FShandler);
-        document.removeEventListener("MSFullscreenChange", FShandler);
+        document.removeEventListener("fullscreenchange", RemoveFShandler);
+        document.removeEventListener("webkitfullscreenchange", RemoveFShandler);
+        document.removeEventListener("mozfullscreenchange", RemoveFShandler);
+        document.removeEventListener("MSFullscreenChange", RemoveFShandler);
     }
     
     const enterFullScreen = () => {
@@ -130,7 +131,7 @@ const ActionButtons = () => {
             docElm.msRequestFullScreen();
         }
         dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
-        setTimeout(()=>{addFullscreenListeners()},1000);
+        addFullscreenListeners();
     }
 
     const exitFullScreen = () => {
@@ -152,6 +153,7 @@ const ActionButtons = () => {
             document.webkitExitFullscreen();
         }
         dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+        removeFullscreenListeners();
     }
 
     const muteAudio = async () => {

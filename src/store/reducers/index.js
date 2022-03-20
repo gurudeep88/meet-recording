@@ -14,6 +14,7 @@ import {audioIndicator} from "./audioIndicator";
 import {notification} from "./notification";
 import {subtitle} from "./subtitle";
 import {snackbar} from "./snackbar";
+import { EXIT_FULL_SCREEN_MODE } from "../../constants";
 
 export const appReducer = combineReducers({
     conference,
@@ -35,7 +36,8 @@ export const appReducer = combineReducers({
 export const rootReducer = (state, action) => {
     if (action.type === 'CLEAR_ALL') {
         layoutInitialState.presenterParticipantIds = [];
-        return appReducer({ localTrack: [], layout: layoutInitialState, profile: state.profile, remoteTrack:{} }, action);
+        layoutInitialState.mode = EXIT_FULL_SCREEN_MODE;
+        return appReducer({ localTrack: [], layout: { ...layoutInitialState} , profile: state.profile, remoteTrack:{} }, action);
     }
     return appReducer(state, action);
 }

@@ -15,7 +15,6 @@ import microsoftLogo from '../../assets/images/shared/microsoftLogo.svg'; // Tel
 import slack from '../../assets/images/shared/slack.png'; // Tell Webpack this JS file uses this image
 import { microsoftCalendarApi } from "../../utils/microsoft-apis";
 import { conference } from "../../store/reducers/conference";
-import {clearAllReducers} from "../../store/actions/conference";
 
 const useStyles = makeStyles((theme) => ({
     googleBtn: {
@@ -189,6 +188,7 @@ const useStyles = makeStyles((theme) => ({
 const Home = () => {
     const dispatch = useDispatch();
     const resolution = useSelector(state => state.media?.resolution);
+    const localTracksRedux = useSelector(state => state.localTrack);
     SariskaMediaTransport.initialize();
     SariskaMediaTransport.setLogLevel(SariskaMediaTransport.logLevels.ERROR); //TRACE ,DEBUG, INFO, LOG, WARN, ERROR
     const classes = useStyles();
@@ -222,8 +222,10 @@ const Home = () => {
         window.location.href = meetingUrl;
     }
 
-    useEffect(() => {
-       // dispatch(clearAllReducers());
+    useEffect(()=>{
+        if (localTracksRedux.length > 0)  {
+            return;
+        }
         const createNewLocalTracks = async () => {
             const options = {
                 devices: ["audio", "video"],
@@ -235,7 +237,10 @@ const Home = () => {
             }
             tracks.forEach(track=>dispatch(addLocalTrack(track)));
         };
+        createNewLocalTracks();
+    },[])
 
+    useEffect(() => {
         const googleLogin = async () => {
             try {
                 googleAPIData.isSignedIn = await googleApi.loadGoogleAPI();
@@ -256,7 +261,6 @@ const Home = () => {
             setLoading(false);
         }
 
-        createNewLocalTracks();
         googleLogin();
         microsoftLogin();
     }, []);

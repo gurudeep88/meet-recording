@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+
 const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, dominantSpeakerId, panelHeight, gridWidth}) => {
     const classes = useStyles();
     const conference = useSelector(state => state.conference);

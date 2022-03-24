@@ -159,10 +159,6 @@ const VideoBox = ({
         'activeSpeaker': isActiveSpeaker
     });
     
-    // if (isPresenter && isLargeVideo) {
-    //     width = (videoTrack?.track?.getSettings()?.aspectRatio || 1.6)*height;
-    // }
-
     return (
         <Box style={{width: `${width - 4-4*16/9 }px`, height: `${height - 4}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}

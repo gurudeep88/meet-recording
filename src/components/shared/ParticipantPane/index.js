@@ -38,13 +38,13 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeig
             />
             { conference.getParticipantsWithoutHidden().map(participant => {              
                 return <VideoBox localUserId={conference.myUserId()}
-                                    width={actaulWidth}
-                                    height={actualHeight}
-                                    isPresenter={layout.presenterParticipantIds.find(item=>item===participant._id)}
-                                    isFilmstrip={false}
-                                    isActiveSpeaker={dominantSpeakerId===participant._id}
-                                    participantDetails={participant?._identity?.user}
-                                    participantTracks={remoteTracks[participant._id] || []}
+                            width={actaulWidth}
+                            height={actualHeight}
+                            isPresenter={layout.presenterParticipantIds.find(item=>item===participant._id)}
+                            isFilmstrip={false}
+                            isActiveSpeaker={dominantSpeakerId===participant._id}
+                            participantDetails={participant?._identity?.user}
+                            participantTracks={remoteTracks[participant._id] || []}
                         />
             })}
         </Box>)

@@ -11,7 +11,7 @@ import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
 import Notification from "../../components/shared/Notification";
-import { SPEAKER, PRESENTATION, GRID, ENTER_FULL_SCREEN_MODE } from "../../constants";
+import { SPEAKER, PRESENTATION, GRID, ENTER_FULL_SCREEN_MODE} from "../../constants";
 import { addMessage } from "../../store/actions/message";
 import { getUserById, preloadIframes } from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
@@ -227,6 +227,13 @@ const Meeting = () => {
             }));
             ingoreFirstEvent = false;
         });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, async ( participant, data) => {
+            if (data.event === "LOBBY-ACCESS-GRANTED" || data.event === "LOBBY-ACCESS-DENIED") {
+                setLobbyUserJoined({});
+            }
+        });
+
         
         conference.addEventListener(SariskaMediaTransport.events.conference.CONNECTION_RESTORED, () => {
             if (ingoreFirstEvent) {

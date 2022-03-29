@@ -99,4 +99,3 @@ export const DROPBOX_APP_KEY = "hey9dkz8x8s3x74";
 export const CHECK_ROOM_URL = "https://reservation.sariska.io/room"
 
 export const GET_PRESIGNED_URL = `${process.env.REACT_APP_API_SERVICE_HOST}api/v1/misc/get-presigned`;
-

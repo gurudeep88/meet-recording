@@ -91,9 +91,16 @@ const ActionButtons = () => {
     const [raiseHand, setRaiseHand] = useState(false);
 
     const AddFShandler = ()=>{
-    }
+        var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
+        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null);
 
-    const RemoveFShandler = ()=>{
+        if (isInFullScreen) {
+            dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
+        } else {
+            dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+        }
     }
 
     const addFullscreenListeners = ()=>{
@@ -104,56 +111,40 @@ const ActionButtons = () => {
     }
 
     const removeFullscreenListeners = ()=>{
-        document.removeEventListener("fullscreenchange", RemoveFShandler);
-        document.removeEventListener("webkitfullscreenchange", RemoveFShandler);
-        document.removeEventListener("mozfullscreenchange", RemoveFShandler);
-        document.removeEventListener("MSFullscreenChange", RemoveFShandler);
+        document.removeEventListener("fullscreenchange", AddFShandler);
+        document.removeEventListener("webkitfullscreenchange", AddFShandler);
+        document.removeEventListener("mozfullscreenchange", AddFShandler);
+        document.removeEventListener("MSFullscreenChange", AddFShandler);
     }
     
-    const enterFullScreen = () => {
+    const fullScreen = () => {
         var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
         (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
         (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
         (document.msFullscreenElement && document.msFullscreenElement !== null);
-        let docElm = document.documentElement;
 
-        if (isInFullScreen || !docElm) {
-            return;
-        }
-
-        if (docElm.requestFullscreen) {
-            docElm.requestFullscreen();
-        } else if (docElm.mozRequestFullScreen) {
-            docElm.mozRequestFullScreen();
-        } else if (docElm.webkitRequestFullScreen) {
-            docElm.webkitRequestFullScreen();
-        } else if(docElm.msRequestFullScreen) {
-            docElm.msRequestFullScreen();
-        }
-        dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
-        addFullscreenListeners();
-    }
-
-    const exitFullScreen = () => {
-        var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
-        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
-        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
-        (document.msFullscreenElement && document.msFullscreenElement !== null);
+        var docElm = document.documentElement;
         if (!isInFullScreen) {
-            return;
-        }   
-
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
+            if (docElm.requestFullscreen) {
+                docElm.requestFullscreen();
+            } else if (docElm.mozRequestFullScreen) {
+                docElm.mozRequestFullScreen();
+            } else if (docElm.webkitRequestFullScreen) {
+                docElm.webkitRequestFullScreen();
+            } else if (docElm.msRequestFullscreen) {
+                docElm.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
         }
-        dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
-        removeFullscreenListeners();
     }
 
     const muteAudio = async () => {
@@ -219,10 +210,10 @@ const ActionButtons = () => {
         }, 1000);
 
         const dbClickHandler = ()=>{
-            if ( layout.mode === EXIT_FULL_SCREEN_MODE ){
-                enterFullScreen();
+             if ( layout.mode === EXIT_FULL_SCREEN_MODE ){
+                fullScreen();
             } else {
-                exitFullScreen();
+                fullScreen();
             }
         }
 
@@ -233,6 +224,12 @@ const ActionButtons = () => {
         }
     },[layout.mode])
 
+    useEffect(()=>{
+        addFullscreenListeners();
+        return ()=>{
+            removeFullscreenListeners();
+        }
+    },[])
     const leaveConference = () => {
         dispatch(clearAllReducers());
         history.push("/leave");
@@ -249,7 +246,7 @@ const ActionButtons = () => {
                 <Tooltip title={ raiseHand ? "Hand Down" : "Raise Hand"}>{ raiseHand ? <PanTool style={{color: color.primary}} onClick={stopRaiseHand}/> : <PanTool  onClick={startRaiseHand}/> }</Tooltip>
                 <Tooltip title="Leave Call"><CallEndIcon className={classes.end} onClick={leaveConference}/></Tooltip>
                 <Tooltip title={ layout.mode === EXIT_FULL_SCREEN_MODE ? "Full Screen": "Exit Full Screen" }>
-                    { layout.mode === EXIT_FULL_SCREEN_MODE ? <FullscreenIcon onClick={enterFullScreen} className={classes.subIcon}/> : <FullscreenExitOutlinedIcon onClick={exitFullScreen} className={classes.subIcon}/>}
+                    { layout.mode === EXIT_FULL_SCREEN_MODE ? <FullscreenIcon onClick={fullScreen} className={classes.subIcon}/> : <FullscreenExitOutlinedIcon onClick={fullScreen} className={classes.subIcon}/>}
                 </Tooltip>
             </Box>
             <Box className={classes.infoContainer}>

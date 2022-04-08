@@ -35,8 +35,13 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     if ( conference.getParticipantCount() === 2 ) {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
-    largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId;
-   
+
+    largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId || myUserId;
+    
+    if ( conference.getParticipantCount() > 1 && largeVideoId === myUserId) {
+        largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
+    }
+
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
         "onStageEndpoints":  [largeVideoId],

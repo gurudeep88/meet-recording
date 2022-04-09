@@ -11,19 +11,22 @@ import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
 import Notification from "../../components/shared/Notification";
-import { SPEAKER, PRESENTATION, GRID, ENTER_FULL_SCREEN_MODE } from "../../constants";
+import { SPEAKER, PRESENTATION, GRID, ENTER_FULL_SCREEN_MODE} from "../../constants";
 import { addMessage } from "../../store/actions/message";
 import { getUserById, preloadIframes } from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
 import SnackbarBox from '../../components/shared/Snackbar';
 import { unreadMessage } from '../../store/actions/chat';
 import Home from "../Home";
-import { setPresenter, setPinParticipant, setRaiseHand, setModerator } from "../../store/actions/layout";
+import { setPresenter, setPinParticipant, setRaiseHand, setModerator, setDisconnected } from "../../store/actions/layout";
 import { setAudioLevel } from "../../store/actions/audioIndicator";
 import { showNotification } from "../../store/actions/notification";
 import { addSubtitle } from '../../store/actions/subtitle';
 import { useHistory } from 'react-router-dom';
-import { setResolution } from '../../store/actions/layout';
+import { setUserResolution } from '../../store/actions/layout';
+import {useOnlineStatus} from "../../hooks/useOnlineStatus";
+import { updateLocalTrack } from '../../store/actions/track';
+
 import ReactGA from 'react-ga4';
 
 const useStyles = makeStyles((theme) => ({
@@ -45,9 +48,11 @@ const Meeting = () => {
     const layout = useSelector(state => state.layout);
     const notification = useSelector(state => state.notification);
     const snackbar = useSelector(state => state.snackbar);
-
+    const isOnline = useOnlineStatus()
+    const resolution = useSelector(state=>state.media?.resolution);
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUserJoined, setLobbyUserJoined] = useState({});
+    let ingoreFirstEvent = true;
 
     const allowLobbyAccess = () => {
         conference.lobbyApproveAccess(lobbyUserJoined.id)
@@ -59,15 +64,23 @@ const Meeting = () => {
         setLobbyUserJoined({});
     }
 
-    const updateNetwork = () => { // set internet connectivity status
-        if (!window.navigator.onLine) {
-            dispatch(showNotification({
-                message: "You lost your internet connection. Trying to reconnect...",
-                severity: "info"
-            }));
-        }
-        SariskaMediaTransport.setNetworkInfo({ isOnline: window.navigator.onLine });
-    };
+    const deviceListChanged = async (devices) => {
+        // const [audioTrack, videoTrack] = localTracks;
+        // const options = {
+        //     devices: ["audio", "video"],
+        //     resolution
+        // };
+        // const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
+        // await conference.replaceTrack(audioTrack, newAudioTrack);
+        // await conference.replaceTrack(videoTrack, newVideoTrack);
+        // dispatch(updateLocalTrack(audioTrack, newAudioTrack));
+        // dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+    }
+    
+    const audioOutputDeviceChanged = (deviceId)=> {
+        //  console.log("audio output deviceId", deviceId);
+        //  SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
+    }
 
     const destroy = async () => {
         if (conference?.isJoined()) {
@@ -77,15 +90,14 @@ const Meeting = () => {
             await track.dispose();
         }
         await connection?.disconnect();
-        window.removeEventListener("offline", updateNetwork);
-        window.removeEventListener("online", updateNetwork);
+        SariskaMediaTransport.mediaDevices.removeEventListener(SariskaMediaTransport.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
     }
 
     useEffect(() => {
         if (!conference) {
             return;
         }
-        
+
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.presenting === "start") {
                 dispatch(showNotification({autoHide: true, message: `Screen sharing is being presenting by ${item._identity?.user?.name}`}));
@@ -101,7 +113,7 @@ const Meeting = () => {
             }
             
             if (item._properties?.resolution) {
-                dispatch(setResolution({ participantId: item._id, resolution: item._properties?.resolution }));
+                dispatch(setUserResolution({ participantId: item._id, resolution: item._properties?.resolution }));
             }
         });
         
@@ -129,6 +141,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
+            console.log("DOMINANT_SPEAKER_CHANGED", id);
             setDominantSpeakerId(id);
         });
 
@@ -155,25 +168,31 @@ const Meeting = () => {
             }
             
             if (key === "resolution") {
-                dispatch(setResolution({ participantId: participant._id, resolution: newValue }));
+                dispatch(setUserResolution({ participantId: participant._id, resolution: newValue }));
             }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_LEFT, (id) => {
+            if (id === dominantSpeakerId) {
+                setDominantSpeakerId(null);
+            }
+
             if (id === layout.pinnedParticipantId) {
                 dispatch(setPinParticipant(null))
             }
+
             if (layout.presenterParticipantIds.find(item => item === id)) {
-                dispatch(setPresenter({ participantId: id, presenter: false }));
+                dispatch(setPresenter({ participantId: id, presenter: null }));
             }
-            if (layout.presenterParticipantIds.find(item => item === id)) {
-                dispatch(setResolution({ participantId: id, resolution: null }));
+
+            if (layout.raisedHandParticipantIds[id]) {
+                dispatch(setRaiseHand({ participantId: id, raiseHand: null }));
             }
-            dispatch(participantLeft());
+                
+            dispatch(participantLeft(id));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.LOBBY_USER_JOINED, (id, displayName) => {
-            console.log("LOBBY_USER_JOINED");
             new Audio("https://sdk.sariska.io/knock_0b1ea0a45173ae6c10b084bbca23bae2.ogg").play();
             setLobbyUserJoined({ id, displayName });
         });
@@ -200,6 +219,32 @@ const Meeting = () => {
         conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_AUDIO_LEVEL_CHANGED, (participantId, audioLevel) => {
             dispatch(setAudioLevel({ participantId, audioLevel }));
         });
+        
+        conference.addEventListener(SariskaMediaTransport.events.conference.CONNECTION_INTERRUPTED, () => {
+            dispatch(showNotification({
+                message: "You lost your internet connection. Trying to reconnect...",
+                severity: "info"
+            }));
+            ingoreFirstEvent = false;
+        });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, async ( participant, data) => {
+            if (data.event === "LOBBY-ACCESS-GRANTED" || data.event === "LOBBY-ACCESS-DENIED") {
+                setLobbyUserJoined({});
+            }
+        });
+
+        
+        conference.addEventListener(SariskaMediaTransport.events.conference.CONNECTION_RESTORED, () => {
+            if (ingoreFirstEvent) {
+                return;
+            }
+            dispatch(showNotification({
+                message: "Your Internet connection was restored",
+                autoHide: true,
+                severity: "info"
+            }));
+        });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.ANALYTICS_EVENT_RECEIVED, (payload) => {
             const { name, action, actionSubject, source, attributes } = payload;
@@ -210,17 +255,21 @@ const Meeting = () => {
             })
         });
 
-        window.addEventListener("offline", updateNetwork);
-        window.addEventListener("online", updateNetwork);
-        window.addEventListener("beforeunload", destroy);
-
         preloadIframes(conference);
+        SariskaMediaTransport.effects.createRnnoiseProcessor();
+        SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
+        SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.AUDIO_OUTPUT_DEVICE_CHANGED, audioOutputDeviceChanged);
+
+        window.addEventListener("beforeunload", destroy);
 
         return () => {
             destroy();
         };
     }, [conference]);
 
+    useEffect(()=>{
+        SariskaMediaTransport.setNetworkInfo({ isOnline });
+    }, [isOnline]);
 
     if (!conference || !conference.isJoined()) {
         return <Home />;
@@ -250,7 +299,7 @@ const Meeting = () => {
                 displayName={lobbyUserJoined.displayName} />}
 
             <SnackbarBox notification={notification} />
-            <ReconnectDialog open={layout.disconnected} />
+            <ReconnectDialog open={layout.disconnected === "lost"} />
             <Notification snackbar={snackbar} />
         </Box>
     )

@@ -291,12 +291,26 @@ const Navbar = ({dominantSpeakerId}) => {
             return;
         }
         
-        await googleApi.signInIfNotSignedIn();
+        if (conference?.getRole() === "none") {
+            return dispatch(showNotification({
+                severity: "info",
+                autoHide: true,
+                message: 'You are not moderator!!'
+            }));
+        }
 
-        const youtubeBroadcasts = await googleApi.requestAvailableYouTubeBroadcasts();
+        await googleApi.signInIfNotSignedIn();
+        let youtubeBroadcasts
+        
+        try  {
+            youtubeBroadcasts = await googleApi.requestAvailableYouTubeBroadcasts();
+        } catch(e) {
+            dispatch(showNotification({autoHide: true, message : e?.result?.error?.message , severity: "info"}));
+            return;
+        }
+
         if (youtubeBroadcasts.status !== 200) {
             dispatch(showNotification({autoHide: true, message : "Could not fetch YouTube broadcasts", severity: "info"}));
-            return;
         }
         setBroadcasts(youtubeBroadcasts.result.items);
         setOpenLivestreamDialog(true);
@@ -351,13 +365,29 @@ const Navbar = ({dominantSpeakerId}) => {
         if (!streaming) {
             return;
         }
-        await conference.stopRecording(streamingSession?.current?._sessionID);
+        if (conference?.getRole() === "none") {
+            return dispatch(showNotification({
+                severity: "info",
+                autoHide: true,
+                message: 'You are not moderator!!'
+            }));
+        }
+        await conference.stopRecording(localStorage.getItem("streaming_session_id"));
     }
 
     const startRecording = async () => {
         if (recording) {
             return;
         }
+        
+        if (conference?.getRole() === "none") {
+            return dispatch(showNotification({
+                severity: "info",
+                autoHide: true,
+                message: 'You are not moderator!!'
+            }));
+        }
+
         const response = await authorizeDropbox();
         if (!response?.token) {
             return dispatch(showNotification({
@@ -401,7 +431,14 @@ const Navbar = ({dominantSpeakerId}) => {
         if (!recording) {
             return;
         }
-        await conference.stopRecording(recordingSession?.current?._sessionID);
+        if (conference?.getRole() === "none") {
+            return dispatch(showNotification({
+                severity: "info",
+                autoHide: true,
+                message: 'You are not moderator!!'
+            }));
+        }
+        await conference.stopRecording(localStorage.getItem("recording_session_id"));
     }
 
     const startCaption = () => {
@@ -459,10 +496,6 @@ const Navbar = ({dominantSpeakerId}) => {
         }
     }
 
-    const cancelNoise = async ()=>{
-        await SariskaMediaTransport.effects.createRnnoiseProcessor();
-    }
-
     useEffect(() => {
         conference.getParticipantsWithoutHidden().forEach(item=>{
             if (item._properties?.transcribing) {
@@ -517,7 +550,6 @@ const Navbar = ({dominantSpeakerId}) => {
                 dispatch(addSubtitle({}));
                 setCaption(false);
             }
-            console.log("status", status);
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
@@ -525,6 +557,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 conference.setLocalParticipantProperty("streaming", true);
                 dispatch(showSnackbar({autoHide: true, message: "Live streaming started"}));
                 setStreaming(true);
+                localStorage.setItem("streaming_session_id", data?._sessionID)
             }
 
             if (data._status === "off" && data._mode === "stream") {
@@ -537,6 +570,7 @@ const Navbar = ({dominantSpeakerId}) => {
                 conference.setLocalParticipantProperty("recording", true);
                 dispatch(showSnackbar({autoHide: true, message: "Recording started"}));
                 setRecording(true);
+                localStorage.setItem("recording_session_id", data?._sessionID)
             }
 
             if (data._status === "off" && data._mode === "file") {

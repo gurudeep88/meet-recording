@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {useSelector} from "react-redux";
 import {makeStyles} from "@material-ui/core";
 import SariskaMediaTransport from "sariska-media-transport";
@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ConnectionIndicator = ({participantId}) => {
-   
+    let connectionValue = "Connection: Good";
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const stats = conference.myUserId() === participantId ? conference.connectionQuality._localStats : conference.connectionQuality._remoteStats[participantId] || {};
@@ -126,10 +126,13 @@ const ConnectionIndicator = ({participantId}) => {
         const {INACTIVE, INTERRUPTED} = SariskaMediaTransport.constants.participantConnectionStatus;
         
         if (connectionStatus === INACTIVE) {
+            connectionValue = "Connection :Low"
             return 'status-other';
         } else if (connectionStatus === INTERRUPTED) {
+            connectionValue = "Connection :Lost"
             return 'status-lost';
         } else if (typeof percent === 'undefined') {
+            connectionValue = "Connection :High"
             return 'status-high';
         }
         return getDisplayConfiguration(percent).colorClass;
@@ -167,6 +170,7 @@ const ConnectionIndicator = ({participantId}) => {
             iconWidth = getDisplayConfiguration(percent).width;
         }
 
+
         return [
             <span
                 className={emptyIconWrapperClassName}
@@ -181,11 +185,11 @@ const ConnectionIndicator = ({participantId}) => {
             </span>
         ];
     }
-    
+
     const connectionRate = conference.myUserId()=== participantId ? conference.connectionQuality._localStats : conference.connectionQuality._remoteStats[participantId];
     return (
         <div className={classes.root}>
-            <Tooltip title={<div style={{fontSize: "bold"}} >Connection: Good <br /> {connectionRate?.bandwidth?.upload ? <span>Upload Bandwidth: {connectionRate?.bandwidth?.upload}</span> : ''} {connectionRate?.bandwidth?.download ? <><br /><span>Download Bandwidth: {connectionRate?.bandwidth?.download}</span></> : ''}</div>}>
+            <Tooltip title={<div style={{fontSize: "bold"}} >{connectionValue} <br /> {connectionRate?.bandwidth?.upload ? <span>Upload Bandwidth: {connectionRate?.bandwidth?.upload}</span> : ''} {connectionRate?.bandwidth?.download ? <><br /><span>Download Bandwidth: {connectionRate?.bandwidth?.download}</span></> : ''}</div>}>
                 <div className={rootClassNames}>
                     <div className={indicatorContainerClassNames}
                          style={{fontSize: "8px"}}>

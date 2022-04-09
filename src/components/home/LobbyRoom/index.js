@@ -15,7 +15,7 @@ import {color} from "../../../assets/styles/_color";
 import {useHistory} from "react-router-dom";
 import {localTrackMutedChanged} from "../../../store/actions/track";
 import {addConference} from "../../../store/actions/conference";
-import {getToken,getRandomColor, checkRoom, trimSpace, detectUpperCaseChar} from "../../../utils";
+import {getToken,getRandomColor, trimSpace, detectUpperCaseChar} from "../../../utils";
 import {addThumbnailColor} from "../../../store/actions/color";
 import {useDispatch, useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
@@ -26,9 +26,7 @@ import JoinTrack from "../JoinTrack";
 import {addConnection} from "../../../store/actions/connection";
 import SnackbarBox from "../../shared/Snackbar";
 import { showNotification } from "../../../store/actions/notification";
-import IOSSwitch from "../../shared/IOSSwitch";
-
-const label = { inputProps: { 'aria-label': 'Moderator?' } };
+import {setDisconnected} from "../../../store/actions/layout";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -105,6 +103,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: -12,
     },
 }));
+
 const LobbyRoom = ({tracks}) => {
     const classes = useStyles();
     const history = useHistory();
@@ -118,7 +117,7 @@ const LobbyRoom = ({tracks}) => {
     const profile = useSelector(state => state.profile);
     const queryParams = useParams();
     const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
-    const isLoadTesting = window.location.hash.indexOf("isLoadTesting") >= 0;
+    const testMode = window.location.hash.indexOf("testMode") >= 0;
     const notification = useSelector(state => state.notification);
     const moderator = useRef(true);
 
@@ -130,11 +129,6 @@ const LobbyRoom = ({tracks}) => {
         setName(e.target.value);
     };
 
-    const handleChange = (value)=>{
-        console.log("value.checked", value.checked);
-        moderator.current = value.checked;
-    }
-
     const handleSubmit = async () => {
         if(!meetingTitle){
             dispatch(showNotification({
@@ -144,10 +138,12 @@ const LobbyRoom = ({tracks}) => {
             }))
             return;
         }
+        
         setLoading(true);
-    
+       
         const token = await getToken(profile, name);
-        const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle);
+
+        const connection = new SariskaMediaTransport.JitsiConnection(token, meetingTitle, process.env.REACT_APP_ENV === "development" ? true : false);
         
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () => {
             dispatch(addConnection(connection));
@@ -155,9 +151,13 @@ const LobbyRoom = ({tracks}) => {
         });
         
         connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_FAILED, async(error) => {
+            console.log(" CONNECTION_DROPPED_ERROR", error);
             if (error === SariskaMediaTransport.errors.connection.PASSWORD_REQUIRED) {
                 const  token = await getToken(profile, name, moderator.current)
                 connection.setToken(token); // token expired, set a new token
+            }
+            if (error === SariskaMediaTransport.errors.connection.CONNECTION_DROPPED_ERROR) {
+                dispatch(setDisconnected("lost"));
             }
         });
           
@@ -168,27 +168,27 @@ const LobbyRoom = ({tracks}) => {
         connection.connect();
     }
 
-    const createConference = async (connection)=>{   
+    const createConference = async (connection)=>{
+           
         const conference = connection.initJitsiConference({
             createVADProcessor: SariskaMediaTransport.effects.createRnnoiseProcessor
         });
-        
         await conference.addTrack(audioTrack);
         await conference.addTrack(videoTrack);
         
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_JOINED, () => {
-            console.log("CONFERENCE_JOINED")
             setLoading(false);
             dispatch(addConference(conference));
             dispatch(setProfile(conference.getLocalUser()));
             dispatch(setMeeting({meetingTitle}));
-            history.push(`/${meetingTitle}`);
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.USER_ROLE_CHANGED, (id) => {
-            console.log("isMembersOnly ", conference.isMembersOnly());
-            if (conference.isModerator() && !isLoadTesting) {
-             //   conference.enableLobby();
+            if (conference.isModerator() && !testMode) {
+                conference.enableLobby();
+                history.push(`/${meetingTitle}`);
+            } else {
+                history.push(`/${meetingTitle}`);
             }
         });
 
@@ -201,12 +201,9 @@ const LobbyRoom = ({tracks}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.CONFERENCE_FAILED, async (error) => {
-            
-            console.log("conference failed", error);
-
             if (error === SariskaMediaTransport.errors.conference.MEMBERS_ONLY_ERROR) {
                 setButtonText("Asking to join");
-                conference.joinLobby(name);
+                conference.joinLobby(name || conference?.getLocalUser()?.name);
             }
 
             if (error === SariskaMediaTransport.errors.conference.CONFERENCE_ACCESS_DENIED) {
@@ -245,7 +242,7 @@ const LobbyRoom = ({tracks}) => {
     }
     
     useEffect(() => {
-        if (meetingTitle && (isLoadTesting || iAmRecorder)) {
+        if (meetingTitle && (testMode || iAmRecorder)) {
             handleSubmit();
         }
     }, [meetingTitle]);
@@ -330,10 +327,6 @@ const LobbyRoom = ({tracks}) => {
                             value={name}
                             onChange={handleUserNameChange}
                         />
-                        <Box className={classes.moderatorBox}>
-                            <p>Are you a Moderator? </p>
-                            <IOSSwitch handleChange={handleChange} />
-                        </Box>
                     </Box>
                     <Button
                         className={classes.anchor}

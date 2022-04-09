@@ -35,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
             fontSize: '0.9rem'
         }
     },
-    hostBox: {		
+    hostBox: {
+        display: "inline-flex",
         width: 'auto !important',		
         marginLeft: '10px'		
     }
@@ -56,9 +57,9 @@ const ParticipantDetails = () => {
                 <Box className={classes.userBox}>
                     <Avatar src={ localUser?.avatar ? localUser?.avatar: null}  >{localUser?.name?.slice(0, 1).toUpperCase()}</Avatar>
                     <Box className={classes.hostBox}></Box>
-                    <Typography>{ localUser?.name } (You) </Typography>
-                    <Typography variant="caption">{!Object.keys(layout.moderator)?.length && <b>&nbsp; (Host)</b>}</Typography>
-                </Box>
+                        <Typography>{ localUser?.name } (You) </Typography>
+                        <Typography variant="caption">{conference.getRole()=== "moderator" && <b>&nbsp; (Host)</b>}</Typography>
+                    </Box>
                 {localTracks.find(track=>track.isAudioTrack())?.isMuted() ? <MicOffOutlinedIcon/> : <MicNoneOutlinedIcon/> }
             </Box>
             <Box>
@@ -68,7 +69,7 @@ const ParticipantDetails = () => {
                             <Avatar src={ participant?._identity?.user?.avatar ? participant?._identity?.user?.avatar: null} style={{background: avatarColors[participant._id]}} >{participant?._identity?.user?.name.toUpperCase().slice(0, 1)}</Avatar>
                             <Box className={classes.hostBox}>		                           
                                 <Typography>{participant?._identity?.user?.name}</Typography>		
-                                <Typography variant="caption">{layout.moderator[participant?._identity?.user?.id] && <b> (Host)</b>}</Typography>		
+                                <Typography variant="caption">{participant?._role==="moderator" && <b>&nbsp; (Host)</b>}</Typography>		
                             </Box>
                         </Box>
                         {remoteTracks[participant._id]?.find(track=>track.isAudioTrack())?.isMuted() ? <MicOffOutlinedIcon/> : <MicNoneOutlinedIcon/> }

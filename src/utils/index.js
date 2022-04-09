@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
-import {GENERATE_TOKEN_URL, CHECK_ROOM_URL, GET_PRESIGNED_URL} from "../constants";
+import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL} from "../constants";
+import linkifyHtml from 'linkify-html';
 
 const Compressor = require('compressorjs');
 
@@ -48,43 +49,30 @@ export function createDeferred() {
     return deferred;
 }
 
-export async function checkRoom(room) {
-    try {
-        const response = await fetch(`${CHECK_ROOM_URL}/${room}`);
-        if (response.ok) {
-            const json = await response.json();
-            return json.id;
-        } else {
-            console.log(response.status);
-        }
-    } catch (error) {
-        console.log('error', error);
-    }
-}
-
-export async function getToken(profile, name, isModerator) {
+export async function getToken(profile, name) {
     const body = {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            apiKey: `27fd6f8080d512442a3694f461adb3986cda5ba39dbe368d75`,
+            apiKey: process.env.REACT_APP_API_KEY,
             user: {
                 id: profile.id,
                 avatar: profile.avatar,
                 name: name,
-                email: profile.email,
-                moderator: isModerator
-            }
+                email: profile.email
+            },
+            exp: "48 hours"
         })
     };
 
+    
     try {
         const response = await fetch(GENERATE_TOKEN_URL, body);
         if (response.ok) {
             const json = await response.json();
-            localStorage.setItem("SARISKA_TOKEN", json.token)
+            localStorage.setItem("SARISKA_TOKEN", json.token);
             return json.token;
         } else {
             console.log(response.status);
@@ -171,7 +159,7 @@ export function appendLinkTags(type, conference) {
     var preloadLink = document.createElement("link");
     preloadLink.href = type === "whiteboard" ? getWhiteIframeUrl(conference) : getSharedDocumentIframeUrl(conference);
     preloadLink.rel = "preload";
-    preloadLink.as = "script";
+    preloadLink.as = "document";
     document.head.appendChild(preloadLink);
 }
 
@@ -200,20 +188,8 @@ export const detectUpperCaseChar = (char) => {
 }
 
 export const linkify=(inputText) =>{
-    var replacedText, replacePattern1, replacePattern2, replacePattern3;
-
-    //URLs starting with http://, https://, or ftp://
-    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
-    replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank" >$1</a>');
-
-    //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
-    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
-    replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank" >$2</a>');
-
-    //Change email addresses to mailto:: links.
-    replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
-    replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1" >$1</a>');
-    return replacedText;
+    const options = { defaultProtocol: 'https',   target: '_blank'};
+    return linkifyHtml(inputText, options);
 }
 
 export function encodeHTML(str){

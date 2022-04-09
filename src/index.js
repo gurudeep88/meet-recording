@@ -10,16 +10,17 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 
-Sentry.init({
-  dsn: "https://baaa535f9f69421b93100c9f32a337a9@debug.sariska.io/23",
-  integrations: [new Integrations.BrowserTracing()],
+if (process.env.REACT_APP_ENV == "production") {
+    Sentry.init({
+      dsn: "https://baaa535f9f69421b93100c9f32a337a9@debug.sariska.io/23",
+      integrations: [new Integrations.BrowserTracing()],
 
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
-
+      // Set tracesSampleRate to 1.0 to capture 100%
+      // of transactions for performance monitoring.
+      // We recommend adjusting this value in production
+      tracesSampleRate: 1.0,
+    });
+}
 
 const THEME = createMuiTheme({
   typography: {

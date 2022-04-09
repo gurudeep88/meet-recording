@@ -4,7 +4,7 @@ import {makeStyles, Box, Card, Grid, Typography, Tooltip} from "@material-ui/cor
 import {color} from "../../assets/styles/_color";
 import LobbyRoom from "../../components/home/LobbyRoom";
 import SariskaMediaTransport from "sariska-media-transport";
-import {addLocalTrack} from "../../store/actions/track";
+import {addLocalTrack,remoteAllLocalTracks} from "../../store/actions/track";
 import {useDispatch, useSelector} from "react-redux";
 import googleApi from "../../utils/google-apis";
 import {setProfile} from "../../store/actions/profile";
@@ -181,13 +181,14 @@ const useStyles = makeStyles((theme) => ({
     slackContainer: {
         position: "absolute",
         left: "22px",
-        bottom: 0,
+        bottom: "22px"
     }
 }));
 
 const Home = () => {
     const dispatch = useDispatch();
     const resolution = useSelector(state => state.media?.resolution);
+    const localTracksRedux = useSelector(state => state.localTrack);
     SariskaMediaTransport.initialize();
     SariskaMediaTransport.setLogLevel(SariskaMediaTransport.logLevels.ERROR); //TRACE ,DEBUG, INFO, LOG, WARN, ERROR
     const classes = useStyles();
@@ -200,7 +201,6 @@ const Home = () => {
     const signInIfNotSignedIn = async () => {
         await googleApi.signInIfNotSignedIn();
         const profile = await googleApi.getCurrentUserProfile();
-        console.log({id: profile.getId(), name: profile.getName(), email: profile.getEmail(), avatar: profile.getImageUrl()})
         dispatch(setProfile({id: profile.getId(), name: profile.getName(), email: profile.getEmail(), avatar: profile.getImageUrl()}));
         googleAPIData.isSignedIn = true;
         googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);
@@ -222,7 +222,10 @@ const Home = () => {
         window.location.href = meetingUrl;
     }
 
-    useEffect(() => {
+    useEffect(()=>{
+        if (localTracksRedux.length > 0)  {
+            return;
+        }
         const createNewLocalTracks = async () => {
             const options = {
                 devices: ["audio", "video"],
@@ -234,7 +237,10 @@ const Home = () => {
             }
             tracks.forEach(track=>dispatch(addLocalTrack(track)));
         };
+        createNewLocalTracks();
+    },[])
 
+    useEffect(() => {
         const googleLogin = async () => {
             try {
                 googleAPIData.isSignedIn = await googleApi.loadGoogleAPI();
@@ -244,21 +250,17 @@ const Home = () => {
                     googleAPIData.calenderEntries = await googleApi.getCalendarEntries(0, 30);
                 }
                 setGoogleAPIData({...googleAPIData});
-            } catch (e) {
-                console.log("e", e);
-            }
+            } catch (e) { }
             setLoading(false);
         }
 
         const microsoftLogin = async () => {
             try {
                 const response = await microsoftCalendarApi?.isSignedIn();
-                console.log("response", response);
-            } catch (e) {console.log(e)}
+            } catch (e) {}
             setLoading(false);
         }
 
-        createNewLocalTracks();
         googleLogin();
         microsoftLogin();
     }, []);
@@ -325,7 +327,7 @@ const Home = () => {
                         </Box> }
                     </Box>
                     <Box className={classes.slackContainer}>
-                        <a href="https://slack.com/oauth/v2/authorize?client_id=884180672320.2771420271893&scope=bot,commands" >
+                        <a href="https://slack.com/oauth/v2/authorize?client_id=884180672320.2771420271893&scope=chat:write,commands,im:write,users:read&user_scope=" >
                             <img className={classes.slackBtn} src={slack} alt='slack'/>
                         </a>
                     </Box>

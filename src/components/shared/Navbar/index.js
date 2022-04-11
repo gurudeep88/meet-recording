@@ -18,7 +18,7 @@ import CopyLink from "../CopyLink";
 import ViewComfyIcon from '@material-ui/icons/ViewComfy';
 import {useSelector, useDispatch} from "react-redux";
 import {setLayout} from "../../../store/actions/layout";
-import {GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD, DROPBOX_APP_KEY, EXIT_FULL_SCREEN_MODE} from "../../../constants";
+import {GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD, DROPBOX_APP_KEY, EXIT_FULL_SCREEN_MODE, RECORDING_ERROR_CONSTANTS} from "../../../constants";
 import classnames from "classnames";
 import Chat from "../Chat";
 import ParticipantDetails from "../ParticipantDetails";
@@ -561,8 +561,6 @@ const Navbar = ({dominantSpeakerId}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
-
-            console.log("data", data);
             if (data._status === "on" && data._mode === "stream") {
                 conference.setLocalParticipantProperty("streaming", true);
                 dispatch(showSnackbar({autoHide: true, message: "Live streaming started"}));
@@ -589,17 +587,17 @@ const Navbar = ({dominantSpeakerId}) => {
                 setRecording(false);
             }
 
-            // if (data._status === "error" && data._mode === "file") {
-            //     conference.removeLocalParticipantProperty("recording");
-            //     dispatch(showSnackbar({autoHide: true, message: data.message}));
-            //     setRecording(false);
-            // }
+            if (data._mode === "stream" && data._error) {
+                conference.removeLocalParticipantProperty("streaming");
+                dispatch(showSnackbar({autoHide: true, message: RECORDING_ERROR_CONSTANTS[data._error]}));
+                setStreaming(false);
+            }
 
-            // if (data._status === "error" && data._mode === "stream") {
-            //     conference.removeLocalParticipantProperty("streaming");
-            //     dispatch(showSnackbar({autoHide: true, message: data.message}));
-            //     setStreaming(false);
-            // }
+            if (data._mode === "file" && data._error) {
+                conference.removeLocalParticipantProperty("recording");
+                dispatch(showSnackbar({autoHide: true, message: RECORDING_ERROR_CONSTANTS[data._error]}));
+                setRecording(false);
+            }
         });
 
     }, []);

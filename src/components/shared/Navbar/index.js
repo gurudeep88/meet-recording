@@ -538,6 +538,7 @@ const Navbar = ({dominantSpeakerId}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED, (status) => {
+            console.log("status", status);
             if (status === "ON") {
                 conference.setLocalParticipantProperty("transcribing", true);
                 dispatch(showSnackbar({autoHide: true, message: "Caption started"}));
@@ -550,9 +551,18 @@ const Navbar = ({dominantSpeakerId}) => {
                 dispatch(addSubtitle({}));
                 setCaption(false);
             }
+
+            // if (status === "OFF") {
+            //     conference.removeLocalParticipantProperty("transcribing");
+            //     dispatch(showSnackbar({autoHide: true, message: "Caption stopped"}));
+            //     dispatch(addSubtitle({}));
+            //     setCaption(false);
+            // }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
+
+            console.log("data", data);
             if (data._status === "on" && data._mode === "stream") {
                 conference.setLocalParticipantProperty("streaming", true);
                 dispatch(showSnackbar({autoHide: true, message: "Live streaming started"}));
@@ -578,6 +588,18 @@ const Navbar = ({dominantSpeakerId}) => {
                 dispatch(showSnackbar({autoHide: true, message: "Recording stopped"}));
                 setRecording(false);
             }
+
+            // if (data._status === "error" && data._mode === "file") {
+            //     conference.removeLocalParticipantProperty("recording");
+            //     dispatch(showSnackbar({autoHide: true, message: data.message}));
+            //     setRecording(false);
+            // }
+
+            // if (data._status === "error" && data._mode === "stream") {
+            //     conference.removeLocalParticipantProperty("streaming");
+            //     dispatch(showSnackbar({autoHide: true, message: data.message}));
+            //     setStreaming(false);
+            // }
         });
 
     }, []);

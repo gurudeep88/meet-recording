@@ -8,6 +8,9 @@ const Audio = props => {
         if (audioElementRef?.current) {
             audioElementRef.current.volume = 1;
         }
+        return()=>{
+            track?.detach(audioElementRef.current);
+        }
     }, [track]);
 
     if (!track) {

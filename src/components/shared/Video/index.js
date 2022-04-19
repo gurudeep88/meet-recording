@@ -13,6 +13,9 @@ const Video = props => {
     const videoElementRef = useRef(null);
     useEffect(() => {
         track?.attach(videoElementRef.current);
+        return()=>{
+            track?.detach(videoElementRef.current);
+        }
     }, [track]);
 
     if (!track) {

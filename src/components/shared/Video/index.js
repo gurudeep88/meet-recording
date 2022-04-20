@@ -12,15 +12,14 @@ const Video = props => {
     const {track, isPresenter} = props;
     const videoElementRef = useRef(null);
     useEffect(() => {
-        track?.attach(videoElementRef.current);
-        return()=>{
-            track?.detach(videoElementRef.current);
+        if (!track || !videoElementRef.current) {
+            return;
+        }
+        track.attach(videoElementRef.current);
+        return ()=>{
+            track.detach(videoElementRef.current);
         }
     }, [track]);
-
-    if (!track) {
-        return null;
-    }
 
     return (<video playsInline="1" autoPlay='1' className={ !isPresenter && classes.video } ref={videoElementRef}
                                style={{width: '100%', height: '100%', objectFit: 'contain'}}/>);

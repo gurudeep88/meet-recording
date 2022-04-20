@@ -25,7 +25,6 @@ const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, 
     });
     const actaulWidth = gridWidth - 40;
     const actualHeight = actaulWidth * 9/16;
-
     return (
         <Box style={{height: `${panelHeight}px`}} className={activeClasses}>
             {conference.getParticipantsWithoutHidden().map((participant, index) => {

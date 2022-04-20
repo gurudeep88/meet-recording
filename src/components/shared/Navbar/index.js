@@ -18,7 +18,7 @@ import CopyLink from "../CopyLink";
 import ViewComfyIcon from '@material-ui/icons/ViewComfy';
 import {useSelector, useDispatch} from "react-redux";
 import {setLayout} from "../../../store/actions/layout";
-import {GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD, DROPBOX_APP_KEY, EXIT_FULL_SCREEN_MODE, RECORDING_ERROR_CONSTANTS} from "../../../constants";
+import {RECEIVED_PRESENTATION_STATUS, GET_PRESENTATION_STATUS, GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD, DROPBOX_APP_KEY, EXIT_FULL_SCREEN_MODE, RECORDING_ERROR_CONSTANTS} from "../../../constants";
 import classnames from "classnames";
 import Chat from "../Chat";
 import ParticipantDetails from "../ParticipantDetails";
@@ -495,6 +495,38 @@ const Navbar = ({dominantSpeakerId}) => {
             conference.setLocalParticipantProperty("sharedDocument", "stop");
         }
     }
+    useEffect(()=>{
+        if ( conference.getParticipantsWithoutHidden()[0]?._id ) {
+            setTimeout(()=>conference.sendEndpointMessage(conference.getParticipantsWithoutHidden()[0]._id, {action: GET_PRESENTATION_STATUS}), 1000);    
+        }
+        const checkPresentationStatus = (participant, payload)=> {
+            if (payload?.action === GET_PRESENTATION_STATUS) {
+                conference.sendEndpointMessage(participant._id, {
+                    action: RECEIVED_PRESENTATION_STATUS,
+                    status: whiteboard ? "whiteboard": (sharedDocument ? "sharedDocument" : 'none')
+                })
+            }
+
+            if (payload?.action === RECEIVED_PRESENTATION_STATUS) {
+                if (payload.status === "whiteboard") {
+                    dispatch(setLayout(PRESENTATION));
+                    dispatch(setPresentationtType({ presentationType:  WHITEBOARD}));
+                    setSharedDocument(false);
+                    setWhiteboard(true);
+                }
+                if (payload.status === "sharedDocument") {
+                    dispatch(setLayout(PRESENTATION));
+                    dispatch(setPresentationtType({ presentationType:  SHARED_DOCUMENT}));
+                    setWhiteboard(false);
+                    setSharedDocument(true);
+                }
+            }
+        }
+        conference.addEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
+        return ()=>{
+            conference.removeEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
+        }
+    },[whiteboard, sharedDocument]);
 
     useEffect(() => {
         conference.getParticipantsWithoutHidden().forEach(item=>{

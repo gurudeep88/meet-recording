@@ -4,18 +4,15 @@ const Audio = props => {
     const {track} = props
     const audioElementRef = useRef(null);
     useEffect(() => {
-        track?.attach(audioElementRef.current);
-        if (audioElementRef?.current) {
-            audioElementRef.current.volume = 1;
+        if (!track || !audioElementRef?.current) {
+            return;
         }
-        return()=>{
-            track?.detach(audioElementRef.current);
+        track.attach(audioElementRef.current);
+        return ()=>{
+            track.detach(audioElementRef.current);
         }
     }, [track]);
 
-    if (!track) {
-        return null;
-    }
     return (<audio playsInline="1" autoPlay='1' ref={audioElementRef}/>);
 }
 

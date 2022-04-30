@@ -19,16 +19,16 @@ export function useWindowResize() {
         }
 
         if (layout.mode === ENTER_FULL_SCREEN_MODE ) {
-            viewportHeight = documentHeight - 84;
+            viewportHeight = documentHeight - 128;
             viewportWidth = viewportHeight * 16/9;
             return {viewportWidth , viewportHeight};
         }
 
-        viewportWidth = documentWidth - documentWidth*20/100;
+        viewportWidth = documentWidth - documentWidth*10/100;
         viewportHeight = viewportWidth * 9/16;
         
-        if (viewportHeight > documentHeight - 128) {
-            viewportHeight = documentHeight - 128
+        if (viewportHeight > documentHeight - 88) {
+            viewportHeight = documentHeight - 88
             viewportWidth  = viewportHeight*16/9
         }
 

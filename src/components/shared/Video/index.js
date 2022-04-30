@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {makeStyles} from "@material-ui/core";
+import { color } from '../../../assets/styles/_color';
 
 const useStyles = makeStyles(() => ({
     video: {
@@ -20,7 +21,7 @@ const Video = props => {
     }
 
     return (<video playsInline="1" autoPlay='1' className={ !isPresenter && classes.video } ref={videoElementRef}
-                               style={{width: '100%', height: '100%', objectFit: 'contain'}}/>);
+                               style={{width: '100%', height: '100%', objectFit: 'contain', borderRadius: '5px', backgroundColor: color.secondaryDark}}/>);
 }
 
 export default Video;

@@ -8,20 +8,7 @@ import {useDocumentSize} from "../../../hooks/useDocumentSize";
 import classnames from "classnames";
 import * as Constants from "../../../constants";
 
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        alignItems: "center",
-        display: "flex",
-        "& .fullmode": {
-            position: "absolute",
-            right: 0,
-        }
-    }
-}));
-
 const SpeakerLayout = ({dominantSpeakerId}) => {
-    const classes = useStyles();
     const {documentHeight, documentWidth} = useDocumentSize();
     const {viewportWidth, viewportHeight} = useWindowResize();
     const localTracks = useSelector(state => state.localTrack);
@@ -30,6 +17,21 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state=>state.layout);
     const myUserId = conference.myUserId();
+
+    const useStyles = makeStyles((theme) => ({
+        root: {
+            alignItems: "center",
+            display: "flex",
+            marginTop: layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? '0px' : '16px',
+            "& .fullmode": {
+                position: "absolute",
+                right: '16px',
+            }
+        }
+    }));
+
+    const classes = useStyles();
+
     let largeVideoId;
 
     if ( conference.getParticipantCount() === 2 ) {
@@ -49,7 +51,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-
+    
     return (
         <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}} className={activeClasses}>
             <VideoBox

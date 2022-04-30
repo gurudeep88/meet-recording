@@ -9,19 +9,21 @@ import { color } from '../../../assets/styles/_color';
 const useStyles = makeStyles((theme) => ({
     labelHover: {
         '&:hover svg': {
-            color:color.secondary,
+            color:color.primaryLight,
             cursor: 'pointer'
         }
     },
     photo: {
         marginBottom: '-4px',
-        padding: '3px'
+        padding: '3px',
+        color: color.white,
     },
     attach: {
         fontSize: '1.3rem', 
         marginBottom: '-4px',
         padding: '3px',
-        transform: 'rotate(30deg)'
+        transform: 'rotate(30deg)',
+        color: color.white,
     }
 }))
 

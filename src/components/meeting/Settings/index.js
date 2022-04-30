@@ -52,24 +52,29 @@ const useStyles = makeStyles((theme) => ({
     },
     root: {
         flexGrow: 1,
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: color.secondary,
     },
     tabs: {
         borderRight: `1px solid ${theme.palette.divider}`,
-        padding: "8px 8px 0px 24px",
+        padding: "8px 0px 8px 0px",
         "&>div>span": {
             display: "none",
         },
     },
     tab: {
-        color: "red",
+        height: '36px',
+        minHeight: '36px',
         padding: "6px 16px",
+        minWidth: '56px',
+        marginRight: '4px',
+        border: `1px solid ${color.primaryLight}`,
+        borderRadius: "10px",
+        color: '#fff',
         "& .MuiTab-wrapper": {
             alignItems: "flex-start",
         },
         "&.Mui-selected": {
-            background: color.primary,
-            borderRadius: "25px",
+            background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
             "& svg": {
                 color: color.white,
             },
@@ -78,12 +83,9 @@ const useStyles = makeStyles((theme) => ({
             },
         },
         "&:hover": {
-            "& svg": {
-                color: color.secondaryDark,
-            },
-            "& p": {
-                color: color.primary,
-            },
+            fontWeight: "900",
+            background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
+           
         },
     },
     setting: {
@@ -91,36 +93,43 @@ const useStyles = makeStyles((theme) => ({
         color: color.secondary,
     },
     title: {
-        fontSize: "1.5rem",
-        paddingLeft: theme.spacing(3),
-        fontWeight: '900'
+        color: color.white,
+        fontWeight: "400",
+        fontSize: '28px',
+        lineHeight: '1',
+        marginLeft: theme.spacing(1),
+        marginBottom: theme.spacing(2),
     },
     marginBottom: {
         marginBottom: theme.spacing(2),
     },
     label: {
-        display: "flex",
-        alignItems: "center",
-        "& svg": {
-            color: color.secondary,
-            marginRight: theme.spacing(2),
-        },
-        "& p": {
+        display: 'flex',
+        alignItems: 'center',
+            padding: theme.spacing(0.5, 1),
             textTransform: "capitalize",
-            color: color.secondary,
-            fontSize: "0.9rem",
-        },
+        // display: "flex",
+        // alignItems: "center",
+        // "& svg": {
+        //     color: color.white,
+        //     marginRight: '12px',
+        // },
+        // "& p": {
+        //     textTransform: "capitalize",
+        //     color: color.white,
+        //     fontSize: "0.9rem",
+        // },
     },
     audioIcon: {
-        paddingLeft: "3px",
-        marginRight: "20px",
+        paddingLeft: "0px",
+        marginRight: "15px",
     },
     videoIcon: {
         marginRight: "13px",
         fontSize: "2rem",
     },
     list: {
-        padding: theme.spacing(3, 3, 3, 3),
+        padding: theme.spacing(3, 0),
         "&>li>div": {
             "&>span": {
                 fontSize: "0.9rem",
@@ -322,10 +331,10 @@ const SettingsBox = () => {
     const audioPanel = (
         <Box className={classes.list}>
             <Box className={classes.marginBottom}>
-                <SelectField data={microphoneData} />
+                <SelectField data={microphoneData} minWidth={'292px'} />
             </Box>
             <Box className={classes.marginBottom}>
-                <SelectField data={speakerData} />
+                <SelectField data={speakerData} minWidth={'292px'} />
             </Box>
         </Box>
     );

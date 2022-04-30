@@ -32,39 +32,62 @@ const useStyles = makeStyles((theme) => ({
         right: "2px",
         justifyContent: "space-between",
         margin: theme.spacing(3, 0, 0, 0),
+        paddingBottom: theme.spacing(3),
     },
     form: {
         textAlign: 'center',
         display: 'flex',
         alignItems: 'center',
+        paddingLeft: theme.spacing(1),
+        border: `1px solid ${color.primaryLight}`,
+        borderRadius: '40px',
         "& fieldset": {
             border: 'none'
         }
     },
     margin: {
         width: '100%',
-        margin: theme.spacing(1, 0),
         "& label": {
             fontSize: '0.8rem',
-            color: color.secondary,
+            color: color.white,
         },
         "& .MuiFormLabel-root.Mui-focused": {
-            color: color.secondary
+            color: 'transparent'
+        },
+        "& .MuiInputBase-input":{
+            fontSize: '0.8rem'
         },
         "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: `${color.secondary} !important`
         },
         "& .MuiOutlinedInput-root.Mui-focused": {
             "& svg": {
-                color: color.secondary
+                color: color.white
             }
+        },
+        "& textarea": {
+            color: color.white
+        },
+        "& .MuiOutlinedInput-multiline": {
+            padding: '12.5px 14px'
         }
     },
-    input: {
+    link: {
+        color: 'red !important'
+    },
+    outlinedInput: {
         background: color.lightgray,
         borderRadius: "30px",
+        padding: '12.5px 14px',
         "& svg": {
-            color: color.secondaryLight
+            color: color.white
+        },
+    },
+    input: {
+        "&::placeholder": {
+            color: 'white',
+            background: 'red',
+
         }
     },
     chatList: {
@@ -76,31 +99,42 @@ const useStyles = makeStyles((theme) => ({
             height: '30px',
             fontSize: '0.8rem'
         },
-        "& span": {
-            fontSize: '0.875rem'
+        "& h6": {
+            fontSize: '1rem'
         },
         "& p": {
-            fontSize: "0.75rem"
+            fontSize: "0.75rem",
+            "& a": {
+                color: `${color.link} !important`
+            }
         }
     },
     listItem: {
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        paddingLeft: '12px',
+        paddingRight: '12px'
     },
     listItemText: {
         paddingRight: '5px',
         wordBreak: 'break-word',
-        marginTop: 0
+        marginTop: 0,
+        color: color.white,
+        "& p": {
+            color: color.white
+        }
     },
     time: {
-        whiteSpace: 'nowrap'
+        whiteSpace: 'nowrap',
+        color: color.secondaryLight
     },
     sendIcon: {
         padding: '2px 12px 2px 6px',
+        color: color.white,
         '&:hover':{
             background: 'none'
         },
         '&:hover svg':{
-            color: color.secondary
+            color: color.primaryLight
         }
     }
 }));
@@ -190,14 +224,14 @@ const ChatPanel = () => {
                 {messages.map((newMessage, index) => {
                     return (
                     <ListItem key={index} className={classes.listItem}>
-                        <ListItemAvatar>
+                        {/* <ListItemAvatar>
                             <Avatar src={ newMessage?.user?.avatar ? newMessage?.user?.avatar : null } style={{background: avatarColors[newMessage?.user?.id], marginTop: '5px'}} >{newMessage?.user?.name?.toUpperCase()?.slice(0, 1)}</Avatar>
-                        </ListItemAvatar>
+                        </ListItemAvatar> */}
                         <ListItemText 
                             className={classes.listItemText}>
-                            <span className="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock">{newMessage?.user?.name}</span>
+                            <Typography variant="h6" className="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock">{newMessage?.user?.name}</Typography>
                             <p className="MuiTypography-root MuiListItemText-secondary MuiTypography-body2 MuiTypography-colorTextSecondary MuiTypography-displayBlock"
-                            dangerouslySetInnerHTML={{__html: linkify(newMessage?.text)}}>
+                            dangerouslySetInnerHTML={{__html: linkify(newMessage?.text, {className: classes.link})}}>
                             </p>
                         </ListItemText>
                         <Typography variant = "caption" className={classes.time}>{formatAMPM(newMessage?.time)}</Typography>
@@ -231,18 +265,21 @@ const ChatPanel = () => {
                     className={clsx(classes.margin, classes.textField)}
                     variant="outlined"
                 >
-                    
+{/*                     
                     <InputLabel htmlFor="outlined-adornment-submit">
                         Type Here
-                    </InputLabel>
+                    </InputLabel> */}
                     <OutlinedInput
+                        placeholder="Send a message to everyone"
                         autoComplete='off'
                         id="outlined-adornment-submit"
                         value={currentMessage}
                         onChange={handleChange}
-                        className={classes.input}
                         multiline
                         maxRows={1}
+                        inputProps={{
+                            classes: {input: classes.input}
+                        }}
                         endAdornment={
                             <InputAdornment position="end">
                                 

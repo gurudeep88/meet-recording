@@ -24,7 +24,7 @@ if (process.env.REACT_APP_ENV == "production") {
 
 const THEME = createMuiTheme({
   typography: {
-   "fontFamily": `'Montserrat', sans-serif`,
+   "fontFamily": `'DM Sans', sans-serif`,
   }
 });
 

@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         "& .fullmode": {
             position: "absolute",
-            right: 0,
+            right: '16px',
         },
         "& iframe .hasSecondary": {
            boxShadow: "none",

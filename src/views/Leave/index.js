@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
                 textTransform: 'capitalize',
                 padding: theme.spacing(0.5, 2.5),
                 "&:hover": {
-                    color: color.primary
+                    color: color.white
                 }
             }
     }))

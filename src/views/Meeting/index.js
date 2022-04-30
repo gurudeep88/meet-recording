@@ -255,6 +255,14 @@ const Meeting = () => {
             })
         });
 
+        conference.addEventListener(SariskaMediaTransport.events.conference.KICKED, (id)=> { // if a user kicked by moderator 
+            // kicked participant id
+          });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_KICKED, (actorParticipant, kickedParticipant, reason) => {
+
+        })
+
         preloadIframes(conference);
         SariskaMediaTransport.effects.createRnnoiseProcessor();
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
@@ -275,14 +283,15 @@ const Meeting = () => {
         return <Home />;
     }
 
-    let justifyContent = "center";
+    //let justifyContent = "center";
+    let justifyContent = "space-between";
     if (layout.mode === ENTER_FULL_SCREEN_MODE) {
         justifyContent = "space-around";
     }
 
     return (
         <Box style={{ justifyContent }} className={classes.root}>
-            <Navbar dominantSpeakerId={dominantSpeakerId} />
+            {/* <Navbar dominantSpeakerId={dominantSpeakerId} /> */}
             {layout.type === SPEAKER &&
                 <SpeakerLayout dominantSpeakerId={dominantSpeakerId} />
             }

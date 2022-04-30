@@ -8,14 +8,34 @@ const useStyles = makeStyles((theme) => ({
     '& .MuiTextField-root': {
       margin: theme.spacing(1),
       width: props => props.width || '25ch',
+      "& input": {
+        color: color.secondaryLight
+      },
+      "&:hover": {
+        "& .MuiInput-underline:before": {
+          borderBottom: `2px solid ${color.secondaryLight}`
+        },
+      }
+    },
+    "& .MuiFormLabel-root": {
+      color: color.white
     },
     '& .MuiFormLabel-root.Mui-focused': {
-        color: color.secondary,
-        fontWeight: '600'
+        color: color.white,
+        fontWeight: '800'
+    },
+    "& MuiInputBase-input": {
+      color: color.white
+    },
+    "& .MuiInput-underline:before": {
+      borderBottom: `1px solid ${color.secondaryLight}`
     },
     '& .MuiInput-underline:after': {
-        borderBottom: `2px solid ${color.secondaryDark}`
-    }
+        borderBottom: `2px solid ${color.secondaryLight}`
+    },
+    "&.MuiInput-underline:hover:not(.Mui-disabled):before": {
+      borderBottom: `1px solid ${color.white}`
+  }
   },
 }));
 

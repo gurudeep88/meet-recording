@@ -134,7 +134,7 @@ const ParticipantDetails = () => {
       .map((participant) => participant?._identity?.user?.name?.toLowerCase()),
   ]);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
   const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
   const participantDetails = conference.participants?._identity?.user || conference.getLocalUser();
   const dispatch = useDispatch();
@@ -176,7 +176,7 @@ const togglePinParticipant = (id) => {
   dispatch(setPinParticipant(id));
 }
 
-const getOptions = (participantId) => { 
+const getOptions = (participantId, role) => { 
   return [
   {
     icon: <span className={pinnedParticipantId ===participantId ? classnames("material-icons material-icons-outlined", classes.pin): "material-icons material-icons-outlined"}>push_pin</span>,
@@ -190,11 +190,15 @@ const getOptions = (participantId) => {
       </span>
     ),
     text: "Remove from the call",
-    onClick: ()=>conference.kickParticipant(participantId)
+    onClick: (event, index)=>{ 
+      conference.kickParticipant(participantId); 
+      setSelectedIndex(index);
+      setAnchorEl(null);
+      },
+    disabled: conference.getRole() === "moderator" && selectedIndex !==1 ? false : true,
   },
 ];
 }
-
   return (
     <Box className={classes.root}>
       <Box>
@@ -215,11 +219,11 @@ const getOptions = (participantId) => {
                 <Box className={classes.userBoxContainer}>
                   <Box className={classes.hostDetails}>
                     <Box className={classes.hostBox}></Box>
-                    <Typography>{participant?.name} (You) {participant?.id} </Typography>
+                    <Typography>{participant?.name} (You) </Typography>
                   </Box>
                   <Typography variant="caption">
                     {conference.getRole() === "moderator" && (
-                      <b>Meeting Host {participant?.id}</b>
+                      <b>Meeting Host</b>
                     )}
                   </Typography>
                 </Box>
@@ -248,7 +252,7 @@ const getOptions = (participantId) => {
                 {anchorEl && <MenuBox
                   anchorEl={anchorEl}
                   selectedIndex={selectedIndex}
-                  options={getOptions(participant?.id)}
+                  options={getOptions(participant?.id, conference.getRole())}
                   handleMenuClick={handleMenuClick}
                   handleMenuItemClick={handleMenuItemClick}
                   handleClose={handleClose}
@@ -275,13 +279,13 @@ const getOptions = (participantId) => {
                     <Box className={classes.hostDetails}>
                       <Box className={classes.hostBox}>
                         <Typography>
-                          {participant?._identity?.user?.name} {participant?._id}
+                          {participant?._identity?.user?.name}
                         </Typography>
                       </Box>
                     </Box>
                     <Typography variant="caption">
                       {participant?._role === "moderator" && (
-                        <b>Meeting Host {participant?._id}</b>
+                        <b>Meeting Host </b>
                       )}
                     </Typography>
                   </Box>
@@ -310,7 +314,7 @@ const getOptions = (participantId) => {
                   {anchorEl && <MenuBox
                     anchorEl={anchorEl}
                     selectedIndex={selectedIndex}
-                    options={getOptions(participant._id)}
+                    options={getOptions(participant._id, participant?._role)}
                     handleMenuClick={handleMenuClick}
                     handleMenuItemClick={handleMenuItemClick}
                     handleClose={handleClose}

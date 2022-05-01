@@ -106,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
     label: {
         display: 'flex',
         alignItems: 'center',
-            padding: theme.spacing(0.5, 1),
+            padding: '4px 14px',
             textTransform: "capitalize",
         // display: "flex",
         // alignItems: "center",

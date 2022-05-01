@@ -159,6 +159,13 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     marginLeft: -12,
   },
+  buttonProgressJoin: {
+    color: color.primary,
+    position: "absolute",
+    top: "76%",
+    left: "50%",
+    marginLeft: -12,
+  },
 }));
 
 const LobbyRoom = ({ tracks }) => {
@@ -494,7 +501,7 @@ const LobbyRoom = ({ tracks }) => {
             </Button>
 
             {loading && (
-              <CircularProgress size={24} className={classes.buttonProgress} />
+              <CircularProgress size={24} className={ !queryParams?.meetingId ? classes.buttonProgress : classes.buttonProgressJoin} />
             )}
           </div>
         </Box>

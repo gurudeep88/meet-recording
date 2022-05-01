@@ -72,6 +72,7 @@ export const MenuBox=({anchorEl, selectedIndex, options, handleMenuItemClick, ha
             key={index}
             selected={index === selectedIndex}
             onClick={option.onClick}
+            disabled={option?.disabled}
         >
           <ListItemIcon>
             {option.icon}

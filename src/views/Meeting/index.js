@@ -26,21 +26,12 @@ import { useHistory } from 'react-router-dom';
 import { setUserResolution } from '../../store/actions/layout';
 import {useOnlineStatus} from "../../hooks/useOnlineStatus";
 import { updateLocalTrack } from '../../store/actions/track';
-
+import {useWindowResize} from "../../hooks/useWindowResize";
+import {useDocumentSize} from "../../hooks/useDocumentSize";
 import ReactGA from 'react-ga4';
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        display: "flex",
-        flexDirection: "column",
-        background: color.secondaryDark,
-        minHeight: '100vh',
-    }
-}));
 
 const Meeting = () => {
     const history = useHistory();
-    const classes = useStyles();
     const dispatch = useDispatch();
     const localTracks = useSelector(state => state.localTrack);
     const conference = useSelector(state => state.conference);
@@ -52,6 +43,19 @@ const Meeting = () => {
     const resolution = useSelector(state=>state.media?.resolution);
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUserJoined, setLobbyUserJoined] = useState({});
+    const {documentHeight, documentWidth} = useDocumentSize();
+    const {viewportWidth, viewportHeight} = useWindowResize();
+
+    const useStyles = makeStyles((theme) => ({
+        root: {
+            display: "flex",
+            flexDirection: "column",
+            background: color.secondaryDark,
+            minHeight: layout.mode === ENTER_FULL_SCREEN_MODE ? "100vh":  "calc(100vh - 16px)"
+        }
+    }));
+
+    const classes = useStyles();
     let ingoreFirstEvent = true;
 
     const allowLobbyAccess = () => {
@@ -288,10 +292,19 @@ const Meeting = () => {
     if (layout.mode === ENTER_FULL_SCREEN_MODE) {
         justifyContent = "space-around";
     }
+    let paddingTop = 16;
+
+    if (viewportWidth  < 1025 && layout.type === GRID) {
+        justifyContent = "center";
+        paddingTop = 0;
+    }
+
+    if (layout.mode === ENTER_FULL_SCREEN_MODE) {
+        paddingTop = 0 ;
+    }
 
     return (
-        <Box style={{ justifyContent }} className={classes.root}>
-            {/* <Navbar dominantSpeakerId={dominantSpeakerId} /> */}
+        <Box style={{ justifyContent, paddingTop:  paddingTop}} className={classes.root}>
             {layout.type === SPEAKER &&
                 <SpeakerLayout dominantSpeakerId={dominantSpeakerId} />
             }

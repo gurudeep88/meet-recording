@@ -129,6 +129,8 @@ const VideoBox = ({
                     isFilmstrip,
                     isLargeVideo,
                     isTranscription,
+                    videoWidth,
+                    videoHeight
                   }) => {
     const classes = useStyles();
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
@@ -162,7 +164,7 @@ const VideoBox = ({
     });
     
     return (
-        <Box style={{width: `${width - 4-4*16/9 }px`, height: `${height - 4}px`}}
+        <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
              onMouseLeave={() => setVisiblePinPartcipant(false)} 
              className={classes.root}>
@@ -190,8 +192,8 @@ const VideoBox = ({
                         </Avatar>
                     </Box>
                     :
-                    <Box style={{width: `${width - 4-4*16/9}px`, height: `${height - 4}px`, borderRadius: '5px'}} className={borderActiveClasses}>
-                        <Video isPresenter={isPresenter} track={videoTrack}/>
+                    <Box style={{width: `${width}px`, height: `${height}px`, borderRadius: '5px', overflow: "hidden"}} className={borderActiveClasses}>
+                        <Video isPresenter={isPresenter} width={videoWidth} height={videoHeight} track={videoTrack} borderRadius = "5px" />
                     </Box>
             }
             <Box className={classes.rightControls}>

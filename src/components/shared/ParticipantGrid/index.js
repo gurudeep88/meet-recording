@@ -4,22 +4,24 @@ import {useSelector} from "react-redux";
 import VideoBox from "../VideoBox";
 import {calculateRowsAndColumns} from "../../../utils";
 import {useWindowResize} from "../../../hooks/useWindowResize";
-
-const useStyles = makeStyles((theme) => ({
-    row: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%"
-    },
-    root: {
-        justifyContent: "center",
-        display: "flex",
-        flexDirection: "column"
-    }
-}));
+import * as Constants from "../../../constants";
 
 const ParticipantGrid = ({dominantSpeakerId}) => {
+    const layout = useSelector(state => state.layout);
+    const useStyles = makeStyles((theme) => ({
+        row: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%"
+        },
+        root: {
+            justifyContent: "center",
+            display: "flex",
+            flexDirection: "column"
+        }
+    }));
+
     const {viewportWidth, viewportHeight} = useWindowResize();
     
     const classes = useStyles();
@@ -27,7 +29,6 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
     const localTracks = useSelector(state => state.localTrack);
     const remoteTracks = useSelector(state => state.remoteTrack);
     const localUser = conference.getLocalUser();
-    const layout = useSelector(state => state.layout);
 
     //merge local and remote track
     const tracks = {...remoteTracks, [localUser.id]: localTracks };
@@ -52,6 +53,8 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
                                 <VideoBox key={i * columns + j}
                                     height={gridItemHeight}
                                     width={gridItemWidth}
+                                    videoWidth="100%"
+                                    videoHeight="auto"
                                     isBorderSeparator={participants.length > 1}
                                     isFilmstrip={true}
                                     isPresenter={layout.presenterParticipantIds.find(item=>item===participants[i * columns + j]._id)}

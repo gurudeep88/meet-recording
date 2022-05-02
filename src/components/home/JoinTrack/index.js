@@ -1,28 +1,15 @@
 import { Avatar, Box, makeStyles } from "@material-ui/core";
 import React, { useRef, useLayoutEffect, useState } from "react";
+import { useDocumentSize } from "../../../hooks/useDocumentSize";
 import Video from "../../shared/Video";
 
 
 const JoinTrack = ({ tracks, name }) => {
-
   const videoTrack = tracks.find((track) => track && track.isVideoTrack());
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  useLayoutEffect(() => {
-    function updateSize() {
-      const width = document.documentElement.clientWidth * (100 / 100);
-      const height =
-        document.documentElement.clientWidth * (100 / 100) * (9 / 16);
-      setDimensions({ width, height });
-    }
-    window.addEventListener("resize", updateSize);
-    updateSize();
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
+  const {documentHeight, documentWidth} = useDocumentSize();
 
   const useStyles = makeStyles((theme) => ({
     localStream: {
-      borderRadius: "8px",
       margin: "0px",
       overflow: "hidden",
       position: "absolute",
@@ -54,13 +41,24 @@ const JoinTrack = ({ tracks, name }) => {
   }));
   const classes = useStyles();
 
+  let height;
+  let width ;
+
+  if (documentWidth*9/16 <  documentHeight ) {
+    width = "auto"
+    height = "100%"
+  }  else {
+    width = "100%";
+    height =  "auto";
+  }
+
   return (
     <div
       className={classes.localStream}
     >
       {videoTrack?.isMuted() ? (
         <Box className={classes.avatarBox} 
-        style={{ width: dimensions.width, height: dimensions.height }}>
+        style={{ width: documentWidth, height: documentHeight }}>
           <Avatar className={classes.avatar} style={{fontSize: name && '125px' , fontWeight: name && '100'}}>
             {!name ? (
               <span class="material-icons material-icons-outlined">
@@ -72,10 +70,8 @@ const JoinTrack = ({ tracks, name }) => {
           </Avatar>
         </Box>
       ) : (
-        <div
-          style={{ width: dimensions.width, height: dimensions.height }}
-        >
-          <Video track={videoTrack} />
+        <div style={{ width: documentWidth, height: documentHeight, overflow: "hidden" }} >
+          <Video track={videoTrack} borderRadius={false} height={height} width={width} />
         </div>
       )}
     </div>
@@ -83,43 +79,3 @@ const JoinTrack = ({ tracks, name }) => {
 };
 
 export default JoinTrack;
-
-// import {makeStyles} from '@material-ui/core'
-// import React, {useRef, useLayoutEffect, useState} from 'react'
-// import Video from '../../shared/Video';
-
-// const useStyles = makeStyles(() => ({
-//     localStream: {
-//         borderRadius: "8px",
-//         margin: "16px 16px 16px 16px",
-//         overflow: "hidden",
-//         position: "relative",
-//         background: "black"
-//     }
-// }))
-
-// const JoinTrack = ({tracks}) => {
-
-//     const videoTrack = tracks.find(track => track && track.isVideoTrack());
-//     const classes = useStyles();
-//     const [dimensions, setDimensions] = useState({width: 0 , height: 0 });
-
-//     useLayoutEffect(() => {
-//             function updateSize() {
-//                 const width  = (document.documentElement.clientWidth/2)*(70/100);
-//                 const height  = width*9/16;
-//                 setDimensions({width, height});
-//             }
-//             window.addEventListener('resize', updateSize);
-//             updateSize();
-//             return () => window.removeEventListener('resize', updateSize);
-//     }, []);
-
-//     return (
-//         <div style={{width: dimensions.width, height: dimensions.height}} className={classes.localStream}>
-//             { !videoTrack?.isMuted() && <Video track={videoTrack}/> }
-//         </div>
-//     )
-// }
-
-// export default JoinTrack

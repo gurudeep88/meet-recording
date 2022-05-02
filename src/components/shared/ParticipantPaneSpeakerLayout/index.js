@@ -8,17 +8,14 @@ import * as Constants from "../../../constants";
 
 
 
-const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, dominantSpeakerId, panelHeight, gridWidth}) => {
-
+const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, dominantSpeakerId, panelHeight, gridWidth, gridHeight}) => {
     const layout = useSelector(state => state.layout);
     const useStyles = makeStyles((theme) => ({
         root: {
             overflowY: "auto",
             alignItems: "center",
             "& > div": {
-                marginBottom: layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? "0px" : "16px",
-                marginTop: layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? "16px" : "0px",
-                marginRight: layout.mode === Constants.ENTER_FULL_SCREEN_MODE && "36px",
+                marginTop: layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? "16px" : "0px"
             }
         }
     }));
@@ -27,8 +24,8 @@ const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, 
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-    const actualWidth = gridWidth - 40;
-    const actualHeight = actualWidth * 9/16;
+    const actualWidth = gridWidth;
+    const actualHeight = gridHeight;
 
     return (
         <Box style={{height: `${panelHeight}px`}} className={activeClasses}>

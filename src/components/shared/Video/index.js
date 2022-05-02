@@ -10,7 +10,7 @@ const useStyles = makeStyles(() => ({
 
 const Video = props => {
     const classes = useStyles();
-    const {track, isPresenter} = props;
+    const {track, isPresenter, borderRadius, width, height} = props;
     const videoElementRef = useRef(null);
     useEffect(() => {
         track?.attach(videoElementRef.current);
@@ -20,8 +20,11 @@ const Video = props => {
         return null;
     }
 
-    return (<video playsInline="1" autoPlay='1' className={ !isPresenter && classes.video } ref={videoElementRef}
-                               style={{width: '100%', height: '100%', objectFit: 'contain', borderRadius: '5px', backgroundColor: color.secondaryDark}}/>);
+    return (<video playsInline="1" 
+                   autoPlay='1' 
+                   className={ !isPresenter && classes.video } 
+                   ref={videoElementRef}
+                   style={{width: width ? width : "100%", height: height ? height : "100%", objectFit: 'contain', borderRadius: ( !borderRadius ? 0 : '5px' ), backgroundColor: color.secondaryDark}}/>);
 }
 
 export default Video;

@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL} from "../constants";
+import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL, ENTER_FULL_SCREEN_MODE} from "../constants";
 import linkifyHtml from 'linkify-html';
 
 const Compressor = require('compressorjs');
@@ -96,18 +96,61 @@ export const clearAllTokens = () => {
             x => localStorage.removeItem(x))
 }
 
+export function getVideoWidthHeight(layout, viewportWidth, documentWidth, documentHeight) {
+    let videoHeight, videoWidth;
+    if ( viewportWidth * 9 / 16  < documentHeight - 88) {
+        videoHeight = "100%";
+        videoWidth = "auto";
+   
+    } else {
+        videoWidth = "100%";
+        videoHeight = "auto";
+    }
+
+    if (documentWidth < 1040)  {
+        videoHeight = "100%"
+        videoWidth = "100%"
+    }
+
+    if (layout.mode === ENTER_FULL_SCREEN_MODE) {
+        videoHeight = "auto";
+        videoWidth = "100%";
+    }
+    return {videoWidth, videoHeight};
+}
+
 export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewportHeight) {
     const numWindows = totalParticipant;
     const columns = Math.ceil(Math.sqrt(numWindows));
     const rows = Math.ceil(numWindows / columns);
-    const gridItemWidth = viewportWidth / columns;
-    let gridItemHeight = viewportHeight / rows;
-    if ( gridItemHeight > gridItemWidth*9/16 ) {
-        gridItemHeight  = gridItemWidth*9/16
+    let gridItemWidth, gridItemHeight;
+    
+    if (totalParticipant === 1) {
+        return { rows, columns, gridItemWidth: viewportWidth, gridItemHeight: viewportHeight};
     }
 
-    return { rows, columns, gridItemWidth, gridItemHeight};
-}
+    if (totalParticipant === 2) {
+        gridItemWidth  = viewportWidth / (rows + 1);
+        return { rows, columns, gridItemWidth, gridItemHeight: gridItemWidth * 9/16};
+    }
+
+    // console.log("viewportWidth, gridItemWidth", viewportWidth , gridItemWidth);
+    // console.log("rows columns", rows, columns);
+
+    // if (gridItemWidth * 9/16 * rows >  viewportHeight ) {
+    //     if (totalParticipant === 2) {
+    //         gridItemHeight =  viewportHeight / (columns + 1);
+    //     } else {
+    //         gridItemHeight  = viewportHeight / columns;
+    //     }
+    //     return { rows, columns, gridItemWidth: gridItemHeight * 16 / 9, gridItemHeight};
+    // }
+
+    gridItemHeight = viewportHeight / columns;
+    gridItemWidth = viewportWidth / rows;
+
+    return { rows, columns, gridItemWidth: gridItemWidth, gridItemHeight};
+ } 
 
 export function getRandomColor() {
     var letters = '0123456789ABCDEF';

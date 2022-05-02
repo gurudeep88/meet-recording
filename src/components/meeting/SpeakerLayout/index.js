@@ -50,11 +50,11 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
 
-    let {videoWidth, videoHeight } =  getVideoWidthHeight(layout, viewportWidth, documentWidth, documentHeight);
-    if (conference.getParticipantCount() === 1  || layout.mode === Constants.ENTER_FULL_SCREEN_MODE) {
+    let {videoWidth, videoHeight} =  getVideoWidthHeight(layout, viewportWidth, documentWidth, documentHeight);
+    if (conference?.getParticipantCount() === 1  || layout.mode === Constants.ENTER_FULL_SCREEN_MODE) {
         viewportWidth = viewportWidth;
     }  else {
-        viewportWidth = viewportWidth - 48;
+        viewportWidth = viewportWidth - 48; 
     }
 
     return (

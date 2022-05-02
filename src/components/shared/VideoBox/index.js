@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
         },
         "& .activeSpeaker": {
             boxSizing: "border-box",
-            //border: "2px solid #44A5FF"
+            border: "2px solid #44A5FF"
         }
     },
     audioBox: {
@@ -193,7 +193,7 @@ const VideoBox = ({
                     </Box>
                     :
                     <Box style={{width: `${width}px`, height: `${height}px`, borderRadius: '5px', overflow: "hidden"}} className={borderActiveClasses}>
-                        <Video isPresenter={isPresenter} width={videoWidth} height={videoHeight} track={videoTrack} borderRadius = "5px" />
+                        <Video isPresenter={isPresenter} width={ isPresenter ? "100%" : videoWidth } height={ isPresenter ? "100%": videoHeight } track={videoTrack} borderRadius = "5px" />
                     </Box>
             }
             <Box className={classes.rightControls}>

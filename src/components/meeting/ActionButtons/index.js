@@ -187,6 +187,7 @@ const ActionButtons = () => {
   const [moreActionState, setMoreActionState] = React.useState({
     right: false,
   });
+
   const AddFShandler = () => {
     var isInFullScreen =
       (document.fullscreenElement && document.fullscreenElement !== null) ||
@@ -196,11 +197,12 @@ const ActionButtons = () => {
         document.mozFullScreenElement !== null) ||
       (document.msFullscreenElement && document.msFullscreenElement !== null);
 
-    if (isInFullScreen) {
-      dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
-    } else {
-      dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
-    }
+      console.log("isInFullScreen", isInFullScreen);
+      if (isInFullScreen) {
+        dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
+      } else {
+        dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+      }
   };
 
   const addFullscreenListeners = () => {
@@ -389,18 +391,11 @@ const ActionButtons = () => {
       setTime(formatAMPM(new Date()));
     }, 1000);
 
-    const dbClickHandler = () => {
-      if (layout.mode === EXIT_FULL_SCREEN_MODE) {
-        fullScreen();
-      } else {
-        fullScreen();
-      }
-    };
+    document.addEventListener("dblclick", fullScreen);
 
-    document.addEventListener("dblclick", dbClickHandler);
     return () => {
       clearInterval(interval);
-      document.removeEventListener("dblclick", dbClickHandler);
+      document.removeEventListener("dblclick", fullScreen);
     };
   }, [layout.mode]);
 
@@ -409,7 +404,8 @@ const ActionButtons = () => {
     return () => {
       removeFullscreenListeners();
     };
-  }, []);
+  }, [layout.mode]);
+
   const leaveConference = () => {
     dispatch(clearAllReducers());
     history.push("/leave");

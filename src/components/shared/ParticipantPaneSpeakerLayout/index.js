@@ -5,9 +5,6 @@ import VideoBox from "../VideoBox";
 import classnames from "classnames";
 import * as Constants from "../../../constants";
 
-
-
-
 const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, dominantSpeakerId, panelHeight, gridWidth, gridHeight}) => {
     const layout = useSelector(state => state.layout);
     const useStyles = makeStyles((theme) => ({
@@ -15,6 +12,7 @@ const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, 
             overflowY: "auto",
             alignItems: "center",
             "& > div": {
+                marginBottom: layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? "0px" : "16px",
                 marginTop: layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? "16px" : "0px"
             }
         }

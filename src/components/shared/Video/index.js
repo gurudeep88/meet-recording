@@ -21,7 +21,7 @@ const Video = props => {
     }
 
     return (<video playsInline="1" autoPlay='1' className={ !isPresenter && classes.video } ref={videoElementRef}
-                               style={{width: '100%', height: '100%', objectFit: 'contain', borderRadius: '5px', backgroundColor: color.secondaryDark}}/>);
+                               style={{width: '100%', height: '100%', objectFit: 'contain', borderRadius: props.borderRadius ? '0px' : '5px', backgroundColor: color.secondaryDark}}/>);
 }
 
 export default Video;

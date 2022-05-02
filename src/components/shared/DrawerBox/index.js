@@ -2,9 +2,12 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { color } from "../../../assets/styles/_color";
 import { Box, Drawer } from "@material-ui/core";
+import { ENTER_FULL_SCREEN_MODE } from "../../../constants";
+import { useSelector } from "react-redux";
 
 
 export default function DrawerBox({ children, open, onClose, top }) {
+  const layout = useSelector(state => state.layout);
   const useStyles = makeStyles((theme) => ({
     drawer: {
       "& .MuiDrawer-paper": {
@@ -13,7 +16,7 @@ export default function DrawerBox({ children, open, onClose, top }) {
         bottom: "80px",
         right: "16px",
         borderRadius: "10px",
-        height: "85%",
+        height: layout.mode === ENTER_FULL_SCREEN_MODE ? "89%" : "87%",
         width: "360px",
         backgroundColor: color.secondary,
       },

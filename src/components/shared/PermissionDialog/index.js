@@ -2,6 +2,8 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import {makeStyles} from "@material-ui/core";
+import { color } from '../../../assets/styles/_color';
+import FancyButton from '../FancyButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -16,6 +18,10 @@ const useStyles = makeStyles((theme) => ({
            padding: "20px"
         }
     },
+    card: {
+        background: color.secondaryDark,
+        color: color.white
+    },
     controls: {
         textAlign: "right",
         marginTop: "20px"
@@ -27,11 +33,12 @@ export default function PermissionDialog({displayName, allowLobbyAccess, denyLob
 
     return (
         <div className={classes.root}>
-            <Card>
+            <Card className={classes.card}>
                 <div>{displayName} wants to join </div>
                 <div className={classes.controls}>
-                    <Button onClick={denyLobbyAccess}>Deny</Button>
-                    <Button onClick={allowLobbyAccess}>Allow</Button>
+                    <FancyButton buttonText={'Deny'} onClick={denyLobbyAccess} width="100px" />
+                    &nbsp; &nbsp;
+                    <FancyButton buttonText={'Allow'} onClick={allowLobbyAccess} width="100px"/>
                 </div>
             </Card>
         </div>

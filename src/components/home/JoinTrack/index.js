@@ -11,8 +11,7 @@ const JoinTrack = ({ tracks, name }) => {
   useLayoutEffect(() => {
     function updateSize() {
       const width = document.documentElement.clientWidth * (100 / 100);
-      const height =
-        document.documentElement.clientWidth * (100 / 100) * (9 / 16);
+      const height = width * (9 / 16);
       setDimensions({ width, height });
     }
     window.addEventListener("resize", updateSize);
@@ -22,7 +21,6 @@ const JoinTrack = ({ tracks, name }) => {
 
   const useStyles = makeStyles((theme) => ({
     localStream: {
-      borderRadius: "8px",
       margin: "0px",
       overflow: "hidden",
       position: "absolute",
@@ -75,7 +73,7 @@ const JoinTrack = ({ tracks, name }) => {
         <div
           style={{ width: dimensions.width, height: dimensions.height }}
         >
-          <Video track={videoTrack} />
+          <Video track={videoTrack} borderRadius />
         </div>
       )}
     </div>

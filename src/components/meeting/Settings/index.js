@@ -75,6 +75,8 @@ const useStyles = makeStyles((theme) => ({
         },
         "&.Mui-selected": {
             background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
+            border: `none`,
+            padding: "7px 17px",
             "& svg": {
                 color: color.white,
             },
@@ -85,7 +87,8 @@ const useStyles = makeStyles((theme) => ({
         "&:hover": {
             fontWeight: "900",
             background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
-           
+            border: `none`,
+            padding: "7px 17px",
         },
     },
     setting: {

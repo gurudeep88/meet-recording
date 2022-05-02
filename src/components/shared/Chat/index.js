@@ -100,7 +100,9 @@ const useStyles = makeStyles((theme) => ({
             fontSize: '0.8rem'
         },
         "& h6": {
-            fontSize: '1rem'
+            fontSize: '1rem',
+            lineHeight: 1,
+            marginBottom: '8px',
         },
         "& p": {
             fontSize: "0.75rem",

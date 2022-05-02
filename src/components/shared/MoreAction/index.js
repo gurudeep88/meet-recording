@@ -49,8 +49,11 @@ const useStyles = makeStyles((theme) => ({
       height: "40px",
       marginTop: "10px",
       marginBottom: "20px",
+      paddingLeft: '6px',
+      borderRadius: '7.5px',
       "&:hover": {
         backgroundColor: color.secondaryLight,
+        borderRadius: '7.5px',
       },
     },
     "& span.material-icons": {
@@ -77,6 +80,14 @@ const useStyles = makeStyles((theme) => ({
     color: color.secondary,
     fontWeight: "900",
   },
+  cardTitle: {
+    color: color.white,
+    fontWeight: "400",
+    marginLeft: '8px',
+    fontSize: '28px',
+    lineHeight: '1',
+    marginBottom: '24px',
+  },
   urlBox: {
     padding: "24px 10px",
     "& h5": {
@@ -86,13 +97,14 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   stopRecording: {
-    color: `${color.primary} !important`,
+    color: `${color.primaryLight} !important`,
   },
   startRecording: {
     color: color.white,
   },
   virtualList: {
-    overflowY: "auto",
+    overflowY: "scroll",
+    height: '95%',
   },
   settingsList: {
 
@@ -644,27 +656,27 @@ export default function MoreAction({ dominantSpeakerId }) {
       title: streaming ? "Stop Streaming" : "Start Streaming",
       onClick: streaming ? stopStreaming : startStreaming,
     },
-    {
-      icon: (
-        <span
-          className={
-            caption
-              ? classnames(
-                  "material-icons material-icons-outlined",
-                  classes.stopRecording
-                )
-              : classnames(
-                  "material-icons material-icons-outlined",
-                  classes.startRecording
-                )
-          }
-        >
-          closed_caption
-        </span>
-      ),
-      title: caption ? "Turn off Captions" : "Turn on Captions",
-      onClick: caption ? stopCaption : startCaption,
-    },
+    // {
+    //   icon: (
+    //     <span
+    //       className={
+    //         caption
+    //           ? classnames(
+    //               "material-icons material-icons-outlined",
+    //               classes.stopRecording
+    //             )
+    //           : classnames(
+    //               "material-icons material-icons-outlined",
+    //               classes.startRecording
+    //             )
+    //       }
+    //     >
+    //       closed_caption
+    //     </span>
+    //   ),
+    //   title: caption ? "Turn off Captions" : "Turn on Captions",
+    //   onClick: caption ? stopCaption : startCaption,
+    // },
     {
       icon: (
         <span className="material-icons material-icons-outlined">
@@ -731,6 +743,7 @@ export default function MoreAction({ dominantSpeakerId }) {
   return (
     <>
       <Paper className={classes.root}>
+      <Typography variant="h6" className={classes.cardTitle}>Activities</Typography>
         <MenuList>
           {menuData.map((menu, index) => (
             <MenuItem onClick={menu.onClick} key={index}>

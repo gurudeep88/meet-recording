@@ -10,8 +10,11 @@ import { color } from "../../../assets/styles/_color";
 
 const StyledMenu = withStyles({
   paper: {
-    border: '1px solid #d3d4d5',
+    border: `1px solid ${color.secondaryDark}`,
+    borderRight: `1px solid ${color.secondary}`,
     zIndex: 999,
+    background: color.secondaryDark,
+    color: color.white
   },
 })((props) => (
   <Menu
@@ -31,28 +34,32 @@ const StyledMenu = withStyles({
 
 const StyledMenuItem = withStyles((theme) => ({
   root: {
+    border: `1px solid ${color.secondaryDark}`,
     '& .MuiListItemIcon-root': {
         fontSize: '1.3rem',
-        minWidth: '35px'
+        minWidth: '35px',
+        color: color.white,
       }, 
       '& .MuiListItemText-primary': {
-        fontSize: '0.9rem'
+        fontSize: '0.9rem',
+        color: color.white,
       },
     '&:focus': {
-      backgroundColor: color.lightgray2,
+      backgroundColor: color.secondary,
       '& .MuiListItemIcon-root': {
-        color: color.red
+        color: color.white
       }, 
       '& .MuiListItemText-primary': {
-        color: color.secondary,
+        color: color.white,
       },
     },
     '&:hover': {
+      background: color.secondary,
         '& .MuiListItemIcon-root':{
-            color: color.primaryLight
+            color: color.primary
         }, 
         '& .MuiListItemText-primary': {
-          color: color.secondary,
+          color: color.white,
         },
       },
   },

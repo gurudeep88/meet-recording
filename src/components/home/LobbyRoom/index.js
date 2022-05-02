@@ -34,6 +34,7 @@ import { setDisconnected } from "../../../store/actions/layout";
 import Logo from "../../shared/Logo";
 import DrawerBox from "../../shared/DrawerBox";
 import SettingsBox from "../../meeting/Settings";
+import FancyButton from "../../shared/FancyButton";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -492,14 +493,11 @@ const LobbyRoom = ({ tracks }) => {
                 onChange={handleUserNameChange}
               />
             </Box>
-            <Button
-              className={classes.anchor}
+            <FancyButton 
               disabled={loading}
               onClick={handleSubmit}
-            >
-              {buttonText}
-            </Button>
-
+              buttonText={buttonText}
+            />
             {loading && (
               <CircularProgress size={24} className={ !queryParams?.meetingId ? classes.buttonProgress : classes.buttonProgressJoin} />
             )}

@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   divider: {
-    backgroundColor: color.secondaryLight,
+    backgroundColor: color.search,
     marginTop: "auto",
     marginBottom: theme.spacing(2),
   },

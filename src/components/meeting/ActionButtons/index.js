@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
   infoContainer: {
     marginLeft: "20px",
     display: "flex",
-    width: "410px",
+    width: "350px",
   },
   separator: {
     marginLeft: "10px",
@@ -114,6 +114,7 @@ const useStyles = makeStyles((theme) => ({
       opacity: "0.8",
       background: `${color.red} !important`,
       cursor: "pointer",
+      color: `${color.white} !important`,
     },
   },
   subIcon: {

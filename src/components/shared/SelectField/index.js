@@ -35,6 +35,15 @@ const useStyles = makeStyles((theme) => ({
       color: color.secondaryLight
     }
     },
+    select: {
+      background: color.secondaryDark,
+      "& li": {
+        color: color.white,
+        "&:hover": {
+          background: color.secondary
+        }
+      }
+    }
 }));
 
 export default function SelectField({data, minWidth}) {
@@ -52,6 +61,12 @@ export default function SelectField({data, minWidth}) {
           onOpen={data.handleOpen}
           value={data.value}
           onChange={data.handleChange}
+          MenuProps={{
+            classes: {
+              paper: classes.select
+             }
+            }
+          }
         >
             {data.list?.map((item, index)=>(
                 <MenuItem value={item.value} key={index}>{item.label}</MenuItem>

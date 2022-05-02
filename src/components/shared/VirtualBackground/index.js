@@ -126,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
-        height: "206px",
+        height: "176px",
         marginBottom: '8px',
         background: color.secondary,
     },

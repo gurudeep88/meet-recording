@@ -12,7 +12,8 @@ export const API_URL_LIVE_BROADCASTS = 'https://content.googleapis.com/youtube/v
 export const DISCOVERY_DOCS = [ 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest' ];
 export const CREATE_YOUTUBE_LIVE_STREAMS = "https://www.googleapis.com/youtube/v3/liveStreams";
 export const CREATE_YOUTUBE_LIVE_BROADCASTS = "https://www.googleapis.com/youtube/v3/liveBroadcasts";
-
+export const GET_PRESENTATION_STATUS = "GET_PRESENTATION_STATUS";
+export const RECEIVED_PRESENTATION_STATUS = "RECEIVED_PRESENTATION_STATUS";
 export const GOOGLE_API_STATES = {
     NEEDS_LOADING: 0,
     LOADED: 1,

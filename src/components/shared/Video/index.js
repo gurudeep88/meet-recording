@@ -13,7 +13,13 @@ const Video = props => {
     const {track, isPresenter, borderRadius, width, height, left} = props;
     const videoElementRef = useRef(null);
     useEffect(() => {
-        track?.attach(videoElementRef.current);
+        if (!track || !videoElementRef.current) {
+            return;
+        }
+        track.attach(videoElementRef.current);
+        return ()=>{
+            track.detach(videoElementRef.current);
+        }
     }, [track]);
 
     if (!track) {

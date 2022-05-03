@@ -163,11 +163,13 @@ const VideoBox = ({
         'gridSeparator': isBorderSeparator
     });
 
-    let diff = 0 ;
-    if (height * 16 / 9  < width )  {
+    let diff = 0 , finalHeight;
+    
+    if ( height * 16 / 9  < width )  {
         diff = width - height*16/9;
+        finalHeight =  height + diff*9/16;
     }
-    const finalHeight  = height + diff*9/16;
+    console.log("diff", diff);
     
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
@@ -198,7 +200,7 @@ const VideoBox = ({
                         </Avatar>
                     </Box>
                     :
-                    <Box style={{width:  `${finalHeight*16/9}px`, height: `${finalHeight}px`}} className={classes.videoWrapper} >
+                    <Box style={{width:  `${finalHeight*16/9}px`, height: `${finalHeight}px`, left: `-${diff/2}`}} className={classes.videoWrapper} >
                         <Video isPresenter={isPresenter} track={videoTrack} />
                     </Box>
             }

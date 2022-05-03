@@ -15,31 +15,28 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeight, gridWidth}) => {
+const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeight, gridItemWidth, gridItemHeight}) => {
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state => state.layout);
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-    const actaulWidth =  gridWidth - 40;
-    const actualHeight = actaulWidth * 9/16;
-
     return (
         <Box style={{height: `${panelHeight}px`}} className={activeClasses}>
              <VideoBox localUserId={conference.myUserId()}
                     isPresenter={layout.presenterParticipantIds.find(item=>item===conference.myUserId())}
                     isFilmstrip={false}
-                    width={actaulWidth}
-                    height={actualHeight}
+                    width={gridItemWidth}
+                    height={gridItemHeight}
                     isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
                     participantDetails={conference.getLocalUser()}
                     participantTracks={localTracks}
             />
             { conference.getParticipantsWithoutHidden().map(participant => {              
                 return <VideoBox localUserId={conference.myUserId()}
-                            width={actaulWidth}
-                            height={actualHeight}
+                            width={gridItemWidth}
+                            height={gridItemHeight}
                             isPresenter={layout.presenterParticipantIds.find(item=>item===participant._id)}
                             isFilmstrip={false}
                             isActiveSpeaker={dominantSpeakerId===participant._id}

@@ -20,7 +20,7 @@ export function useWindowResize() {
             return {viewportWidth , viewportHeight};
         }
 
-        if (conference?.getParticipantCount() === 1)  {
+        if (conference?.getParticipantCount() === 1 &&  type !== PRESENTATION)  {
             return {viewportWidth: (documentHeight - 92)*16/9 , viewportHeight: documentHeight - 92};
         }
 

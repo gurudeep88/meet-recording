@@ -11,12 +11,17 @@ const JoinTrack = ({ tracks, name }) => {
   const useStyles = makeStyles((theme) => ({
     localStream: {
       margin: "0px",
-      overflow: "hidden",
       position: "absolute",
       top: 0,
       left: 0,
       bottom: 0,
       background: "black",
+      "& .widthAuto  video" :  {
+        width: "auto!important"
+      },
+      "& .heightAuto  video": {
+        height: "auto!important"
+      }
     },
     avatarBox: {
         height: '100%',
@@ -37,28 +42,25 @@ const JoinTrack = ({ tracks, name }) => {
       "& span": {
           fontSize: '150px'
       }
-    },
+    }
   }));
+
   const classes = useStyles();
 
   let height;
   let width ;
 
-  let diff = 0 ;
-  if (height * 16 / 9  < width )  {
-      diff = width - height*16/9;
-  }
-  const finalHeight  = height + diff*9/16;
-  
-  
+  const streamWidth = documentHeight * 16/9;
 
+  const extraStreamWidth = streamWidth - documentWidth;
+
+  console.log("documentWidth", documentWidth, documentHeight);
   if (documentWidth*9/16 <  documentHeight ) {
-    width = "auto"
-    height = "100%"
+     width = "auto"
   }  else {
-    width = "100%";
-    height =  "auto";
+     height =  "auto";
   }
+  console.log("localtrack", extraStreamWidth/2);
 
   return (
     <div
@@ -78,8 +80,8 @@ const JoinTrack = ({ tracks, name }) => {
           </Avatar>
         </Box>
       ) : (
-        <div style={{ width: documentWidth, height: documentHeight, overflow: "hidden" }} >
-          <Video track={videoTrack}/>
+        <div style={{ width: documentWidth, height: documentHeight, overflow: "hidden", position: "relative"}} className={ documentWidth*9/16 <  documentHeight ? "widthAuto": "heightAuto"} >
+          <Video left= {`-${extraStreamWidth/2}px`}  track={videoTrack}/>
         </div>
       )}
     </div>

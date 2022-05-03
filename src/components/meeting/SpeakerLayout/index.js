@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
         }
     }
 }));
-
+ 
 const SpeakerLayout = ({dominantSpeakerId}) => {
     let {viewportWidth, viewportHeight} = useWindowResize();
     const {documentWidth, documentHeight} = useDocumentSize();
@@ -36,6 +36,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
     largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId || myUserId;
+    
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
         "onStageEndpoints":  [largeVideoId],

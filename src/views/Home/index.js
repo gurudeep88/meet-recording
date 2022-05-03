@@ -231,7 +231,22 @@ const Home = () => {
                 devices: ["audio", "video"],
                 resolution
             };
-            const tracks = await SariskaMediaTransport.createLocalTracks(options);
+
+            let tracks = [];
+            try  {
+                const [audioTrack] = await SariskaMediaTransport.createLocalTracks({devices: ["audio"], resolution});
+                tracks.push(audioTrack);
+            } catch(e) {
+                console.log("failed to fetch audio device");
+            }
+
+            try  {
+                const [videoTrack]  = await SariskaMediaTransport.createLocalTracks({devices: ["video"], resolution});
+                tracks.push(videoTrack);
+            } catch(e) {
+                console.log("failed to fetch video device");
+            }
+            
             if (!iAmRecorder) {
                 setLocalTracks(tracks);
             }

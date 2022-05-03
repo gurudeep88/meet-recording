@@ -53,8 +53,8 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
                                 <VideoBox key={i * columns + j}
                                     height={gridItemHeight}
                                     width={gridItemWidth}
-                                    videoWidth="100%"
                                     videoHeight="auto"
+                                    videoWidth="100%"
                                     isBorderSeparator={participants.length > 1}
                                     isFilmstrip={true}
                                     isPresenter={layout.presenterParticipantIds.find(item=>item===participants[i * columns + j]._id)}

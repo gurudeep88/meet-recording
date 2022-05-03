@@ -172,7 +172,8 @@ const useStyles = makeStyles((theme) => ({
 const LobbyRoom = ({ tracks }) => {
   const classes = useStyles();
   const history = useHistory();
-  const [audioTrack, videoTrack] = useSelector((state) => state.localTrack);
+  const audioTrack = useSelector((state) => state.localTrack).find(track=>track.isAudioTrack());
+  const videoTrack =  useSelector((state) => state.localTrack).find(track=>track.isVideoTrack());  
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [meetingTitle, setMeetingTitle] = useState("");

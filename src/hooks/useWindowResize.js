@@ -6,10 +6,14 @@ export function useWindowResize() {
     const layout = useSelector(state => state.layout);
     const [windowSize, setWindowSize] = useState({viewportWidth: undefined, viewportHeight: undefined});
 
-    function getDimensions(mode) {
+    function getDimensions(mode, type) {
         let documentWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
         let documentHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
         let viewportHeight, viewportWidth;
+        if ( type === GRID ) {
+            return {viewportWidth: documentWidth , viewportHeight: documentHeight - 92};
+        }
+
         if (mode === ENTER_FULL_SCREEN_MODE ) {
             viewportHeight = documentHeight - 108;
             viewportWidth = documentWidth;
@@ -22,11 +26,11 @@ export function useWindowResize() {
     }
 
     useEffect(() => {
-        setTimeout(()=>setWindowSize(getDimensions(layout.mode)), 10);
+        setTimeout(()=>setWindowSize(getDimensions(layout.mode, layout.type)), 10);
     }, [layout.mode]);
 
     useEffect(() => {
-        setWindowSize(getDimensions());
+        setWindowSize(getDimensions(layout.mode, layout.type));
     }, [layout.type]);
 
     function handleResize() {

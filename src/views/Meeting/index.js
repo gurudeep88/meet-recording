@@ -292,6 +292,9 @@ const Meeting = () => {
     if (layout.mode === ENTER_FULL_SCREEN_MODE) {
         justifyContent = "space-around";
     }
+    if (layout.type === GRID && conference.getParticipantCount() <= 2) {
+        justifyContent = "center";
+    }
     let paddingTop = 16;
 
     if (viewportWidth  < 1025 && layout.type === GRID) {

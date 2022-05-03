@@ -118,15 +118,19 @@ export function getVideoWidthHeight(layout, viewportWidth, documentWidth, docume
     }
     return {videoWidth, videoHeight};
 }
+export function isSquare  (n) {
+    return n > 0 && Math.sqrt(n) % 1 === 0;
+};
 
 export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewportHeight) {
     const numWindows = totalParticipant;
     const columns = Math.ceil(Math.sqrt(numWindows));
     const rows = Math.ceil(numWindows / columns);
+
     let gridItemWidth, gridItemHeight;
-    
+
     if (totalParticipant === 1) {
-        return { rows, columns, gridItemWidth: viewportWidth, gridItemHeight: viewportHeight};
+        return { rows, columns, gridItemWidth: viewportWidth - 218, gridItemHeight: viewportHeight};
     }
 
     if (totalParticipant === 2) {
@@ -134,22 +138,19 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
         return { rows, columns, gridItemWidth, gridItemHeight: gridItemWidth * 9/16};
     }
 
-    // console.log("viewportWidth, gridItemWidth", viewportWidth , gridItemWidth);
-    // console.log("rows columns", rows, columns);
-
-    // if (gridItemWidth * 9/16 * rows >  viewportHeight ) {
-    //     if (totalParticipant === 2) {
-    //         gridItemHeight =  viewportHeight / (columns + 1);
-    //     } else {
-    //         gridItemHeight  = viewportHeight / columns;
-    //     }
-    //     return { rows, columns, gridItemWidth: gridItemHeight * 16 / 9, gridItemHeight};
-    // }
-
-    gridItemHeight = viewportHeight / columns;
-    gridItemWidth = viewportWidth / rows;
-
-    return { rows, columns, gridItemWidth: gridItemWidth, gridItemHeight};
+    if (isSquare(totalParticipant) || totalParticipant <= 4) {
+        gridItemHeight  =  viewportHeight / columns;
+        gridItemWidth = gridItemHeight * 16/9;
+        return { rows, columns, gridItemWidth, gridItemHeight};
+    } else if ( rows < columns ) {
+        gridItemWidth  =  viewportWidth / rows;
+        gridItemHeight = viewportHeight / (columns - 1);
+        return { rows, columns: columns, gridItemWidth, gridItemHeight};
+    }  else if ( rows === columns) {
+        gridItemWidth = viewportWidth / (columns + 1);
+        gridItemHeight = viewportHeight / (rows - 1);
+        return  { rows: rows - 1 , columns: columns + 1, gridItemWidth, gridItemHeight }
+    } 
  } 
 
 export function getRandomColor() {

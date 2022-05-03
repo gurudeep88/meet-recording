@@ -168,7 +168,8 @@ const useStyles = makeStyles((theme) => ({
 
 const ActionButtons = () => {
   const history = useHistory();
-  const [audioTrack, videoTrack] = useSelector((state) => state.localTrack);
+  const audioTrack = useSelector((state) => state.localTrack).find(track=>track.isAudioTrack());
+  const videoTrack =  useSelector((state) => state.localTrack).find(track=>track.isVideoTrack());
   const classes = useStyles();
   const dispatch = useDispatch();
   const conference = useSelector((state) => state.conference);

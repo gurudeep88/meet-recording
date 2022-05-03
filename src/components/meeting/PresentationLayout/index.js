@@ -46,8 +46,9 @@ const PresentationLayout = ({dominantSpeakerId}) => {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
     
-    const height =  layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 84:  documentHeight -  128;
+    const height =  layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 108:  documentHeight -  92;
     const width  = height*16/9;
+
     return (
         <Box  className={activeClasses}>
             <SharedDocument

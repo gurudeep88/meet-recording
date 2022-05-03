@@ -51,7 +51,17 @@ const Meeting = () => {
             display: "flex",
             flexDirection: "column",
             background: color.secondaryDark,
-            minHeight: layout.mode === ENTER_FULL_SCREEN_MODE ? "100vh":  "calc(100vh - 16px)"
+            minHeight: layout.mode === ENTER_FULL_SCREEN_MODE ? "100vh":  "calc(100vh - 16px)",
+            "& .gridSeparator": {
+                boxSizing: "border-box",
+                border: "2px solid black",
+                borderRadius: "8px"
+            },
+            "& .activeSpeaker": {
+                boxSizing: "border-box",
+                border: "3px solid #44A5FF",
+                borderRadius: "8px"
+            }
         }
     }));
 
@@ -286,22 +296,19 @@ const Meeting = () => {
     if (!conference || !conference.isJoined()) {
         return <Home />;
     }
-
-    //let justifyContent = "center";
+    
     let justifyContent = "space-between";
     if (layout.mode === ENTER_FULL_SCREEN_MODE) {
         justifyContent = "space-around";
     }
-    if (layout.type === GRID && conference.getParticipantCount() <= 2) {
+    if (layout.type === GRID && conference.getParticipantCount() === 2) {
         justifyContent = "center";
     }
     let paddingTop = 16;
-
     if (viewportWidth  < 1025 && layout.type === GRID) {
         justifyContent = "center";
         paddingTop = 0;
     }
-
     if (layout.mode === ENTER_FULL_SCREEN_MODE) {
         paddingTop = 0 ;
     }

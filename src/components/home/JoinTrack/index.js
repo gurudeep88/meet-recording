@@ -44,6 +44,14 @@ const JoinTrack = ({ tracks, name }) => {
   let height;
   let width ;
 
+  let diff = 0 ;
+  if (height * 16 / 9  < width )  {
+      diff = width - height*16/9;
+  }
+  const finalHeight  = height + diff*9/16;
+  
+  
+
   if (documentWidth*9/16 <  documentHeight ) {
     width = "auto"
     height = "100%"
@@ -71,7 +79,7 @@ const JoinTrack = ({ tracks, name }) => {
         </Box>
       ) : (
         <div style={{ width: documentWidth, height: documentHeight, overflow: "hidden" }} >
-          <Video track={videoTrack} borderRadius={false} height={height} width={width} />
+          <Video track={videoTrack}/>
         </div>
       )}
     </div>

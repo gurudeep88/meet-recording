@@ -19,21 +19,16 @@ const useStyles = makeStyles((theme) => ({
     root: {
         background: color.secondary,
         position: "relative",
+        overflow: "hidden", 
+        position: "relative",
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: '5px',
+        borderRadius: '8px',
+        background: "#272931",
         "& .largeVideo": {
             height: theme.spacing(20),
             width: theme.spacing(20),
             fontSize: "40pt"
-        },
-        "& .gridSeparator": {
-            boxSizing: "border-box",
-            border: "2px solid black"
-        },
-        "& .activeSpeaker": {
-            boxSizing: "border-box",
-            border: "2px solid #44A5FF"
         }
     },
     audioBox: {
@@ -114,6 +109,14 @@ const useStyles = makeStyles((theme) => ({
     subtitle: {
         position: "absolute",
         bottom: 0
+    },
+    videoWrapper: {
+        position: "absolute",
+        right: 0,
+        left: 0,
+        top: 0,
+        bottom: 0,
+        margin: "auto"
     }
 }));
 
@@ -128,9 +131,7 @@ const VideoBox = ({
                     isActiveSpeaker,
                     isFilmstrip,
                     isLargeVideo,
-                    isTranscription,
-                    videoWidth,
-                    videoHeight
+                    isTranscription
                   }) => {
     const classes = useStyles();
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
@@ -149,7 +150,7 @@ const VideoBox = ({
         dispatch(setPinParticipant(id));
     }
 
-    const borderActiveClasses = classnames({
+    const borderActiveClasses = classnames(classes.root, {
         'gridSeparator': isBorderSeparator,
         'activeSpeaker': conference.getParticipantCount()>1 && isActiveSpeaker
     });
@@ -159,15 +160,20 @@ const VideoBox = ({
     });
 
     const avatarActiveClasses = classnames(classes.avatarBox, {
-        'gridSeparator': isBorderSeparator,
-        'activeSpeaker': conference.getParticipantCount()>1 && isActiveSpeaker
+        'gridSeparator': isBorderSeparator
     });
+
+    let diff = 0 ;
+    if (height * 16 / 9  < width )  {
+        diff = width - height*16/9;
+    }
+    const finalHeight  = height + diff*9/16;
     
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
              onMouseLeave={() => setVisiblePinPartcipant(false)} 
-             className={classes.root}>
+             className={borderActiveClasses}>
             <Box className={classes.audioBox}>
                 { audioTrack?.isMuted() ? <span
               className="material-icons material-icons-outlined"
@@ -192,15 +198,14 @@ const VideoBox = ({
                         </Avatar>
                     </Box>
                     :
-                    <Box style={{width: `${width}px`, height: `${height}px`, borderRadius: '5px', overflow: "hidden"}} className={borderActiveClasses}>
-                        <Video isPresenter={isPresenter} width={ isPresenter ? "100%" : videoWidth } height={ isPresenter ? "100%": videoHeight } track={videoTrack} borderRadius = "5px" />
+                    <Box style={{width:  `${finalHeight*16/9}px`, height: `${finalHeight}px`}} className={classes.videoWrapper} >
+                        <Video isPresenter={isPresenter} track={videoTrack} />
                     </Box>
             }
             <Box className={classes.rightControls}>
                 {visiblePinParticipant && 
                 <>
                     <PinParticipant participantId={participantDetails?.id} pinnedParticipantId={pinnedParticipantId} togglePinParticipant={togglePinParticipant}/>
-                    {/* <ConnectionIndicator participantId={participantDetails?.id} /> */}
                 </>
                 }
                 {raisedHandParticipantIds[participantDetails?.id] &&

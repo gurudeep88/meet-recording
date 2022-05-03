@@ -130,7 +130,7 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
     let gridItemWidth, gridItemHeight;
 
     if (totalParticipant === 1) {
-        return { rows, columns, gridItemWidth: viewportWidth - 218, gridItemHeight: viewportHeight};
+        return { rows, columns, gridItemWidth: viewportWidth, gridItemHeight: viewportHeight};
     }
 
     if (totalParticipant === 2) {

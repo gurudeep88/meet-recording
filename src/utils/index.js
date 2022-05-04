@@ -122,6 +122,18 @@ export function isSquare  (n) {
     return n > 0 && Math.sqrt(n) % 1 === 0;
 };
 
+export function  calculateSteamHeightAndExtraDiff(width, height)  {
+    let videoStreamHeight = height, videoStreamDiff = 0;
+
+    if ( height * (16 / 9)  < width )  {
+        let diff = width - height*16/9;
+        videoStreamHeight =  (height * 16 / 9 + diff)*9/16;
+        videoStreamDiff = height * 16 / 9 + diff - width;
+    } else {
+        videoStreamDiff =  height * 16 / 9  - width;
+    }
+    return {videoStreamHeight, videoStreamDiff};
+}
 export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewportHeight) {
     const numWindows = totalParticipant;
     const columns = Math.ceil(Math.sqrt(numWindows));

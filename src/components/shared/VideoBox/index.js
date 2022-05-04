@@ -10,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setPinParticipant} from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
-import {videoShadow} from "../../../utils";
+import {videoShadow, calculateSteamHeightAndExtraDiff} from "../../../utils";
 import AudioLevelIndicator from "../AudioIndicator";
 import ConnectionIndicator from "../ConnectionIndicator";
 import SubTitle from "../SubTitle";
@@ -135,7 +135,6 @@ const VideoBox = ({
                   }) => {
     const classes = useStyles();
 
-    console.log("participantTracks", participantTracks);
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
     const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
@@ -164,14 +163,8 @@ const VideoBox = ({
     const avatarActiveClasses = classnames(classes.avatarBox, {
         'gridSeparator': isBorderSeparator
     });
+    const { videoStreamHeight, videoStreamDiff } = calculateSteamHeightAndExtraDiff(width, height);
 
-    let diff = 0 , finalHeight;
-    
-    if ( height * 16 / 9  < width )  {
-        diff = width - height*16/9;
-        finalHeight =  height + diff*9/16;
-    }
-    
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
@@ -201,7 +194,7 @@ const VideoBox = ({
                         </Avatar>
                     </Box>
                     :
-                    <Box style={{width:  `${finalHeight*16/9}px`, height: `${finalHeight}px`, left: `-${diff/2}`}} className={classes.videoWrapper} >
+                    <Box style={{width:  `${videoStreamHeight*16/9}px`, height: `${videoStreamHeight}px`, left: `-${videoStreamDiff/2}px`, position: "absolute"}} className={classes.videoWrapper} >
                         <Video isPresenter={isPresenter} track={videoTrack} />
                     </Box>
             }

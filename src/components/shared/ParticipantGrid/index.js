@@ -52,7 +52,7 @@ const ParticipantGrid = ({dominantSpeakerId}) => {
                             { return (tracks[participants[i * columns + j]?._id] ||  participants[i * columns + j]?._id) &&
                                 <VideoBox key={i * columns + j}
                                     height={gridItemHeight}
-                                    width={gridItemWidth}
+                                    width={gridItemWidth > gridItemHeight* 16/9 ? gridItemHeight* 16/9: gridItemWidth}
                                     isBorderSeparator={participants.length > 1}
                                     isFilmstrip={true}
                                     isPresenter={layout.presenterParticipantIds.find(item=>item===participants[i * columns + j]._id)}

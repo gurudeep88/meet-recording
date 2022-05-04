@@ -1,5 +1,5 @@
 import {
-    Badge,
+  Badge,
   Box,
   Drawer,
   makeStyles,
@@ -8,13 +8,7 @@ import {
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import SariskaMediaTransport from "sariska-media-transport";
-import MicIcon from "@material-ui/icons/Mic";
-import MicOffIcon from "@material-ui/icons/MicOff";
-import VideocamIcon from "@material-ui/icons/Videocam";
-import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import { color } from "../../../assets/styles/_color";
-import ScreenShareIcon from "@material-ui/icons/ScreenShare";
-import CallEndIcon from "@material-ui/icons/CallEnd";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import classnames from "classnames";
@@ -23,18 +17,19 @@ import {
   localTrackMutedChanged,
   removeLocalTrack,
 } from "../../../store/actions/track";
-import StopScreenShareIcon from "@material-ui/icons/StopScreenShare";
 import {
   ENTER_FULL_SCREEN_MODE,
   EXIT_FULL_SCREEN_MODE,
   GRID,
   PRESENTATION,
+  SHARED_DOCUMENT,
   SPEAKER,
+  RECORDING_ERROR_CONSTANTS,
+  WHITEBOARD,
+  GET_PRESENTATION_STATUS,
+  RECEIVED_PRESENTATION_STATUS
 } from "../../../constants";
-import FullscreenIcon from "@material-ui/icons/Fullscreen";
-import PanTool from "@material-ui/icons/PanTool";
-import FullscreenExitOutlinedIcon from "@material-ui/icons/FullscreenExitOutlined";
-import { setFullScreen, setLayout, setPresenter } from "../../../store/actions/layout";
+import { setFullScreen, setLayout, setPresenter, setPresentationtType } from "../../../store/actions/layout";
 import { clearAllReducers } from "../../../store/actions/conference";
 import { formatAMPM } from "../../../utils";
 import classNames from "classnames";
@@ -44,13 +39,15 @@ import { withStyles } from "@material-ui/styles";
 import ChatPanel from "../../shared/Chat";
 import MoreAction from "../../shared/MoreAction";
 import DrawerBox from "../../shared/DrawerBox";
+import { addSubtitle } from "../../../store/actions/subtitle";
+import { showSnackbar } from "../../../store/actions/snackbar";
 
 const StyledBadge = withStyles((theme) => ({
-    badge: {
-        background: color.primary,
-        top: 6,
-        right: 10
-    },
+  badge: {
+    background: color.primary,
+    top: 6,
+    right: 10
+  },
 }))(Badge);
 
 const useStyles = makeStyles((theme) => ({
@@ -150,26 +147,26 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '1'
   },
   chatList: {
-      height: "100%",
-      padding: theme.spacing(3, 3, 0, 3),
+    height: "100%",
+    padding: theme.spacing(3, 3, 0, 3),
   },
   chat: {
-      marginRight: '0px !important',
-      fontSize: '20px',
-      padding: '10px !important'
+    marginRight: '0px !important',
+    fontSize: '20px',
+    padding: '10px !important'
   },
   moreActionList: {
     height: "100%",
     width: '260px',
     padding: theme.spacing(1, 0, 0, 0),
     backgroundColor: color.secondary,
-},
+  },
 }));
 
-const ActionButtons = () => {
+const ActionButtons = ({dominantSpeakerId}) => {
   const history = useHistory();
-  const audioTrack = useSelector((state) => state.localTrack).find(track=>track.isAudioTrack());
-  const videoTrack =  useSelector((state) => state.localTrack).find(track=>track.isVideoTrack());
+  const audioTrack = useSelector((state) => state.localTrack).find(track => track.isAudioTrack());
+  const videoTrack = useSelector((state) => state.localTrack).find(track => track.isVideoTrack());
   const classes = useStyles();
   const dispatch = useDispatch();
   const conference = useSelector((state) => state.conference);
@@ -180,6 +177,7 @@ const ActionButtons = () => {
   const layout = useSelector((state) => state.layout);
   const unread = useSelector((state) => state.chat.unreadMessage);
   const [raiseHand, setRaiseHand] = useState(false);
+  const [featureStates, setFeatureStates] = useState({});
   const [chatState, setChatState] = React.useState({
     right: false,
   });
@@ -199,12 +197,12 @@ const ActionButtons = () => {
         document.mozFullScreenElement !== null) ||
       (document.msFullscreenElement && document.msFullscreenElement !== null);
 
-      console.log("isInFullScreen", isInFullScreen);
-      if (isInFullScreen) {
-        dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
-      } else {
-        dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
-      }
+    console.log("isInFullScreen", isInFullScreen);
+    if (isInFullScreen) {
+      dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
+    } else {
+      dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+    }
   };
 
   const addFullscreenListeners = () => {
@@ -220,6 +218,14 @@ const ActionButtons = () => {
     document.removeEventListener("mozfullscreenchange", AddFShandler);
     document.removeEventListener("MSFullscreenChange", AddFShandler);
   };
+
+  const action = (actionData) => {
+      featureStates[actionData.key] = actionData.value;
+
+      console.log("state", actionData, featureStates);
+
+      setFeatureStates({...featureStates});
+  }
 
   const fullScreen = () => {
     var isInFullScreen =
@@ -359,14 +365,16 @@ const ActionButtons = () => {
 
   const chatList = (anchor) => (
     <>
-        <Typography variant="h6" className={classes.title}>Messages</Typography>
-        <ChatPanel />
+      <Typography variant="h6" className={classes.title}>Messages</Typography>
+      <ChatPanel />
     </>
   );
 
   const toggleView = () => {
-    if (layout.type === SPEAKER || layout.type === PRESENTATION) {
+    if (layout.type === PRESENTATION || layout.type === SPEAKER) {
       dispatch(setLayout(GRID));
+    } else if( featureStates.whiteboard ||  featureStates.sharedDocument) {      
+      dispatch(setLayout(PRESENTATION));
     } else {
       dispatch(setLayout(SPEAKER));
     }
@@ -384,9 +392,15 @@ const ActionButtons = () => {
 
   const moreActionList = (anchor) => (
     <>
-        <MoreAction />
+      <MoreAction dominantSpeakerId={dominantSpeakerId} action = {action} featureStates={featureStates} setLayoutAndFeature={setLayoutAndFeature} />
     </>
   );
+
+  const setLayoutAndFeature = (layoutType, presentationType, actionData) => {
+    dispatch(setLayout(layoutType));
+    dispatch(setPresentationtType({ presentationType }));
+    action(actionData);
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -407,6 +421,140 @@ const ActionButtons = () => {
       removeFullscreenListeners();
     };
   }, [layout.mode]);
+
+  useEffect(() => {
+    if (conference.getParticipantsWithoutHidden()[0]?._id) {
+      setTimeout(() => conference.sendEndpointMessage(conference.getParticipantsWithoutHidden()[0]._id, { action: GET_PRESENTATION_STATUS }), 1000);
+    }
+    const checkPresentationStatus = (participant, payload) => {
+      if (payload?.action === GET_PRESENTATION_STATUS) {
+        conference.sendEndpointMessage(participant._id, {
+          action: RECEIVED_PRESENTATION_STATUS,
+          status: featureStates.whiteboard ? "whiteboard" : (featureStates.sharedDocument ? "sharedDocument" : 'none')
+        })
+      }
+
+      if (payload?.action === RECEIVED_PRESENTATION_STATUS) {
+        if (payload.status === "whiteboard") {
+          setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard",  value: true})
+          action({key: "sharedDocument", value: false})
+        }
+
+        if (payload.status === "sharedDocument") {
+          setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument",  value: true})
+          action({key: "whiteboard", value: false});
+        }
+      }
+    }
+    conference.addEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
+    return () => {
+      conference.removeEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
+    }
+  }, [featureStates.whiteboard, featureStates.sharedDocument]);
+
+
+  useEffect(() => {
+    conference.getParticipantsWithoutHidden().forEach((item) => {
+      if (item._properties?.transcribing) {
+        action({key: "caption", value: true})
+      }
+
+      if (item._properties?.recording) {
+        action({key: "recording", value: true})
+      }
+
+      if (item._properties?.streaming) {
+        action({key: "streaming", value: true})
+      }
+
+      if (item._properties?.whiteboard === "start") {
+        console.log("item._properties?.whiteboard", item._properties?.whiteboard);
+        setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard",  value: true})
+      }
+
+      if (item._properties?.sharedDocument === "start") {
+        setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument",  value: true})
+      }
+    });
+
+    conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
+      if (key === "whiteboard" && newValue === "start") {
+        setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard",  value: true})
+      }
+
+      if (key === "whiteboard" && newValue === "stop") {
+        setLayoutAndFeature(SPEAKER, null, { key: "whiteboard",  value: false})
+      }
+
+      if (key === "sharedDocument" && newValue === "stop") {
+        setLayoutAndFeature(SPEAKER, null, { key: "sharedDocument",  value: false})
+      }
+
+      if (key === "sharedDocument" && newValue === "start") {
+        setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument",  value: true})
+      }
+    });
+
+    conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED, (status) => {
+      if (status === "ON") {
+        conference.setLocalParticipantProperty("transcribing", true);
+        dispatch(showSnackbar({ autoHide: true, message: "Caption started" }));
+        action({key: "caption", value: true});
+      }
+
+      if (status === "OFF") {
+        conference.removeLocalParticipantProperty("transcribing");
+        dispatch(showSnackbar({ autoHide: true, message: "Caption stopped" }));
+        dispatch(addSubtitle({}));
+        action({key: "caption", value: false});
+      }
+    });
+
+    conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
+      if (data._status === "on" && data._mode === "stream") {
+        conference.setLocalParticipantProperty("streaming", true);
+        dispatch(showSnackbar({ autoHide: true, message: "Live streaming started" }));
+        action({key: "streaming", value: true});
+        localStorage.setItem("streaming_session_id", data?._sessionID);
+      }
+
+      if (data._status === "off" && data._mode === "stream") {
+        conference.removeLocalParticipantProperty("streaming");
+        dispatch(showSnackbar({ autoHide: true, message: "Live streaming stopped" }));
+        action({key: "streaming", value: false});
+      }
+
+      if (data._status === "on" && data._mode === "file") {
+        conference.setLocalParticipantProperty("recording", true);
+        dispatch(showSnackbar({ autoHide: true, message: "Recording started" }));
+        action({key: "recording", value: true});
+        localStorage.setItem("recording_session_id", data?._sessionID);
+      }
+
+      if (data._status === "off" && data._mode === "file") {
+        conference.removeLocalParticipantProperty("recording");
+        dispatch(showSnackbar({ autoHide: true, message: "Recording stopped" }));
+        action({key: "recording", value: false});
+      }
+
+      if (data._mode === "stream" && data._error) {
+        conference.removeLocalParticipantProperty("streaming");
+        dispatch(showSnackbar({
+          autoHide: true,
+          message: RECORDING_ERROR_CONSTANTS[data._error],
+        }));
+        action({key: "streaming", value: false});
+      }
+
+      if (data._mode === "file" && data._error) {
+        conference.removeLocalParticipantProperty("recording");
+        dispatch(showSnackbar({
+          autoHide: true,
+          message: RECORDING_ERROR_CONSTANTS[data._error],
+        }));
+        action({key: "recording", value: false});
+      }})
+  }, []);
 
   const leaveConference = () => {
     dispatch(clearAllReducers());
@@ -514,16 +662,16 @@ const ActionButtons = () => {
         >
           {participantList("right")}
         </DrawerBox>
-            <Tooltip title="Chat Box">
-                <StyledBadge badgeContent={unread}>
-                    <span
-                    className={classnames("material-icons material-icons-outlined", classes.chat)}
-                    onClick={toggleChatDrawer("right", true)}
-                >
-                    chat
-                </span>
-                </StyledBadge>
-            </Tooltip>
+        <Tooltip title="Chat Box">
+          <StyledBadge badgeContent={unread}>
+            <span
+              className={classnames("material-icons material-icons-outlined", classes.chat)}
+              onClick={toggleChatDrawer("right", true)}
+            >
+              chat
+            </span>
+          </StyledBadge>
+        </Tooltip>
         <DrawerBox
           open={chatState["right"]}
           onClose={toggleChatDrawer("right", false)}
@@ -532,11 +680,11 @@ const ActionButtons = () => {
         </DrawerBox>
         <Tooltip
           title={
-            layout.type === SPEAKER
+            layout.type === SPEAKER || layout.type === PRESENTATION
               ? "Grid View" : "Speaker View"
           }
         >
-          {layout.type === SPEAKER ? (
+          {layout.type === SPEAKER || layout.type === PRESENTATION ? (
             <span
               className={classnames(
                 "material-icons material-icons-outlined",
@@ -559,35 +707,6 @@ const ActionButtons = () => {
             </span>
           )}
         </Tooltip>
-        {/* <Tooltip
-          title={
-            layout.mode === EXIT_FULL_SCREEN_MODE
-              ? "Full Screen"
-              : "Exit Full Screen"
-          }
-        >
-          {layout.mode === EXIT_FULL_SCREEN_MODE ? (
-            <span
-              className={classNames(
-                "material-icons material-icons-outlined",
-                classes.subIcon
-              )}
-              onClick={fullScreen}
-            >
-              fullscreen
-            </span>
-          ) : (
-            <span
-              className={classNames(
-                "material-icons material-icons-outlined",
-                classes.subIcon
-              )}
-              onClick={fullScreen}
-            >
-              fullscreen_exit
-            </span>
-          )}
-        </Tooltip> */}
         <Tooltip title="More Actions">
           <span
             className={classnames("material-icons material-icons-outlined", classes.more)}

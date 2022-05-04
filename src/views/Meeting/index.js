@@ -328,7 +328,6 @@ const Meeting = () => {
                 denyLobbyAccess={denyLobbyAccess}
                 allowLobbyAccess={allowLobbyAccess}
                 displayName={lobbyUserJoined.displayName} />}
-
             <SnackbarBox notification={notification} />
             <ReconnectDialog open={layout.disconnected === "lost"} />
             <Notification snackbar={snackbar} />

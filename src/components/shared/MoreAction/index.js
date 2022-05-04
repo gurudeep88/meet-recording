@@ -5,8 +5,6 @@ import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Typography from "@material-ui/core/Typography";
-import DraftsIcon from "@material-ui/icons/Drafts";
-import SendIcon from "@material-ui/icons/Send";
 import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
 import { color } from "../../../assets/styles/_color";
 import { Box, Drawer } from "@material-ui/core";
@@ -16,21 +14,18 @@ import {
   DROPBOX_APP_KEY,
   GRID,
   PRESENTATION,
-  RECORDING_ERROR_CONSTANTS,
   SHARED_DOCUMENT,
   SPEAKER,
   WHITEBOARD,
-  GET_PRESENTATION_STATUS,
-  RECEIVED_PRESENTATION_STATUS
 } from "../../../constants";
-import { setLayout, setPresentationtType } from "../../../store/actions/layout";
+
+import { setLayout } from "../../../store/actions/layout";
 import VirtualBackground from "../VirtualBackground";
 import { showSnackbar } from "../../../store/actions/snackbar";
 import { showNotification } from "../../../store/actions/notification";
 import googleApi from "../../../utils/google-apis";
 import SariskaMediaTransport from "sariska-media-transport/dist/esm/SariskaMediaTransport";
 import { authorizeDropbox } from "../../../utils/dropbox-apis";
-import { addSubtitle } from "../../../store/actions/subtitle";
 import SettingsBox from "../../meeting/Settings";
 import classnames from "classnames";
 import DrawerBox from "../DrawerBox";
@@ -113,11 +108,13 @@ const useStyles = makeStyles((theme) => ({
 },
 }));
 
-export default function MoreAction({ dominantSpeakerId }) {
+export default function MoreAction({dominantSpeakerId, featureStates, setLayoutAndFeature, action }) {
   const classes = useStyles();
   const conference = useSelector((state) => state.conference);
   const layout = useSelector((state) => state.layout);
+
   const dispatch = useDispatch();
+  console.log("featureStates", featureStates);
 
   const recordingSession = useRef(null);
   const streamingSession = useRef(null);
@@ -133,13 +130,8 @@ export default function MoreAction({ dominantSpeakerId }) {
     right: false,
   });
 
-  const [caption, setCaption] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const [streaming, setStreaming] = useState(false);
   const [openLivestreamDialog, setOpenLivestreamDialog] = useState(false);
   const [broadcasts, setBroadcasts] = useState([]);
-  const [whiteboard, setWhiteboard] = useState( layout.presentationType==="WHITEBOARD" || false);
-  const [sharedDocument, setSharedDocument] = useState( layout.presentationType === "SHARED_DOCUMENT" || false);
 
   const toggleBackgroundDrawer = (anchor, open) => (event) => {
     if (
@@ -174,7 +166,7 @@ export default function MoreAction({ dominantSpeakerId }) {
   const toggleView = () => {
     if (layout.type === SPEAKER || layout.type === PRESENTATION) {
       dispatch(setLayout(GRID));
-    } else if (sharedDocument || whiteboard) {
+    } else if (featureStates.sharedDocument || featureStates.whiteboard) {
       dispatch(setLayout(PRESENTATION));
     } else {
       dispatch(setLayout(SPEAKER));
@@ -192,7 +184,7 @@ export default function MoreAction({ dominantSpeakerId }) {
   };
 
   const startStreaming = async () => {
-    if (streaming) {
+    if (featureStates.streaming) {
       return;
     }
 
@@ -293,7 +285,7 @@ export default function MoreAction({ dominantSpeakerId }) {
   };
 
   const stopStreaming = async () => {
-    if (!streaming) {
+    if (!featureStates.streaming) {
       return;
     }
     if (conference?.getRole() === "none") {
@@ -311,7 +303,7 @@ export default function MoreAction({ dominantSpeakerId }) {
   };
 
   const startRecording = async () => {
-    if (recording) {
+    if (featureStates.recording) {
       return;
     }
 
@@ -361,7 +353,7 @@ export default function MoreAction({ dominantSpeakerId }) {
   };
 
   const stopRecording = async () => {
-    if (!recording) {
+    if (!featureStates.recording) {
       return;
     }
     if (conference?.getRole() === "none") {
@@ -393,207 +385,27 @@ export default function MoreAction({ dominantSpeakerId }) {
     conference.setLocalParticipantProperty("requestingTranscription", false);
   };
 
-  const startWhiteboard = (isRemoteEvent) => {
-    dispatch(setLayout(PRESENTATION));
-    setWhiteboard(true);
-    dispatch(setPresentationtType({ presentationType: WHITEBOARD }));
-    if (sharedDocument) {
-      setSharedDocument(false);
-      conference.setLocalParticipantProperty("sharedDocument", "stop");
-    }
-    if (isRemoteEvent !== true) {
-      console.log("isRemoteEvent", isRemoteEvent, conference);
-      conference.setLocalParticipantProperty("whiteboard", "start");
-    }
+  const startWhiteboard = () => {
+    stopSharedDocument();
+    setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard",  value: true});
+    conference.setLocalParticipantProperty("whiteboard", "start");
   };
 
-  const stopWhiteboard = (isRemoteEvent) => {
-    dispatch(setLayout(SPEAKER));
-    dispatch(setPresentationtType({ presentationType: null }));
-    setWhiteboard(false);
-    if (isRemoteEvent !== true) {
-      conference.setLocalParticipantProperty("whiteboard", "stop");
-    }
+  const stopWhiteboard = () => {
+    setLayoutAndFeature(SPEAKER, null, { key: "whiteboard", value:  false});
+    conference.setLocalParticipantProperty("whiteboard", "stop");
   };
 
-  const startSharedDocument = (isRemoteEvent) => {
-    dispatch(setLayout(PRESENTATION));
-    dispatch(setPresentationtType({ presentationType: SHARED_DOCUMENT }));
-    setSharedDocument(true);
-    if (whiteboard) {
-      setWhiteboard(false);
-      conference.setLocalParticipantProperty("whiteboard", "stop");
-    }
-    if (isRemoteEvent !== true) {
-      conference.setLocalParticipantProperty("sharedDocument", "start");
-    }
+  const startSharedDocument = () => {
+    stopWhiteboard();
+    setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument", value: true});
+    conference.setLocalParticipantProperty("sharedDocument", "start");
   };
 
-  const stopSharedDocument = (isRemoteEvent) => {
-    dispatch(setLayout(SPEAKER));
-    dispatch(setPresentationtType({ presentationType: null }));
-    setSharedDocument(false);
-    if (isRemoteEvent !== true) {
-      conference.setLocalParticipantProperty("sharedDocument", "stop");
-    }
+  const stopSharedDocument = () => {
+    setLayoutAndFeature(SPEAKER, null, { key: "sharedDocument", value: false});
+    conference.setLocalParticipantProperty("sharedDocument", "stop");
   };
-
-  useEffect(()=>{
-    if ( conference.getParticipantsWithoutHidden()[0]?._id ) {
-        setTimeout(()=>conference.sendEndpointMessage(conference.getParticipantsWithoutHidden()[0]._id, {action: GET_PRESENTATION_STATUS}), 1000);    
-    }
-    const checkPresentationStatus = (participant, payload)=> {
-        if (payload?.action === GET_PRESENTATION_STATUS) {
-            conference.sendEndpointMessage(participant._id, {
-                action: RECEIVED_PRESENTATION_STATUS,
-                status: whiteboard ? "whiteboard": (sharedDocument ? "sharedDocument" : 'none')
-            })
-        }
-
-        if (payload?.action === RECEIVED_PRESENTATION_STATUS) {
-            if (payload.status === "whiteboard") {
-                dispatch(setLayout(PRESENTATION));
-                dispatch(setPresentationtType({ presentationType:  WHITEBOARD}));
-                setSharedDocument(false);
-                setWhiteboard(true);
-            }
-            if (payload.status === "sharedDocument") {
-                dispatch(setLayout(PRESENTATION));
-                dispatch(setPresentationtType({ presentationType:  SHARED_DOCUMENT}));
-                setWhiteboard(false);
-                setSharedDocument(true);
-            }
-        }
-    }
-    conference.addEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
-    return ()=>{
-        conference.removeEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
-    }
-},[whiteboard, sharedDocument]);
-
-
-  useEffect(() => {
-    console.log("conference", conference);
-    conference.getParticipantsWithoutHidden().forEach((item) => {
-      if (item._properties?.transcribing) {
-        setCaption(true);
-      }
-
-      if (item._properties?.recording) {
-        setRecording(true);
-      }
-
-      if (item._properties?.streaming) {
-        setStreaming(true);
-      }
-
-      if (item._properties?.whiteboard === "start") {
-        startWhiteboard(true);
-      }
-
-      if (item._properties?.sharedDocument === "start") {
-        startSharedDocument(true);
-      }
-    });
-
-    conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
-          console.log("participant, key, oldValue, newValue 2", participant, key, oldValue, newValue);
-
-          if (key === "whiteboard" && newValue === "start") {
-            startWhiteboard(true);
-          }
-
-          if (key === "whiteboard" && newValue === "stop") {
-            stopWhiteboard(true);
-          }
-
-          if (key === "sharedDocument" && newValue === "stop") {
-            stopSharedDocument(true);
-          }
-
-          if (key === "sharedDocument" && newValue === "start") {
-            startSharedDocument(true);
-          }
-    });
-
-    conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED,(status) => {
-        console.log("status", status);
-        if (status === "ON") {
-          conference.setLocalParticipantProperty("transcribing", true);
-          dispatch(
-            showSnackbar({ autoHide: true, message: "Caption started" })
-          );
-          setCaption(true);
-        }
-
-        if (status === "OFF") {
-          conference.removeLocalParticipantProperty("transcribing");
-          dispatch(
-            showSnackbar({ autoHide: true, message: "Caption stopped" })
-          );
-          dispatch(addSubtitle({}));
-          setCaption(false);
-        }
-    });
-
-    conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
-        if (data._status === "on" && data._mode === "stream") {
-          conference.setLocalParticipantProperty("streaming", true);
-          dispatch(
-            showSnackbar({ autoHide: true, message: "Live streaming started" })
-          );
-          setStreaming(true);
-          localStorage.setItem("streaming_session_id", data?._sessionID);
-        }
-
-        if (data._status === "off" && data._mode === "stream") {
-          conference.removeLocalParticipantProperty("streaming");
-          dispatch(
-            showSnackbar({ autoHide: true, message: "Live streaming stopped" })
-          );
-          setStreaming(false);
-        }
-
-        if (data._status === "on" && data._mode === "file") {
-          conference.setLocalParticipantProperty("recording", true);
-          dispatch(
-            showSnackbar({ autoHide: true, message: "Recording started" })
-          );
-          setRecording(true);
-          localStorage.setItem("recording_session_id", data?._sessionID);
-        }
-
-        if (data._status === "off" && data._mode === "file") {
-          conference.removeLocalParticipantProperty("recording");
-          dispatch(
-            showSnackbar({ autoHide: true, message: "Recording stopped" })
-          );
-          setRecording(false);
-        }
-
-        if (data._mode === "stream" && data._error) {
-          conference.removeLocalParticipantProperty("streaming");
-          dispatch(
-            showSnackbar({
-              autoHide: true,
-              message: RECORDING_ERROR_CONSTANTS[data._error],
-            })
-          );
-          setStreaming(false);
-        }
-
-        if (data._mode === "file" && data._error) {
-          conference.removeLocalParticipantProperty("recording");
-          dispatch(
-            showSnackbar({
-              autoHide: true,
-              message: RECORDING_ERROR_CONSTANTS[data._error],
-            })
-          );
-          setRecording(false);
-        }
-      }
-    )}, []);
 
   const virtualBackgroundList = (anchor) => (
     <Box
@@ -617,32 +429,11 @@ export default function MoreAction({ dominantSpeakerId }) {
   };
 
   const menuData = [
-    // {
-    //   icon: (
-    //     <span className="material-icons material-icons-outlined">details</span>
-    //   ),
-    //   title: "Meeting Details",
-    //   onClick: toggleDrawer("right", true),
-    // },
-    // {
-    //   icon:
-    //     layout.type === SPEAKER ? (
-    //       <span className="material-icons material-icons-outlined">
-    //         view_sidebar
-    //       </span>
-    //     ) : (
-    //       <span className="material-icons material-icons-outlined">
-    //         view_comfy
-    //       </span>
-    //     ),
-    //   title: layout.type === SPEAKER ? "Grid View" : "Speaker View",
-    //   onClick: toggleView,
-    // },
     {
       icon: (
         <span
           className={
-            recording
+            featureStates.recording
               ? classnames(
                   "material-icons material-icons-outlined",
                   classes.stopRecording
@@ -656,14 +447,14 @@ export default function MoreAction({ dominantSpeakerId }) {
           album
         </span>
       ),
-      title: recording ? "Stop Recording" : "Start Recording",
-      onClick: recording ? stopRecording : startRecording,
+      title: featureStates.recording ? "Stop Recording" : "Start Recording",
+      onClick: featureStates.recording ? stopRecording : startRecording,
     },
     {
       icon: (
         <span
           className={
-            streaming
+            featureStates.streaming
               ? classnames(
                   "material-icons material-icons-outlined",
                   classes.stopRecording
@@ -677,8 +468,8 @@ export default function MoreAction({ dominantSpeakerId }) {
           public
         </span>
       ),
-      title: streaming ? "Stop Streaming" : "Start Streaming",
-      onClick: streaming ? stopStreaming : startStreaming,
+      title: featureStates.streaming ? "Stop Streaming" : "Start Streaming",
+      onClick: featureStates.streaming ? stopStreaming: startStreaming,
     },
     // {
     //   icon: (
@@ -713,24 +504,24 @@ export default function MoreAction({ dominantSpeakerId }) {
     {
       icon: (
         <span
-          className={whiteboard ? classnames("material-icons material-icons-outlined", classes.stopRecording) : classnames("material-icons material-icons-outlined", classes.startRecording)}
+          className={featureStates.whiteboard ? classnames("material-icons material-icons-outlined", classes.stopRecording) : classnames("material-icons material-icons-outlined", classes.startRecording)}
         >
           create
         </span>
       ),
-      title: whiteboard ? "Stop Whiteboard" : "Start Whiteboard",
-      onClick: whiteboard ? stopWhiteboard : startWhiteboard,
+      title: featureStates.whiteboard ? "Stop Whiteboard" : "Start Whiteboard",
+      onClick: featureStates.whiteboard ? stopWhiteboard: startWhiteboard,
     },
     {
       icon: (
         <span
-        className={sharedDocument ? classnames("material-icons material-icons-outlined", classes.stopRecording) : classnames("material-icons material-icons-outlined", classes.startRecording)}
+        className={featureStates.sharedDocument ? classnames("material-icons material-icons-outlined", classes.stopRecording) : classnames("material-icons material-icons-outlined", classes.startRecording)}
         >
           description
         </span>
       ),
-      title: sharedDocument ? "Stop Shared Documents" : "Start Shared Documents",
-      onClick: sharedDocument ? stopSharedDocument : startSharedDocument,
+      title: featureStates.sharedDocument ? "Stop Shared Documents" : "Start Shared Documents",
+      onClick: featureStates.sharedDocument ? stopSharedDocument: startSharedDocument,
     },
     {
       icon: (

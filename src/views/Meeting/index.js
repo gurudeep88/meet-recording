@@ -155,11 +155,10 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
-            console.log("DOMINANT_SPEAKER_CHANGED", id);
             setDominantSpeakerId(id);
         });
-
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
+            console.log("participant, key, oldValue, newValue 1", participant, key, oldValue, newValue)
             if (key === "presenting" && newValue === "start") {
                 dispatch(showNotification({ autoHide: true, message: `Screen sharing started by ${participant._identity?.user?.name}` }));
                 dispatch(setPresenter({ participantId: participant._id, presenter: true }));

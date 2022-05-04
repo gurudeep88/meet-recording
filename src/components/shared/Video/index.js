@@ -13,13 +13,7 @@ const Video = props => {
     const {track, isPresenter, borderRadius, width, height, left} = props;
     const videoElementRef = useRef(null);
     useEffect(() => {
-        if (!track || !videoElementRef.current) {
-            return;
-        }
-        track.attach(videoElementRef.current);
-        return ()=>{
-            track.detach(videoElementRef.current);
-        }
+        track?.attach(videoElementRef.current);
     }, [track]);
 
     if (!track) {
@@ -30,7 +24,7 @@ const Video = props => {
                    autoPlay='1' 
                    className={ !isPresenter && classes.video } 
                    ref={videoElementRef}
-                   style={{left,  top: "-1px",  position: "absolute", width: "calc(100% + 2px)", height: "calc(100% + 2px)", objectFit: 'contain', borderRadius: '8px' }}/>);
+                   style={{left: "-1px",top: "-1px",  position: "absolute", width: "calc(100% + 3px)", height: "calc(100% + 3px)", objectFit: 'contain', borderRadius: '8px' }}/>);
 }
 
 export default Video;

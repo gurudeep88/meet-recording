@@ -20,6 +20,8 @@ import {
   SHARED_DOCUMENT,
   SPEAKER,
   WHITEBOARD,
+  GET_PRESENTATION_STATUS,
+  RECEIVED_PRESENTATION_STATUS
 } from "../../../constants";
 import { setLayout, setPresentationtType } from "../../../store/actions/layout";
 import VirtualBackground from "../VirtualBackground";
@@ -400,6 +402,7 @@ export default function MoreAction({ dominantSpeakerId }) {
       conference.setLocalParticipantProperty("sharedDocument", "stop");
     }
     if (isRemoteEvent !== true) {
+      console.log("isRemoteEvent", isRemoteEvent, conference);
       conference.setLocalParticipantProperty("whiteboard", "start");
     }
   };
@@ -435,7 +438,42 @@ export default function MoreAction({ dominantSpeakerId }) {
     }
   };
 
+  useEffect(()=>{
+    if ( conference.getParticipantsWithoutHidden()[0]?._id ) {
+        setTimeout(()=>conference.sendEndpointMessage(conference.getParticipantsWithoutHidden()[0]._id, {action: GET_PRESENTATION_STATUS}), 1000);    
+    }
+    const checkPresentationStatus = (participant, payload)=> {
+        if (payload?.action === GET_PRESENTATION_STATUS) {
+            conference.sendEndpointMessage(participant._id, {
+                action: RECEIVED_PRESENTATION_STATUS,
+                status: whiteboard ? "whiteboard": (sharedDocument ? "sharedDocument" : 'none')
+            })
+        }
+
+        if (payload?.action === RECEIVED_PRESENTATION_STATUS) {
+            if (payload.status === "whiteboard") {
+                dispatch(setLayout(PRESENTATION));
+                dispatch(setPresentationtType({ presentationType:  WHITEBOARD}));
+                setSharedDocument(false);
+                setWhiteboard(true);
+            }
+            if (payload.status === "sharedDocument") {
+                dispatch(setLayout(PRESENTATION));
+                dispatch(setPresentationtType({ presentationType:  SHARED_DOCUMENT}));
+                setWhiteboard(false);
+                setSharedDocument(true);
+            }
+        }
+    }
+    conference.addEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
+    return ()=>{
+        conference.removeEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
+    }
+},[whiteboard, sharedDocument]);
+
+
   useEffect(() => {
+    console.log("conference", conference);
     conference.getParticipantsWithoutHidden().forEach((item) => {
       if (item._properties?.transcribing) {
         setCaption(true);
@@ -458,30 +496,27 @@ export default function MoreAction({ dominantSpeakerId }) {
       }
     });
 
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED,
-      (participant, key, oldValue, newValue) => {
-        if (key === "whiteboard" && newValue === "start") {
-          startWhiteboard(true);
-        }
+    conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
+          console.log("participant, key, oldValue, newValue 2", participant, key, oldValue, newValue);
 
-        if (key === "whiteboard" && newValue === "stop") {
-          stopWhiteboard(true);
-        }
+          if (key === "whiteboard" && newValue === "start") {
+            startWhiteboard(true);
+          }
 
-        if (key === "sharedDocument" && newValue === "stop") {
-          stopSharedDocument(true);
-        }
+          if (key === "whiteboard" && newValue === "stop") {
+            stopWhiteboard(true);
+          }
 
-        if (key === "sharedDocument" && newValue === "start") {
-          startSharedDocument(true);
-        }
-      }
-    );
+          if (key === "sharedDocument" && newValue === "stop") {
+            stopSharedDocument(true);
+          }
 
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED,
-      (status) => {
+          if (key === "sharedDocument" && newValue === "start") {
+            startSharedDocument(true);
+          }
+    });
+
+    conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED,(status) => {
         console.log("status", status);
         if (status === "ON") {
           conference.setLocalParticipantProperty("transcribing", true);
@@ -499,19 +534,9 @@ export default function MoreAction({ dominantSpeakerId }) {
           dispatch(addSubtitle({}));
           setCaption(false);
         }
+    });
 
-        // if (status === "OFF") {
-        //     conference.removeLocalParticipantProperty("transcribing");
-        //     dispatch(showSnackbar({autoHide: true, message: "Caption stopped"}));
-        //     dispatch(addSubtitle({}));
-        //     setCaption(false);
-        // }
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED,
-      (data) => {
+    conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
         if (data._status === "on" && data._mode === "stream") {
           conference.setLocalParticipantProperty("streaming", true);
           dispatch(
@@ -568,8 +593,7 @@ export default function MoreAction({ dominantSpeakerId }) {
           setRecording(false);
         }
       }
-    );
-  }, []);
+    )}, []);
 
   const virtualBackgroundList = (anchor) => (
     <Box

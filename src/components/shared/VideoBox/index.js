@@ -134,6 +134,8 @@ const VideoBox = ({
                     isTranscription
                   }) => {
     const classes = useStyles();
+
+    console.log("participantTracks", participantTracks);
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
     const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
@@ -152,7 +154,7 @@ const VideoBox = ({
 
     const borderActiveClasses = classnames(classes.root, {
         'gridSeparator': isBorderSeparator,
-        'activeSpeaker': conference.getParticipantCount()>1 && isActiveSpeaker
+        'activeSpeaker': conference?.getParticipantCount()>1 && isActiveSpeaker
     });
 
     const audioIndicatorActiveClasses = classnames(classes.avatar, {
@@ -169,14 +171,13 @@ const VideoBox = ({
         diff = width - height*16/9;
         finalHeight =  height + diff*9/16;
     }
-    console.log("diff", diff);
     
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
              onMouseLeave={() => setVisiblePinPartcipant(false)} 
              className={borderActiveClasses}>
-            <Box className={classes.audioBox}>
+            <Box className={classnames(classes.audioBox, {audioBox: true})}>
                 { audioTrack?.isMuted() ? <span
               className="material-icons material-icons-outlined"
             >
@@ -204,17 +205,15 @@ const VideoBox = ({
                         <Video isPresenter={isPresenter} track={videoTrack} />
                     </Box>
             }
-            <Box className={classes.rightControls}>
+            <Box className={classnames(classes.rightControls, {rightControls: true})  }>
                 {visiblePinParticipant && 
-                <>
                     <PinParticipant participantId={participantDetails?.id} pinnedParticipantId={pinnedParticipantId} togglePinParticipant={togglePinParticipant}/>
-                </>
                 }
                 {raisedHandParticipantIds[participantDetails?.id] &&
                     <Typography className={classes.handRaise} ><PanTool /></Typography>
                 }
             </Box>
-            <Box className={classes.textBox}>
+            <Box className={classnames(classes.textBox, {userDetails: true})}>
                 <Typography>{localUserId === participantDetails?.id ? "You" : participantDetails?.name}</Typography>
             </Box>
             {!isFilmstrip && <Box>

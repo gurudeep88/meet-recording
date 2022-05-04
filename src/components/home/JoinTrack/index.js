@@ -1,8 +1,7 @@
 import { Avatar, Box, makeStyles } from "@material-ui/core";
 import React, { useRef, useLayoutEffect, useState } from "react";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
-import Video from "../../shared/Video";
-
+import VideoBox from "../../shared/VideoBox";
 
 const JoinTrack = ({ tracks, name }) => {
   const videoTrack = tracks.find((track) => track && track.isVideoTrack());
@@ -42,25 +41,24 @@ const JoinTrack = ({ tracks, name }) => {
       "& span": {
           fontSize: '150px'
       }
+    },
+    videoWrapper: {
+       "& > div": { 
+           borderRadius: 0
+       },
+       "& .rightControls": {
+          display: "none"
+       },
+       "& .userDetails": {
+          display: "none"
+       },
+       "& .audioBox": {
+          display: "none"
+       }
     }
   }));
 
   const classes = useStyles();
-
-  let height;
-  let width ;
-
-  const streamWidth = documentHeight * 16/9;
-
-  const extraStreamWidth = streamWidth - documentWidth;
-
-  console.log("documentWidth", documentWidth, documentHeight);
-  if (documentWidth*9/16 <  documentHeight ) {
-     width = "auto"
-  }  else {
-     height =  "auto";
-  }
-  console.log("localtrack", extraStreamWidth/2);
 
   return (
     <div
@@ -80,8 +78,8 @@ const JoinTrack = ({ tracks, name }) => {
           </Avatar>
         </Box>
       ) : (
-        <div style={{ width: documentWidth, height: documentHeight, overflow: "hidden", position: "relative"}} className={ documentWidth*9/16 <  documentHeight ? "widthAuto": "heightAuto"} >
-          <Video left= {`-${extraStreamWidth/2}px`}  track={videoTrack}/>
+        <div  className={classes.videoWrapper} style={{ width: documentWidth, height: documentHeight, overflow: "hidden", position: "relative"}} >
+          <VideoBox width={documentWidth} height={documentHeight} participantTracks={tracks} />
         </div>
       )}
     </div>

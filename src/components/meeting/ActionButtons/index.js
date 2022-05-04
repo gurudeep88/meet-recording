@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     color: color.white,
     "& span.material-icons": {
       padding: "8px",
-      borderRadius: "7.5px",
+      borderRadius: "8px",
       marginRight: "2px",
       "&:hover": {
         opacity: "0.8",

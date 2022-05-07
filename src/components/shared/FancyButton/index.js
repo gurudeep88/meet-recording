@@ -14,11 +14,13 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "capitalize",
     marginTop: top || theme.spacing(3),
     width: width || "178.69px",
+    transition: `font-weight .5s all ease`,
     "&:hover": {
       fontWeight: "900",
       background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
       border: `none`,
       padding: '5px 41px',
+      width: width || "178.69px",
     },
   },
 }));

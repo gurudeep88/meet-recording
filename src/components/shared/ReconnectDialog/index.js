@@ -16,7 +16,8 @@ const useStyles = makeStyles((theme) => ({
         "& .MuiPaper-root": {
             background: color.secondaryDark,
             borderRadius: '7.5px',
-            color: color.white
+            color: color.white,
+            boxShadow: `0px 0px 1px 0px rgb(255 255 255 / 20%), 0px 1px 1px 1px rgb(255 255 255 / 14%), 0px 2px 4px 5px rgb(255 255 255 / 12%)`
         },
         "& p": {
             color: color.white

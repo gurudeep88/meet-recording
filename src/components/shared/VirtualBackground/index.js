@@ -268,7 +268,7 @@ export default function VirtualBackground() {
                         </Avatar>
                     </Box>
                     :
-                 loading ? <CircularProgress className={classes.buttonProgress} /> : <Video track={videoTrack}/> }
+                 loading ? <CircularProgress className={classes.buttonProgress} /> : <Video track={videoTrack} position="relative" /> }
             </div>
             <Grid container className={classes.container}>
                 <Grid item md={6}>

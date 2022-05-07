@@ -578,8 +578,8 @@ const ActionButtons = ({dominantSpeakerId}) => {
         </span>
       </Tooltip>
       <Box className={classes.permissions}>
-        <Tooltip title={audioTrack?.isMuted() ? "Unmute Audio" : "Mute Audio"}>
-          {audioTrack?.isMuted() ? (
+        <Tooltip title={audioTrack ? audioTrack?.isMuted() ? "Unmute Audio" : "Mute Audio" : "Check the mic or Speaker"}>
+          {audioTrack ? audioTrack?.isMuted() ? (
             <span
               className={classnames("material-icons material-icons-outlined", classes.active)}
               onClick={unmuteAudio}
@@ -593,7 +593,13 @@ const ActionButtons = ({dominantSpeakerId}) => {
             >
               mic_none
             </span>
-          )}
+          ) : <span
+                className="material-icons material-icons-outlined"
+                style={{cursor: 'unset'}}
+              >
+                mic_none
+              </span>
+          }
         </Tooltip>
         <Tooltip title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}>
           {videoTrack?.isMuted() ? (

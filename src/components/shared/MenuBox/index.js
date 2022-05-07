@@ -47,16 +47,19 @@ const StyledMenuItem = withStyles((theme) => ({
     '&:focus': {
       backgroundColor: color.secondary,
       '& .MuiListItemIcon-root': {
-        color: color.white
+        color: color.primaryLight
       }, 
       '& .MuiListItemText-primary': {
         color: color.white,
       },
+      '&:hover': {
+        background: color.secondary,
+      }
     },
     '&:hover': {
       background: color.secondary,
         '& .MuiListItemIcon-root':{
-            color: color.primary
+            color: color.primaryLight
         }, 
         '& .MuiListItemText-primary': {
           color: color.white,

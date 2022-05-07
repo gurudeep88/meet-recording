@@ -41,8 +41,7 @@ const useStyles = makeStyles(()=>({
     
     return (
         <a href={`/${profile.meetingTitle}`} className={classes.logo}>
-            {/* <img src={process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/> */}
-            <img src={logo} alt="logo" className={classes.logoImage}/>
+            <img src={process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/>
             {/* <Typography className={classes.logoText}>SARISKA</Typography> */}
         </a>
     )

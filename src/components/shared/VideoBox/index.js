@@ -17,14 +17,12 @@ import SubTitle from "../SubTitle";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        background: color.secondary,
+        background: color.secondaryDark,
         position: "relative",
         overflow: "hidden", 
-        position: "relative",
         display: 'flex',
         flexDirection: 'column',
         borderRadius: '8px',
-        background: "#272931",
         "& .largeVideo": {
             height: theme.spacing(20),
             width: theme.spacing(20),

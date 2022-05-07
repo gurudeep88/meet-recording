@@ -59,7 +59,7 @@ const Meeting = () => {
             },
             "& .activeSpeaker": {
                 boxSizing: "border-box",
-                border: "3px solid #44A5FF",
+                border: `3px solid ${color.primaryLight}`,
                 borderRadius: "8px"
             }
         }

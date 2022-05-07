@@ -1,5 +1,6 @@
 import { Avatar, Box, makeStyles } from "@material-ui/core";
 import React, { useRef, useLayoutEffect, useState } from "react";
+import { color } from "../../../assets/styles/_color";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
 import VideoBox from "../../shared/VideoBox";
 
@@ -14,7 +15,7 @@ const JoinTrack = ({ tracks, name }) => {
       top: 0,
       left: 0,
       bottom: 0,
-      background: "black",
+      background: color.secondaryDark,
       "& .widthAuto  video" :  {
         width: "auto!important"
       },

@@ -125,7 +125,9 @@ const useStyles = makeStyles((theme) => ({
     padding: "32px 24px",
     border: `1px solid ${color.primaryLight}`,
     marginLeft: '15%',
-    marginRight: 'auto'
+    marginRight: 'auto',
+    opacity: '0.9',
+    minHeight: '60vh',
   },
   logoContainer: {},
   header: {

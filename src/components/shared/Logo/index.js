@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { color } from '../../../assets/styles/_color';
 import { profile } from "../../../store/actions/profile";
 import { useSelector } from 'react-redux';
-import logo from '../../../assets/images/shared/Logo_Full.svg';
+import logo from '../../../assets/images/shared/Logo.svg';
 
 const Logo = ({width, height}) => {
     const profile = useSelector(state => state.profile);

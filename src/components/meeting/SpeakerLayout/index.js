@@ -31,12 +31,11 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const classes = useStyles();
 
     let largeVideoId;
-
     if ( conference.getParticipantCount() === 2 ) {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
     largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId || myUserId;
-    
+
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
         "onStageEndpoints":  [largeVideoId],
@@ -49,9 +48,8 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     conference.setReceiverConstraints(constraints);
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
-    });
+    });    
 
-    let {videoWidth, videoHeight} =  getVideoWidthHeight(layout, viewportWidth, documentWidth, documentHeight);
     if (conference?.getParticipantCount() === 1  || layout.mode === Constants.ENTER_FULL_SCREEN_MODE) {
         viewportWidth = viewportWidth;
     }  else {
@@ -59,14 +57,12 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     }
 
     return (
-        <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}} className={activeClasses}>
+        <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}}  className={activeClasses} >
             <VideoBox
                 isFilmstrip={true}
                 isTranscription={true}
                 width={viewportWidth}
                 height={viewportHeight}
-                videoWidth = {videoWidth}
-                videoHeight= {videoHeight}
                 isLargeVideo={true}
                 isActiveSpeaker={ largeVideoId === dominantSpeakerId }
                 isPresenter={layout.presenterParticipantIds.find(item=>item===largeVideoId)}
@@ -76,7 +72,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
             />
             {  conference.getParticipantCount() > 1 &&
                 <ParticipantPaneSpeakerLayout
-                    panelHeight = {documentHeight - 88}
+                    panelHeight = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 108 :documentHeight - 88}
                     gridWidth = {218}    
                     gridHeight= {123}    
                     dominantSpeakerId={dominantSpeakerId} 

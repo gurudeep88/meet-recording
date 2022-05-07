@@ -65,7 +65,7 @@ const PresentationLayout = ({dominantSpeakerId}) => {
                 height={viewportHeight}
             />
             <PartcipantPane 
-                panelHeight = {documentHeight - 88}
+                panelHeight = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 108 :documentHeight - 88}
                 gridItemWidth = {218}    
                 gridItemHeight= {123} 
                 dominantSpeakerId={dominantSpeakerId} 

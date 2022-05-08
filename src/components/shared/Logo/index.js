@@ -1,4 +1,4 @@
-import { makeStyles, Typography } from '@material-ui/core'
+import { Box, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { color } from '../../../assets/styles/_color';
@@ -40,11 +40,10 @@ const useStyles = makeStyles(()=>({
     const classes = useStyles();
     
     return (
-        <a href={`/${profile.meetingTitle}`} className={classes.logo}>
-            {/* <img src={process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/> */}
-            <img src={logo} alt="logo" className={classes.logoImage}/>
+        <Box className={classes.logo}>
+            <img src={process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/>
             {/* <Typography className={classes.logoText}>SARISKA</Typography> */}
-        </a>
+        </Box>
     )
 }
 

@@ -272,7 +272,7 @@ const Meeting = () => {
         })
 
         preloadIframes(conference);
-        SariskaMediaTransport.effects.createRnnoiseProcessor();
+        // SariskaMediaTransport.effects.createRnnoiseProcessor();
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.AUDIO_OUTPUT_DEVICE_CHANGED, audioOutputDeviceChanged);
 

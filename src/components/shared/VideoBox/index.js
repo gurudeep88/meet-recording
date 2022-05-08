@@ -15,12 +15,13 @@ import {useDocumentSize} from "../../../hooks/useDocumentSize";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        background: color.secondaryDark,
+        background: "#272931",
         position: "relative",
         overflow: "hidden", 
         display: 'flex',
         flexDirection: 'column',
         borderRadius: '8px',
+        transform: 'translateZ(0)',
         "& .largeVideo": {
             height: theme.spacing(20),
             width: theme.spacing(20),
@@ -123,7 +124,6 @@ const VideoBox = ({
                     width,
                     height,
                     isPresenter,
-                    isBorderSeparator,
                     isActiveSpeaker,
                     isFilmstrip,
                     isLargeVideo,
@@ -148,7 +148,6 @@ const VideoBox = ({
     }
 
     const borderActiveClasses = classnames(classes.root, {
-        'gridSeparator': isBorderSeparator,
         'activeSpeaker': conference?.getParticipantCount()>1 && isActiveSpeaker
     });
 

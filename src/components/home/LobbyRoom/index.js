@@ -261,9 +261,10 @@ const LobbyRoom = ({ tracks }) => {
   };
 
   const createConference = async (connection) => {
-    const conference = connection.initJitsiConference({
-      createVADProcessor: SariskaMediaTransport.effects.createRnnoiseProcessor,
-    });
+    const conference = connection.initJitsiConference();
+    // const conference = connection.initJitsiConference({
+    //   createVADProcessor: SariskaMediaTransport.effects.createRnnoiseProcessor,
+    // });
     await conference.addTrack(audioTrack);
     await conference.addTrack(videoTrack);
 

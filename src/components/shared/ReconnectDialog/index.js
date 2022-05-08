@@ -59,7 +59,7 @@ export default function ReconnectDialog({open}) {
                 <DialogTitle id="responsive-dialog-title">{"Disconnected"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        You have disconnectd, Please reconnect again.
+                        You have disconnected, Please reconnect again.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

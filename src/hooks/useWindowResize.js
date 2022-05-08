@@ -25,6 +25,7 @@ export function useWindowResize() {
         }
 
         if ( type === GRID ) {
+            console.log("documentHeight", documentHeight, ) 
             return {viewportWidth: documentWidth , viewportHeight: documentHeight - 92};
         }
 

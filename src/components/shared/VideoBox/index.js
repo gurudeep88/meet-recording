@@ -4,25 +4,24 @@ import {color} from '../../../assets/styles/_color';
 import Video from "../Video";
 import Audio from "../Audio";
 import PanTool from "@material-ui/icons/PanTool";
-import MicOffIcon from "@material-ui/icons/MicOff";
-import MicIcon from "@material-ui/icons/Mic";
 import {useDispatch, useSelector} from "react-redux";
 import {setPinParticipant} from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
 import {videoShadow, calculateSteamHeightAndExtraDiff} from "../../../utils";
 import AudioLevelIndicator from "../AudioIndicator";
-import ConnectionIndicator from "../ConnectionIndicator";
 import SubTitle from "../SubTitle";
+import {useDocumentSize} from "../../../hooks/useDocumentSize";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        background: color.secondaryDark,
+        background: "#272931",
         position: "relative",
         overflow: "hidden", 
         display: 'flex',
         flexDirection: 'column',
         borderRadius: '8px',
+        transform: 'translateZ(0)',
         "& .largeVideo": {
             height: theme.spacing(20),
             width: theme.spacing(20),
@@ -70,11 +69,11 @@ const useStyles = makeStyles((theme) => ({
     avatarBox: {
         height: '100%',
         width: '100%',
+        borderRadius: "8px",
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexGrow: 1,
-        borderRadius: '5px',
     },
     avatar: {
         borderRadius: "50%",
@@ -125,14 +124,12 @@ const VideoBox = ({
                     width,
                     height,
                     isPresenter,
-                    isBorderSeparator,
                     isActiveSpeaker,
                     isFilmstrip,
                     isLargeVideo,
                     isTranscription
                   }) => {
     const classes = useStyles();
-
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
     const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
@@ -144,24 +141,21 @@ const VideoBox = ({
     let audioLevel = audioIndicator[participantDetails?.id];
     const subtitle  = useSelector(state=>state.subtitle);
     const conference = useSelector(state => state.conference);
+    const {documentWidth, documentHeight} = useDocumentSize();
 
     const togglePinParticipant = (id) => {
         dispatch(setPinParticipant(id));
     }
 
     const borderActiveClasses = classnames(classes.root, {
-        'gridSeparator': isBorderSeparator,
         'activeSpeaker': conference?.getParticipantCount()>1 && isActiveSpeaker
     });
 
     const audioIndicatorActiveClasses = classnames(classes.avatar, {
         'largeVideo': isLargeVideo,
     });
-
-    const avatarActiveClasses = classnames(classes.avatarBox, {
-        'gridSeparator': isBorderSeparator
-    });
-    const { videoStreamHeight, videoStreamDiff } = calculateSteamHeightAndExtraDiff(width, height);
+    const avatarActiveClasses = classnames(classes.avatarBox);
+    const { videoStreamHeight, videoStreamDiff } = calculateSteamHeightAndExtraDiff(width, height, documentWidth, documentHeight);
 
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}

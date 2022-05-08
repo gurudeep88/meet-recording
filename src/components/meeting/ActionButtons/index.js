@@ -299,9 +299,7 @@ const ActionButtons = ({dominantSpeakerId}) => {
     setPresenting(true);
     conference.setLocalParticipantProperty("presenting", "start");
     dispatch(addLocalTrack(desktopTrack));
-    dispatch(
-      setPresenter({ participantId: conference.myUserId(), presenter: true })
-    );
+    dispatch(setPresenter({ participantId: conference.myUserId(), presenter: true }));
   };
 
   const stopPresenting = async () => {

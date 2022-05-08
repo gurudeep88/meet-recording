@@ -52,11 +52,6 @@ const Meeting = () => {
             flexDirection: "column",
             background: color.secondaryDark,
             minHeight: layout.mode === ENTER_FULL_SCREEN_MODE ? "100vh":  "calc(100vh - 16px)",
-            "& .gridSeparator": {
-                boxSizing: "border-box",
-                border: "2px solid black",
-                borderRadius: "8px"
-            },
             "& .activeSpeaker": {
                 boxSizing: "border-box",
                 border: `3px solid ${color.primaryLight}`,
@@ -277,7 +272,7 @@ const Meeting = () => {
         })
 
         preloadIframes(conference);
-        SariskaMediaTransport.effects.createRnnoiseProcessor();
+        // SariskaMediaTransport.effects.createRnnoiseProcessor();
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.AUDIO_OUTPUT_DEVICE_CHANGED, audioOutputDeviceChanged);
 

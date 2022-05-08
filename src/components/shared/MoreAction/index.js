@@ -5,21 +5,18 @@ import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Typography from "@material-ui/core/Typography";
-import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
 import { color } from "../../../assets/styles/_color";
 import { Box, Drawer } from "@material-ui/core";
 import CopyLink from "../CopyLink";
 import { useDispatch, useSelector } from "react-redux";
 import {
   DROPBOX_APP_KEY,
-  GRID,
   PRESENTATION,
   SHARED_DOCUMENT,
   SPEAKER,
   WHITEBOARD,
 } from "../../../constants";
 
-import { setLayout } from "../../../store/actions/layout";
 import VirtualBackground from "../VirtualBackground";
 import { showSnackbar } from "../../../store/actions/snackbar";
 import { showNotification } from "../../../store/actions/notification";
@@ -161,16 +158,6 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
       return;
     }
     setState({ ...state, [anchor]: open });
-  };
-
-  const toggleView = () => {
-    if (layout.type === SPEAKER || layout.type === PRESENTATION) {
-      dispatch(setLayout(GRID));
-    } else if (featureStates.sharedDocument || featureStates.whiteboard) {
-      dispatch(setLayout(PRESENTATION));
-    } else {
-      dispatch(setLayout(SPEAKER));
-    }
   };
 
   const startStreamingCaption = async () => {

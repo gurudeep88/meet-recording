@@ -99,6 +99,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     padding: "0px 8px 8px",
   },
+  action: {
+    opacity: .9
+  },
   anchor: {
     color: color.white,
     textDecoration: "none",
@@ -499,6 +502,7 @@ const LobbyRoom = ({ tracks }) => {
               />
             </Box>
             <FancyButton 
+              homeButton={true}
               disabled={loading}
               onClick={handleSubmit}
               buttonText={buttonText}

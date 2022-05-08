@@ -1,8 +1,9 @@
 import { Button, makeStyles } from "@material-ui/core";
+import classNames from "classnames";
 import React from "react";
 import { color } from "../../../assets/styles/_color";
 
-const FancyButton = ({disabled, onClick, buttonText, width, top}) => {
+const FancyButton = ({disabled, onClick, buttonText, width, top, homeButton}) => {
 
 const useStyles = makeStyles((theme) => ({
   anchor: {
@@ -22,18 +23,20 @@ const useStyles = makeStyles((theme) => ({
       padding: '5px 41px',
       width: width || "178.69px",
     },
-    position: "absolute",
-    left: 0,
-    right: 0,
-    margin: "auto",
-    bottom: "-57px"
+    homeButton: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      margin: "auto",
+      bottom: "-57px"
+    }
   },
 }));
   const classes = useStyles();
 
   return (
     <Button
-      className={classes.anchor}
+      className={classNames(classes.anchor, homeButton ? classes.homeButton: "")}
       disabled={disabled}
       onClick={onClick}
     >

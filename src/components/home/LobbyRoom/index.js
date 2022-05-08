@@ -90,6 +90,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBox: {
     width: "100%",
+    marginBottom: "60px"
   },
   moderatorBox: {
     display: "flex",
@@ -110,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       fontWeight: "900",
       background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
-    },
+    }
   },
   videoContainer: {
     [theme.breakpoints.down("xs")]: {
@@ -158,14 +159,14 @@ const useStyles = makeStyles((theme) => ({
   buttonProgress: {
     color: color.primary,
     position: "absolute",
-    top: "84%",
+    top: "76%",
     left: "50%",
     marginLeft: -12,
   },
   buttonProgressJoin: {
     color: color.primary,
     position: "absolute",
-    top: "76%",
+    top: "142%",
     left: "50%",
     marginLeft: -12,
   },
@@ -261,10 +262,10 @@ const LobbyRoom = ({ tracks }) => {
   };
 
   const createConference = async (connection) => {
-    const conference = connection.initJitsiConference();
     // const conference = connection.initJitsiConference({
     //   createVADProcessor: SariskaMediaTransport.effects.createRnnoiseProcessor,
     // });
+    const conference = connection.initJitsiConference();
     await conference.addTrack(audioTrack);
     await conference.addTrack(videoTrack);
 

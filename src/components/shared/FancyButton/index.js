@@ -22,6 +22,11 @@ const useStyles = makeStyles((theme) => ({
       padding: '5px 41px',
       width: width || "178.69px",
     },
+    position: "absolute",
+    left: 0,
+    right: 0,
+    margin: "auto",
+    bottom: "-57px"
   },
 }));
   const classes = useStyles();

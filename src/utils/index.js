@@ -59,6 +59,7 @@ export async function getToken(profile, name) {
         body: JSON.stringify({
             apiKey: process.env.REACT_APP_API_KEY,
             user: {
+                id: profile.id,
                 avatar: profile.avatar,
                 name: name,
                 email: profile.email
@@ -255,7 +256,28 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
             lastRowOffset 
         }
     } else {
-        console.log("handling for asymettric view");
+        viewportHeight  = viewportHeight - ( rows - 1 ) * 12;
+        viewportWidth  = viewportWidth - ( columns +  1 )*12;
+        
+        gridItemHeight = viewportHeight / rows;
+        gridItemWidth = viewportWidth / columns;
+
+        offset  =  0;
+        lastRowWidth = gridItemHeight  *   16/9;
+        if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9 >  viewportWidth) {
+            lastRowWidth = gridItemWidth;
+        }
+        lastRowOffset =  (viewportWidth - ((totalParticipant % columns === 0 ? columns :  totalParticipant % columns) * lastRowWidth))/2;
+
+        return  { 
+            rows, 
+            columns, 
+            gridItemWidth, 
+            gridItemHeight, 
+            offset,
+            lastRowWidth,
+            lastRowOffset 
+        }
     }
 } 
 

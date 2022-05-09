@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         position: "relative",
         overflow: "hidden", 
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'column',  
         borderRadius: '8px',
         transform: 'translateZ(0)',
         "& .largeVideo": {

@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
@@ -18,6 +18,9 @@ import {
     setSpeaker,
 } from "../../../store/actions/media";
 import {updateLocalTrack} from "../../../store/actions/track";
+import { useDocumentSize } from "../../../hooks/useDocumentSize";
+import VideoBox from "../../shared/VideoBox";
+import Video from "../../shared/Video";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -64,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     tab: {
         height: '36px',
         minHeight: '36px',
-        padding: "6px 16px",
+        padding: "6px 20px",
         minWidth: '56px',
         marginRight: '4px',
         border: `1px solid ${color.primaryLight}`,
@@ -76,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
         "&.Mui-selected": {
             background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
             border: `none`,
-            padding: "7px 17px",
+            padding: "7px 21px",
             "& svg": {
                 color: color.white,
             },
@@ -88,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
             fontWeight: "900",
             background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
             border: `none`,
-            padding: "7px 17px",
+            padding: "7px 21px",
         },
     },
     setting: {
@@ -142,9 +145,51 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
+    volume: {
+        color: color.white,
+        border: color.white,
+        textTransform: 'capitalize',
+        marginTop: '4px',
+        paddingLeft: '0px',
+        "&:hover": {
+            opacity: '0.6',
+            background: color.lightgray4
+        }
+    },
+    test: {
+        marginLeft: '10px'
+    },
+    videoWrapper: {
+        "& > div": { 
+            borderRadius: 0
+        },
+        "& .rightControls": {
+           display: "none"
+        },
+        "& .userDetails": {
+           display: "none"
+        },
+        "& .audioBox": {
+           display: "none"
+        }
+     },
+     muted: {
+        color: color.white,
+        width: '310px',
+        height: '200px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: color.secondaryDark,
+        borderRadius: '8px',
+        marginTop: '28px',
+        "& p":{
+            fontSize: '0.9rem'
+        }
+     },
 }));
 
-const SettingsBox = () => {
+const SettingsBox = ({tracks}) => {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
     const [devices, setDevices] = useState([]);
@@ -157,6 +202,8 @@ const SettingsBox = () => {
     const [resolutionValue, setResolutionValue] = React.useState("");
     const [resolutionOpen, setResolutionOpen] = React.useState(false);
     const localTracks = useSelector(state => state.localTrack);
+    const [testText, setTestText] = useState('Test');
+    const {documentHeight, documentWidth} = useDocumentSize();
 
     const conference = useSelector(state => state.conference);
 
@@ -257,6 +304,13 @@ const SettingsBox = () => {
         setResolutionOpen(true);
     };
 
+    const handleAudioTest = () => {
+        setTestText('Playing');
+        let audio = new Audio("https://sdk.sariska.io/knock_0b1ea0a45173ae6c10b084bbca23bae2.ogg");
+        audio.play();
+        setTimeout(()=>setTestText('Test'), 500);
+    };
+
     const microphoneData = {
         label: "Microphone",
         open: microphoneOpen,
@@ -318,7 +372,7 @@ const SettingsBox = () => {
         handleChange: handleResolutionChange,
         list: resolutionList,
     };
-
+    
     const audioLabel = (
         <Box className={classes.label}>
             <SpeakerOutlinedIcon className={classes.audioIcon} />
@@ -334,20 +388,38 @@ const SettingsBox = () => {
     const audioPanel = (
         <Box className={classes.list}>
             <Box className={classes.marginBottom}>
-                <SelectField data={microphoneData} minWidth={'292px'} />
+                <SelectField data={microphoneData} minWidth={'310px'} />
             </Box>
             <Box className={classes.marginBottom}>
-                <SelectField data={speakerData} minWidth={'292px'} />
+                <SelectField data={speakerData} minWidth={'310px'} />
             </Box>
+            <Box>
+                <Button className={classes.volume} variant='outlined' onClick={handleAudioTest}>
+                    <span class="material-icons material-symbols-outlined">
+                        volume_up
+                    </span>
+                    <span className={classes.test}>{testText}</span>
+                </Button>
+                </Box>
         </Box>
     );
     const videoPanel = (
         <Box className={classes.list}>
             <Box className={classes.marginBottom}>
-                <SelectField data={cameraData} />
+                <SelectField data={cameraData} minWidth={'310px'}/>
             </Box>
             <Box className={classes.marginBottom}>
-                <SelectField data={resolutionData} />
+                <SelectField data={resolutionData} minWidth={'310px'}/>
+            </Box>
+            <Box>
+                {!localTracks.find(track => track.getType() === "video").isMuted() ? <div  className={classes.videoWrapper} style={{ width: "312px", height: "202px", overflow: "hidden", position: "relative", borderRadius: "7.5px", marginTop: '28px'}} >
+                <Video height="100" track={localTracks.find(track => track.getType() === "video")} borderRadius="7.5px" />
+                </div> : 
+                <Box className={classes.muted}>
+                 <Typography>
+                     Video is muted or check your Camera
+                 </Typography> 
+                 </Box>  }
             </Box>
         </Box>
     );

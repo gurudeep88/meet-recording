@@ -24,7 +24,7 @@ const Video = props => {
                    autoPlay='1' 
                    className={ !isPresenter && classes.video } 
                    ref={videoElementRef}
-                   style={{left: "-1px",top: "-1px",  position: props.position || "absolute", width: "calc(100% + 2px)", height: "calc(100% + 2px)", objectFit: 'contain', borderRadius: '8px' }}/>);
+                   style={{left: "-1px",top: "-1px",  position: props.position || "absolute", width: "calc(100% + 2px)", height: props.height || "calc(100% + 2px)", objectFit: 'contain', borderRadius: '8px' }}/>);
 }
 
 export default Video;

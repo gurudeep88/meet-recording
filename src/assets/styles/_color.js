@@ -1,3 +1,4 @@
+
 export const color = {
     black: '#000',
     white: '#fff',
@@ -13,6 +14,7 @@ export const color = {
     buttonGradient: '#7D73FF',
     search: '#7B8198',
     searchFocus: '#C1C3CB',
+    blurEffect: `rgba(18,19,22,.9)`,
     lightgray: 'rgba(0,0,0,0.03)',
     lightgray1: 'rgba(0,0,0,0.5)',
     lightgray2: 'rgba(0,0,0,0.05)',
@@ -54,3 +56,4 @@ export const color = {
 //     background: "linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0.5) 50%,rgba(0,0,0,0.7) 100%)",
 //     red: 'red'
 // }
+

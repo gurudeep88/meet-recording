@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textBox: {
     width: "100%",
-    marginBottom: "60px"
+    //marginBottom: "60px"
   },
   moderatorBox: {
     display: "flex",
@@ -121,7 +121,10 @@ const useStyles = makeStyles((theme) => ({
       minWidth: "300px",
     },
     borderRadius: "60px",
-    background: color.secondary,
+    backgroundColor: color.blurEffect,
+    opacity: '0.9',		
+    backdropFilter: `blur(24px)`,		
+    transition: `background-color .2s ease`,
     display: "flex",
     justifyContent: "space-between",
     flexDirection: "column",
@@ -130,7 +133,6 @@ const useStyles = makeStyles((theme) => ({
     border: `1px solid ${color.primaryLight}`,
     marginLeft: '15%',
     marginRight: 'auto',
-    opacity: '0.9',
     minHeight: '60vh',
   },
   logoContainer: {},
@@ -162,14 +164,14 @@ const useStyles = makeStyles((theme) => ({
   buttonProgress: {
     color: color.primary,
     position: "absolute",
-    top: "76%",
+    top: "84%",
     left: "50%",
     marginLeft: -12,
   },
   buttonProgressJoin: {
     color: color.primary,
     position: "absolute",
-    bottom: "6px",
+    top: '76px',
     left: "50%",
     marginLeft: -12,
   },

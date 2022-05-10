@@ -13,7 +13,7 @@ export default function DrawerBox({ children, open, onClose, top }) {
       "& .MuiDrawer-paper": {
         overflow: "hidden",
         top: top || "16px",
-        bottom: "80px",
+        bottom: "0px",
         right: "16px",
         borderRadius: "10px",
         height: layout.mode === ENTER_FULL_SCREEN_MODE ? "89%" : "87%",
@@ -23,7 +23,7 @@ export default function DrawerBox({ children, open, onClose, top }) {
     },
     list: {
       padding: theme.spacing(3, 3, 3, 3),
-      height: "100%",
+      height: "92%",
     },
   }));
   const classes = useStyles();

@@ -42,9 +42,7 @@ const Meeting = () => {
     const isOnline = useOnlineStatus()
     const resolution = useSelector(state=>state.media?.resolution);
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
-    const [lobbyUserJoined, setLobbyUserJoined] = useState({});
-    const {documentHeight, documentWidth} = useDocumentSize();
-    const {viewportWidth, viewportHeight} = useWindowResize();
+    const [lobbyUser, setLobbyUser] = useState([]);
 
     const useStyles = makeStyles((theme) => ({
         root: {
@@ -63,14 +61,14 @@ const Meeting = () => {
     const classes = useStyles();
     let ingoreFirstEvent = true;
 
-    const allowLobbyAccess = () => {
-        conference.lobbyApproveAccess(lobbyUserJoined.id)
-        setLobbyUserJoined({});
+    const allowLobbyAccess = (userId) => {
+        conference.lobbyApproveAccess(userId);
+        setLobbyUser(lobbyUser =>lobbyUser.filter(item=>item.id !== userId));
     }
 
-    const denyLobbyAccess = () => {
-        conference.lobbyDenyAccess(lobbyUserJoined.id);
-        setLobbyUserJoined({});
+    const denyLobbyAccess = (userId) => {
+        conference.lobbyDenyAccess(userId);
+        setLobbyUser(lobbyUser =>lobbyUser.filter(item=>item.id !== userId));
     }
 
     const deviceListChanged = async (devices) => {
@@ -152,8 +150,8 @@ const Meeting = () => {
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
             setDominantSpeakerId(id);
         });
+        
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
-            console.log("participant, key, oldValue, newValue 1", participant, key, oldValue, newValue)
             if (key === "presenting" && newValue === "start") {
                 dispatch(showNotification({ autoHide: true, message: `Screen sharing started by ${participant._identity?.user?.name}` }));
                 dispatch(setPresenter({ participantId: participant._id, presenter: true }));
@@ -202,7 +200,7 @@ const Meeting = () => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.LOBBY_USER_JOINED, (id, displayName) => {
             new Audio("https://sdk.sariska.io/knock_0b1ea0a45173ae6c10b084bbca23bae2.ogg").play();
-            setLobbyUserJoined({ id, displayName });
+            setLobbyUser(lobbyUser => [...lobbyUser, { id, displayName }]);
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.MESSAGE_RECEIVED, (id, text, ts) => {
@@ -238,7 +236,7 @@ const Meeting = () => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, async ( participant, data) => {
             if (data.event === "LOBBY-ACCESS-GRANTED" || data.event === "LOBBY-ACCESS-DENIED") {
-                setLobbyUserJoined({});
+                setLobbyUser(lobbyUser =>lobbyUser.filter(item=>item.displayName !== data.name));
             }
         });
 
@@ -292,18 +290,9 @@ const Meeting = () => {
     }
     
     let justifyContent = "space-between";
+    let paddingTop = 16;
     if (layout.mode === ENTER_FULL_SCREEN_MODE) {
         justifyContent = "space-around";
-    }
-    if (layout.type === GRID && conference.getParticipantCount() === 2) {
-        justifyContent = "center";
-    }
-    let paddingTop = 16;
-    if (viewportWidth  < 1025 && layout.type === GRID) {
-        justifyContent = "center";
-        paddingTop = 0;
-    }
-    if (layout.mode === ENTER_FULL_SCREEN_MODE) {
         paddingTop = 0 ;
     }
 
@@ -319,10 +308,11 @@ const Meeting = () => {
                 <PresentationLayout dominantSpeakerId={dominantSpeakerId} />
             }
             <ActionButtons dominantSpeakerId={dominantSpeakerId} />
-            {lobbyUserJoined.id && <PermissionDialog
+            {lobbyUser.map((item)=><PermissionDialog
                 denyLobbyAccess={denyLobbyAccess}
                 allowLobbyAccess={allowLobbyAccess}
-                displayName={lobbyUserJoined.displayName} />}
+                userId={item.id}
+                displayName={item.displayName} />)}
             <SnackbarBox notification={notification} />
             <ReconnectDialog open={layout.disconnected === "lost"} />
             <Notification snackbar={snackbar} />

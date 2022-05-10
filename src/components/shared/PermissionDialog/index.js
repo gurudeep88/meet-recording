@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function PermissionDialog({displayName, allowLobbyAccess, denyLobbyAccess}) {
+export default function PermissionDialog({displayName, allowLobbyAccess, denyLobbyAccess, userId}) {
     const classes = useStyles();
 
     return (
@@ -36,9 +36,9 @@ export default function PermissionDialog({displayName, allowLobbyAccess, denyLob
             <Card className={classes.card}>
                 <div>{displayName} wants to join </div>
                 <div className={classes.controls}>
-                    <FancyButton buttonText={'Deny'} onClick={denyLobbyAccess} width="100px" />
+                    <FancyButton buttonText={'Deny'} onClick={()=>denyLobbyAccess(userId)} width="100px" />
                     &nbsp; &nbsp;
-                    <FancyButton buttonText={'Allow'} onClick={allowLobbyAccess} width="100px"/>
+                    <FancyButton buttonText={'Allow'} onClick={()=>allowLobbyAccess(userId)} width="100px"/>
                 </div>
             </Card>
         </div>

@@ -31,7 +31,7 @@ import {
 } from "../../../constants";
 import { setFullScreen, setLayout, setPresenter, setPresentationtType } from "../../../store/actions/layout";
 import { clearAllReducers } from "../../../store/actions/conference";
-import { formatAMPM } from "../../../utils";
+import { exitFullscreen, formatAMPM, isFullscreen, requestFullscreen } from "../../../utils";
 import classNames from "classnames";
 import ParticipantDetails from "../../shared/ParticipantDetails";
 import { unreadMessage } from "../../../store/actions/chat";
@@ -188,73 +188,10 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     right: false,
   });
 
-  const AddFShandler = () => {
-    var isInFullScreen =
-      (document.fullscreenElement && document.fullscreenElement !== null) ||
-      (document.webkitFullscreenElement &&
-        document.webkitFullscreenElement !== null) ||
-      (document.mozFullScreenElement &&
-        document.mozFullScreenElement !== null) ||
-      (document.msFullscreenElement && document.msFullscreenElement !== null);    
-
-      if (isInFullScreen) {
-        dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
-      } else {
-        dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
-      }
-  };
-
-  const addFullscreenListeners = () => {
-    document.addEventListener("fullscreenchange", AddFShandler);
-    document.addEventListener("webkitfullscreenchange", AddFShandler);
-    document.addEventListener("mozfullscreenchange", AddFShandler);
-    document.addEventListener("MSFullscreenChange", AddFShandler);
-  };
-
-  const removeFullscreenListeners = () => {
-    document.removeEventListener("fullscreenchange", AddFShandler);
-    document.removeEventListener("webkitfullscreenchange", AddFShandler);
-    document.removeEventListener("mozfullscreenchange", AddFShandler);
-    document.removeEventListener("MSFullscreenChange", AddFShandler);
-  };
-
   const action = (actionData) => {
     featureStates[actionData.key] = actionData.value;
     setFeatureStates({ ...featureStates });
   }
-
-  const fullScreen = () => {
-    var isInFullScreen =
-      (document.fullscreenElement && document.fullscreenElement !== null) ||
-      (document.webkitFullscreenElement &&
-        document.webkitFullscreenElement !== null) ||
-      (document.mozFullScreenElement &&
-        document.mozFullScreenElement !== null) ||
-      (document.msFullscreenElement && document.msFullscreenElement !== null);
-
-    var docElm = document.documentElement;
-    if (!isInFullScreen) {
-      if (docElm.requestFullscreen) {
-        docElm.requestFullscreen();
-      } else if (docElm.mozRequestFullScreen) {
-        docElm.mozRequestFullScreen();
-      } else if (docElm.webkitRequestFullScreen) {
-        docElm.webkitRequestFullScreen();
-      } else if (docElm.msRequestFullscreen) {
-        docElm.msRequestFullscreen();
-      }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-    }
-  };
 
   const muteAudio = async () => {
     await audioTrack?.mute();
@@ -364,6 +301,45 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     </>
   );
 
+  const toggleFullscreen = () => {
+    if (isFullscreen()) {
+        exitFullscreen();
+    } else {
+        requestFullscreen();
+    }
+  };
+
+  const AddFShandler = () => {
+    if (isFullscreen()) {
+      dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
+    } else {
+      dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+    }
+  };
+
+  const addFullscreenListeners = () => {
+    document.addEventListener("fullscreenchange", AddFShandler);
+    document.addEventListener("webkitfullscreenchange", AddFShandler);
+    document.addEventListener("mozfullscreenchange", AddFShandler);
+    document.addEventListener("MSFullscreenChange", AddFShandler);
+  };
+
+  const removeFullscreenListeners = () => {
+    document.removeEventListener("fullscreenchange", AddFShandler);
+    document.removeEventListener("webkitfullscreenchange", AddFShandler);
+    document.removeEventListener("mozfullscreenchange", AddFShandler);
+    document.removeEventListener("MSFullscreenChange", AddFShandler);
+  };
+
+
+  const resize = ()=>{
+    if( window.innerHeight == window.screen.height) {
+      dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
+    } else {
+      dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+    }
+  }
+
   const toggleView = () => {
     if (layout.type === PRESENTATION || layout.type === SPEAKER) {
       dispatch(setLayout(GRID));
@@ -395,40 +371,27 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     dispatch(setPresentationtType({ presentationType }));
     action(actionData);
   }
-    
-  const resize = ()=>{
-    if( window.innerHeight == window.screen.height) {
-      dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
-    } else {
-      dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
-    }
-  }
 
   useEffect(() => {
+    let doit;
     const interval = setInterval(() => {
       setTime(formatAMPM(new Date()));
     }, 1000);
+    document.addEventListener("dblclick",  toggleFullscreen);
+    // TODO:  browser window full screen click handler
+    // window.addEventListener("resize", ()=> {
+    //   clearTimeout(doit);
+    //   doit = setTimeout(resize, 500);
+    // });
 
-    document.addEventListener("dblclick",  fullScreen);
-    return () => {
-      document.removeEventListener("dblclick",  fullScreen);
-      clearInterval(interval);
-    };
-  }, []);
-
-  useEffect(() => {
     addFullscreenListeners();
     return () => {
+      document.removeEventListener("dblclick",  toggleFullscreen);
+      clearInterval(interval);
       removeFullscreenListeners();
+      //window.removeEventListener("resize", resize);
     };
   }, []);
-
-  useEffect(() => {
-    window.addEventListener("resize", resize);
-    return () => {
-      window.removeEventListener("resize", resize);
-    };
-  }, [layout.mode]);
 
   useEffect(() => {
     if (conference.getParticipantsWithoutHidden()[0]?._id) {

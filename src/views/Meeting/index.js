@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { color } from '../../assets/styles/_color';
 import ActionButtons from '../../components/meeting/ActionButtons';
 import SariskaMediaTransport from 'sariska-media-transport';
-import Navbar from '../../components/shared/Navbar'
 import ReconnectDialog from "../../components/shared/ReconnectDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { addRemoteTrack, participantLeft, removeRemoteTrack, remoteTrackMutedChanged } from "../../store/actions/track";
@@ -25,9 +24,6 @@ import { addSubtitle } from '../../store/actions/subtitle';
 import { useHistory } from 'react-router-dom';
 import { setUserResolution } from '../../store/actions/layout';
 import {useOnlineStatus} from "../../hooks/useOnlineStatus";
-import { updateLocalTrack } from '../../store/actions/track';
-import {useWindowResize} from "../../hooks/useWindowResize";
-import {useDocumentSize} from "../../hooks/useDocumentSize";
 import ReactGA from 'react-ga4';
 
 const Meeting = () => {
@@ -90,6 +86,10 @@ const Meeting = () => {
     }
 
     const destroy = async () => {
+        if (conference.getParticipantCount() - 1 === 0) {
+            fetch(`https://whiteboard.sariska.io/boards/delete/${conference.connection.name}`, { method: 'DELETE',  mode: 'cors' });
+            fetch(`https://etherpad.sariska.io/api/1/deletePad?apikey=a97b8845463ab348a91717f9887842edf0df15e395977c2dad12c56bca146d6e&padID=${conference.connection.name}`, { method: 'GET',  mode: 'cors' });
+        }
         if (conference?.isJoined()) {
             await conference?.leave();
         }
@@ -268,7 +268,7 @@ const Meeting = () => {
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_KICKED, (actorParticipant, kickedParticipant, reason) => {
 
         })
-
+ 
         preloadIframes(conference);
         // SariskaMediaTransport.effects.createRnnoiseProcessor();
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);

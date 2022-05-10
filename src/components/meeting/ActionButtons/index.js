@@ -163,7 +163,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ActionButtons = ({dominantSpeakerId}) => {
+const ActionButtons = ({ dominantSpeakerId }) => {
   const history = useHistory();
   const audioTrack = useSelector((state) => state.localTrack).find(track => track.isAudioTrack());
   const videoTrack = useSelector((state) => state.localTrack).find(track => track.isVideoTrack());
@@ -195,14 +195,13 @@ const ActionButtons = ({dominantSpeakerId}) => {
         document.webkitFullscreenElement !== null) ||
       (document.mozFullScreenElement &&
         document.mozFullScreenElement !== null) ||
-      (document.msFullscreenElement && document.msFullscreenElement !== null);
+      (document.msFullscreenElement && document.msFullscreenElement !== null);    
 
-    console.log("isInFullScreen", isInFullScreen);
-    if (isInFullScreen) {
-      dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
-    } else {
-      dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
-    }
+      if (isInFullScreen) {
+        dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
+      } else {
+        dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+      }
   };
 
   const addFullscreenListeners = () => {
@@ -220,11 +219,8 @@ const ActionButtons = ({dominantSpeakerId}) => {
   };
 
   const action = (actionData) => {
-      featureStates[actionData.key] = actionData.value;
-
-      console.log("state", actionData, featureStates);
-
-      setFeatureStates({...featureStates});
+    featureStates[actionData.key] = actionData.value;
+    setFeatureStates({ ...featureStates });
   }
 
   const fullScreen = () => {
@@ -371,7 +367,7 @@ const ActionButtons = ({dominantSpeakerId}) => {
   const toggleView = () => {
     if (layout.type === PRESENTATION || layout.type === SPEAKER) {
       dispatch(setLayout(GRID));
-    } else if( featureStates.whiteboard ||  featureStates.sharedDocument) {      
+    } else if (featureStates.whiteboard || featureStates.sharedDocument) {
       dispatch(setLayout(PRESENTATION));
     } else {
       dispatch(setLayout(SPEAKER));
@@ -390,7 +386,7 @@ const ActionButtons = ({dominantSpeakerId}) => {
 
   const moreActionList = (anchor) => (
     <>
-      <MoreAction dominantSpeakerId={dominantSpeakerId} action = {action} featureStates={featureStates} setLayoutAndFeature={setLayoutAndFeature} />
+      <MoreAction dominantSpeakerId={dominantSpeakerId} action={action} featureStates={featureStates} setLayoutAndFeature={setLayoutAndFeature} />
     </>
   );
 
@@ -399,24 +395,38 @@ const ActionButtons = ({dominantSpeakerId}) => {
     dispatch(setPresentationtType({ presentationType }));
     action(actionData);
   }
+    
+  const resize = ()=>{
+    if( window.innerHeight == window.screen.height) {
+      dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
+    } else {
+      dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
+    }
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(formatAMPM(new Date()));
     }, 1000);
 
-    document.addEventListener("dblclick", fullScreen);
-
+    document.addEventListener("dblclick",  fullScreen);
     return () => {
+      document.removeEventListener("dblclick",  fullScreen);
       clearInterval(interval);
-      document.removeEventListener("dblclick", fullScreen);
     };
-  }, [layout.mode]);
+  }, []);
 
   useEffect(() => {
     addFullscreenListeners();
     return () => {
       removeFullscreenListeners();
+    };
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("resize", resize);
+    return () => {
+      window.removeEventListener("resize", resize);
     };
   }, [layout.mode]);
 
@@ -434,13 +444,13 @@ const ActionButtons = ({dominantSpeakerId}) => {
 
       if (payload?.action === RECEIVED_PRESENTATION_STATUS) {
         if (payload.status === "whiteboard") {
-          setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard",  value: true})
-          action({key: "sharedDocument", value: false})
+          setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard", value: true })
+          action({ key: "sharedDocument", value: false })
         }
 
         if (payload.status === "sharedDocument") {
-          setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument",  value: true})
-          action({key: "whiteboard", value: false});
+          setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument", value: true })
+          action({ key: "whiteboard", value: false });
         }
       }
     }
@@ -450,46 +460,45 @@ const ActionButtons = ({dominantSpeakerId}) => {
     }
   }, [featureStates.whiteboard, featureStates.sharedDocument]);
 
-
   useEffect(() => {
     conference.getParticipantsWithoutHidden().forEach((item) => {
       if (item._properties?.transcribing) {
-        action({key: "caption", value: true})
+        action({ key: "caption", value: true })
       }
 
       if (item._properties?.recording) {
-        action({key: "recording", value: true})
+        action({ key: "recording", value: true })
       }
 
       if (item._properties?.streaming) {
-        action({key: "streaming", value: true})
+        action({ key: "streaming", value: true })
       }
 
       if (item._properties?.whiteboard === "start") {
         console.log("item._properties?.whiteboard", item._properties?.whiteboard);
-        setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard",  value: true})
+        setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard", value: true })
       }
 
       if (item._properties?.sharedDocument === "start") {
-        setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument",  value: true})
+        setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument", value: true })
       }
     });
 
     conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
       if (key === "whiteboard" && newValue === "start") {
-        setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard",  value: true})
+        setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard", value: true })
       }
 
       if (key === "whiteboard" && newValue === "stop") {
-        setLayoutAndFeature(SPEAKER, null, { key: "whiteboard",  value: false})
+        setLayoutAndFeature(SPEAKER, null, { key: "whiteboard", value: false })
       }
 
       if (key === "sharedDocument" && newValue === "stop") {
-        setLayoutAndFeature(SPEAKER, null, { key: "sharedDocument",  value: false})
+        setLayoutAndFeature(SPEAKER, null, { key: "sharedDocument", value: false })
       }
 
       if (key === "sharedDocument" && newValue === "start") {
-        setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument",  value: true})
+        setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument", value: true })
       }
     });
 
@@ -497,14 +506,14 @@ const ActionButtons = ({dominantSpeakerId}) => {
       if (status === "ON") {
         conference.setLocalParticipantProperty("transcribing", true);
         dispatch(showSnackbar({ autoHide: true, message: "Caption started" }));
-        action({key: "caption", value: true});
+        action({ key: "caption", value: true });
       }
 
       if (status === "OFF") {
         conference.removeLocalParticipantProperty("transcribing");
         dispatch(showSnackbar({ autoHide: true, message: "Caption stopped" }));
         dispatch(addSubtitle({}));
-        action({key: "caption", value: false});
+        action({ key: "caption", value: false });
       }
     });
 
@@ -512,27 +521,27 @@ const ActionButtons = ({dominantSpeakerId}) => {
       if (data._status === "on" && data._mode === "stream") {
         conference.setLocalParticipantProperty("streaming", true);
         dispatch(showSnackbar({ autoHide: true, message: "Live streaming started" }));
-        action({key: "streaming", value: true});
+        action({ key: "streaming", value: true });
         localStorage.setItem("streaming_session_id", data?._sessionID);
       }
 
       if (data._status === "off" && data._mode === "stream") {
         conference.removeLocalParticipantProperty("streaming");
         dispatch(showSnackbar({ autoHide: true, message: "Live streaming stopped" }));
-        action({key: "streaming", value: false});
+        action({ key: "streaming", value: false });
       }
 
       if (data._status === "on" && data._mode === "file") {
         conference.setLocalParticipantProperty("recording", true);
         dispatch(showSnackbar({ autoHide: true, message: "Recording started" }));
-        action({key: "recording", value: true});
+        action({ key: "recording", value: true });
         localStorage.setItem("recording_session_id", data?._sessionID);
       }
 
       if (data._status === "off" && data._mode === "file") {
         conference.removeLocalParticipantProperty("recording");
         dispatch(showSnackbar({ autoHide: true, message: "Recording stopped" }));
-        action({key: "recording", value: false});
+        action({ key: "recording", value: false });
       }
 
       if (data._mode === "stream" && data._error) {
@@ -541,7 +550,7 @@ const ActionButtons = ({dominantSpeakerId}) => {
           autoHide: true,
           message: RECORDING_ERROR_CONSTANTS[data._error],
         }));
-        action({key: "streaming", value: false});
+        action({ key: "streaming", value: false });
       }
 
       if (data._mode === "file" && data._error) {
@@ -550,8 +559,9 @@ const ActionButtons = ({dominantSpeakerId}) => {
           autoHide: true,
           message: RECORDING_ERROR_CONSTANTS[data._error],
         }));
-        action({key: "recording", value: false});
-      }})
+        action({ key: "recording", value: false });
+      }
+    })
   }, []);
 
   const leaveConference = () => {
@@ -594,11 +604,11 @@ const ActionButtons = ({dominantSpeakerId}) => {
               mic_none
             </span>
           ) : <span
-                className="material-icons material-icons-outlined"
-                style={{cursor: 'unset'}}
-              >
-                mic_none
-              </span>
+            className="material-icons material-icons-outlined"
+            style={{ cursor: 'unset' }}
+          >
+            mic_none
+          </span>
           }
         </Tooltip>
         <Tooltip title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}>

@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, makeStyles, Grid } from '@material-ui/core'
 import { useSelector } from "react-redux";
 import VideoBox from "../VideoBox";
 import { calculateRowsAndColumns, getLeftTop } from "../../../utils";
 import { useWindowResize } from "../../../hooks/useWindowResize";
-import { useDocumentSize } from "../../../hooks/useDocumentSize";
 
 const ParticipantGrid = ({ dominantSpeakerId }) => {
     const layout = useSelector(state => state.layout);
@@ -26,8 +25,6 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
     }));
 
     let { viewportWidth, viewportHeight } = useWindowResize();
-    const { documentWidth, documentHeight } = useDocumentSize();
-
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const localTracks = useSelector(state => state.localTrack);
@@ -48,7 +45,6 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
         lastRowOffset,
         lastRowWidth
     } = calculateRowsAndColumns(conference.getParticipantCount(), viewportWidth, viewportHeight); // get grid item dimension
-
     // now render them as a grid
     return (
         <Box className={classes.root}>

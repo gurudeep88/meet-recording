@@ -17,7 +17,7 @@ const Whiteboard = ({ conference, height, width, isVisible }) => {
     const classes = useStyles();
     const src = getWhiteIframeUrl(conference);  
     return (
-            <iframe frameBorder="0" style={{background: "#ffffff", display: isVisible ? "block": "none"}} height={height} width={width} src={src}></iframe>
+            <iframe id="whiteboard" frameBorder="0" style={{background: "#ffffff", display: isVisible ? "block": "none"}} height={height} width={width} src={src}></iframe>
     );
 };
 

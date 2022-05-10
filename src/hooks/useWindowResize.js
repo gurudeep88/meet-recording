@@ -13,7 +13,7 @@ export function useWindowResize() {
         let documentWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
         let documentHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
         let viewportHeight, viewportWidth;
-
+        
         if (mode === ENTER_FULL_SCREEN_MODE ) {
             viewportHeight = documentHeight - 108;
             viewportWidth = documentWidth;
@@ -25,7 +25,6 @@ export function useWindowResize() {
         }
 
         if ( type === GRID ) {
-            console.log("documentHeight", documentHeight, ) 
             return {viewportWidth: documentWidth , viewportHeight: documentHeight - 92};
         }
 
@@ -35,7 +34,11 @@ export function useWindowResize() {
     }
 
     useEffect(() => {
-        setTimeout(()=>setWindowSize(getDimensions(layout.mode, layout.type)), 10);
+        setWindowSize(getDimensions(layout.mode, layout.type));
+        window.removeEventListener("resize", handleResize)
+        return ()=>{
+            window.addEventListener("resize", handleResize)
+        }
     }, [layout.mode]);
 
     useEffect(() => {
@@ -47,7 +50,7 @@ export function useWindowResize() {
     }, [layout.type]);
 
     function handleResize() {
-        setWindowSize(getDimensions());
+        setWindowSize(getDimensions(layout.mode, layout.type));
     }
 
     useEffect(() => {

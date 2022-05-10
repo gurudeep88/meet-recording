@@ -10,9 +10,6 @@ export function useDocumentSize() {
     }
 
     function handleResize() {
-        if( window.innerHeight == window.screen.height) {
-           console.log(" browser is fullscreen");
-        }
         setDocumentSize(getDimensions());
     }
 

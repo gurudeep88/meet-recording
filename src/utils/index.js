@@ -234,7 +234,7 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
         columns  = columns + 1;  
 
         viewportHeight  = viewportHeight - ( rows - 1 ) * 12;
-        viewportWidth  = viewportWidth - ( columns +  1 )*12;
+        viewportWidth  = viewportWidth - ( columns +  1 ) * 12;
         
         gridItemHeight = viewportHeight / rows;
         gridItemWidth = viewportWidth / columns;

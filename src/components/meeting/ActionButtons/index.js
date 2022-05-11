@@ -379,21 +379,8 @@ const ActionButtons = ({ dominantSpeakerId }) => {
 
   useEffect(() => {
     let doit;
-
-
-    document.addEventListener("mouseover", ()=>{
-      skipResize = true;
-    })
-
-    document.addEventListener("mouseleave", function(event){
-
-      if(event.clientY <= 0 || event.clientX <= 0 || (event.clientX >= window.innerWidth || event.clientY >= window.innerHeight))
-      {
-    
-         skipResize = false;
-    
-      }
-    });
+    document.documentElement.addEventListener('mouseleave', () => skipResize = false);
+    document.documentElement.addEventListener('mouseenter', () => skipResize = true)
 
     const interval = setInterval(() => {
       setTime(formatAMPM(new Date()));

@@ -188,6 +188,8 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     right: false,
   });
 
+  const skipResize = false;
+
   const action = (actionData) => {
     featureStates[actionData.key] = actionData.value;
     setFeatureStates({ ...featureStates });
@@ -254,7 +256,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   const startRaiseHand = () => {
     conference.setLocalParticipantProperty("handraise", "start");
     setRaiseHand(true);
-  };
+  }; 
 
   const stopRaiseHand = () => {
     conference.setLocalParticipantProperty("handraise", "stop");
@@ -333,6 +335,9 @@ const ActionButtons = ({ dominantSpeakerId }) => {
 
 
   const resize = ()=>{
+    if (skipResize) {
+      return;
+    }
     if( window.innerHeight == window.screen.height) {
       dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
     } else {
@@ -374,22 +379,37 @@ const ActionButtons = ({ dominantSpeakerId }) => {
 
   useEffect(() => {
     let doit;
+
+
+    document.addEventListener("mouseover", ()=>{
+      skipResize = true;
+    })
+
+    document.addEventListener("mouseleave", function(event){
+
+      if(event.clientY <= 0 || event.clientX <= 0 || (event.clientX >= window.innerWidth || event.clientY >= window.innerHeight))
+      {
+    
+         skipResize = false;
+    
+      }
+    });
+
     const interval = setInterval(() => {
       setTime(formatAMPM(new Date()));
     }, 1000);
     document.addEventListener("dblclick",  toggleFullscreen);
-    // TODO:  browser window full screen click handler
-    // window.addEventListener("resize", ()=> {
-    //   clearTimeout(doit);
-    //   doit = setTimeout(resize, 500);
-    // });
+    window.addEventListener("resize", ()=> {
+      clearTimeout(doit);
+      doit = setTimeout(resize, 250);
+    });
 
     addFullscreenListeners();
     return () => {
       document.removeEventListener("dblclick",  toggleFullscreen);
       clearInterval(interval);
       removeFullscreenListeners();
-      //window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", resize);
     };
   }, []);
 

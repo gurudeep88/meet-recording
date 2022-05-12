@@ -118,6 +118,8 @@ export function  calculateSteamHeightAndExtraDiff(viewportWidth, viewportHeight,
 }
 
 export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewportHeight) {
+    const actualWidth = viewportWidth;
+    const  actualHeight = viewportHeight;
     const numWindows = totalParticipant;
     let columns;
     let rows;
@@ -182,22 +184,20 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
             columns, 
             gridItemWidth, 
             gridItemHeight: gridItemWidth * 9/16, 
-            offset: 0 , 
+            offset: 12 , 
             lastRowWidth: gridItemWidth,
-            lastRowOffset: 0
+            lastRowOffset: 12
         };
     }
 
     if (isSquare(totalParticipant) || totalParticipant <= 4) {
         viewportHeight  = viewportHeight - (columns - 1)*12;
-        gridItemHeight  =  viewportHeight / columns;
+        viewportWidth = viewportWidth - (columns - 1)*12;;
+        gridItemHeight  =  viewportHeight / rows;
         gridItemWidth = gridItemHeight * 16/9;
-        offset  =  (viewportWidth -  (columns * gridItemWidth))/2;
-        lastRowOffset =  (viewportWidth - ((totalParticipant % columns) * gridItemWidth))/2; 
-
-        if ( totalParticipant % columns  === 0 ) {
-            lastRowOffset = offset;
-        }
+        offset  =  (viewportWidth -  (columns * gridItemWidth))/2;  
+        const lastRowParticipantCount = (totalParticipant % columns === 0 ? columns: totalParticipant % columns );
+        lastRowOffset =  (actualWidth  - (lastRowParticipantCount * gridItemWidth) - (lastRowParticipantCount - 1)*12 )/2;
 
         return { 
             rows, 
@@ -213,38 +213,38 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
         viewportWidth  = viewportWidth - (columns +  1)*12;
         gridItemWidth =  viewportWidth / (rows + 1);
         gridItemHeight =  viewportHeight / (columns - 1);
-        offset  =  0;
         lastRowWidth = gridItemHeight  *   16/9;
-        if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9  >  viewportWidth) {
+        offset  =  (viewportWidth -  (columns * gridItemWidth))/2 || 12;
+        if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9  >  actualWidth) {
             lastRowWidth = gridItemWidth;
         }
-        lastRowOffset =  (viewportWidth - ((totalParticipant % columns === 0 ? columns: totalParticipant % columns ) * lastRowWidth))/2;
+        const lastRowParticipantCount = totalParticipant % columns === 0 ? columns :  totalParticipant % columns;
+        lastRowOffset =  (actualWidth - (lastRowParticipantCount * lastRowWidth) - (lastRowParticipantCount - 1)*12 )/2 ;
 
         return { 
             rows, 
             columns, 
             gridItemWidth, 
             gridItemHeight, 
-            offset: 0, 
+            offset, 
             lastRowOffset,
             lastRowWidth
         };
     }  else if ( rows === columns) {
         rows = rows  - 1;
         columns  = columns + 1;  
-
         viewportHeight  = viewportHeight - ( rows - 1 ) * 12;
-        viewportWidth  = viewportWidth - ( columns +  1 )*12;
+        viewportWidth  = viewportWidth - ( columns +  1 ) * 12;
         
         gridItemHeight = viewportHeight / rows;
         gridItemWidth = viewportWidth / columns;
-
-        offset  =  0;
+        offset  =  (viewportWidth -  (columns * gridItemWidth))/2 || 12;  
         lastRowWidth = gridItemHeight  *   16/9;
-        if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9 >  viewportWidth) {
+        if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9 >  actualWidth) {
             lastRowWidth = gridItemWidth;
         }
-        lastRowOffset =  (viewportWidth - ((totalParticipant % columns === 0 ? columns :  totalParticipant % columns) * lastRowWidth))/2;
+        const lastRowParticipantCount = totalParticipant % columns === 0 ? columns :  totalParticipant % columns;
+        lastRowOffset =  (actualWidth - (lastRowParticipantCount * lastRowWidth) - (lastRowParticipantCount - 1)*12 )/2 ;
 
         return  { 
             rows, 
@@ -257,17 +257,18 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
         }
     } else {
         viewportHeight  = viewportHeight - ( rows - 1 ) * 12;
-        viewportWidth  = viewportWidth - ( columns +  1 )*12;
+        viewportWidth  = viewportWidth - ( columns +  1 ) * 12;
         
         gridItemHeight = viewportHeight / rows;
         gridItemWidth = viewportWidth / columns;
 
-        offset  =  0;
+        offset  =  (viewportWidth -  (columns* gridItemWidth))/2 || 12;  
         lastRowWidth = gridItemHeight  *   16/9;
-        if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9 >  viewportWidth) {
+        if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9 >  actualWidth) {
             lastRowWidth = gridItemWidth;
         }
-        lastRowOffset =  (viewportWidth - ((totalParticipant % columns === 0 ? columns :  totalParticipant % columns) * lastRowWidth))/2;
+        const lastRowParticipantCount = totalParticipant % columns === 0 ? columns :  totalParticipant % columns;
+        lastRowOffset =  (actualWidth - lastRowParticipantCount * lastRowWidth - (lastRowParticipantCount - 1)*12 )/2 ;
 
         return  { 
             rows, 
@@ -290,9 +291,9 @@ export function isMobile() {
 export function getLeftTop(i,  j,  gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, participantCount, viewportHeight, lastRowWidth){
     let left, top; 
     if ( (rows - 1 ) === i) {
-       left  = lastRowOffset + (j * lastRowWidth) + (j + 1)*12;
+       left  = lastRowOffset + (j * lastRowWidth) + j*12;
     } else {
-       left  = offset + (j * gridItemWidth) + (j + 1)*12;
+       left  = offset + (j * gridItemWidth) +  j*12
     }
     top  =   (i *  gridItemHeight + i*12);
     if ( participantCount === 2 ) {
@@ -341,6 +342,40 @@ export function videoShadow(level) {
 export function getWhiteIframeUrl(conference) {
     return `https://whiteboard.sariska.io/boards/${conference.connection.name}?authorName=${conference.getLocalUser().name}`;     
 
+}
+
+export function isFullscreen(){
+    let isInFullScreen =
+    (document.fullscreenElement && document.fullscreenElement !== null) ||
+    (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+    (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+    (document.msFullscreenElement && document.msFullscreenElement !== null);   
+    return isInFullScreen;
+}
+
+export function requestFullscreen() {
+    var docElm = document.documentElement;
+    if (docElm.requestFullscreen) {
+        docElm.requestFullscreen();
+    } else if (docElm.mozRequestFullScreen) {
+        docElm.mozRequestFullScreen();
+    } else if (docElm.webkitRequestFullScreen) {
+        docElm.webkitRequestFullScreen();
+    } else if (docElm.msRequestFullscreen) {
+        docElm.msRequestFullscreen();
+    }
+}
+
+export function exitFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
 }
 
 export function getSharedDocumentIframeUrl(conference) {

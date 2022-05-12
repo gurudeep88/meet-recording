@@ -223,9 +223,10 @@ const LobbyRoom = ({ tracks }) => {
     }
 
     setLoading(true);
+    let avatarColor = profile?.color ?  profile?.color : getRandomColor();
+    dispatch(updateProfile({key: "color", value: avatarColor}));
 
-    const token = await getToken(profile, name);
-
+    const token = await getToken(profile, name, avatarColor);
     const connection = new SariskaMediaTransport.JitsiConnection(
       token,
       meetingTitle,

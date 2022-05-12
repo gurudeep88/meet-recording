@@ -50,7 +50,7 @@ export function createDeferred() {
     return deferred;
 }
 
-export async function getToken(profile, name) {
+export async function getToken(profile, name, avatarColor) {
     const body = {
         method: "POST",
         headers: {
@@ -60,7 +60,7 @@ export async function getToken(profile, name) {
             apiKey: process.env.REACT_APP_API_KEY,
             user: {
                 id: profile.id,
-                avatar: profile.color || getRandomColor(),
+                avatar: avatarColor,
                 name: name,
                 email: profile.email
             },

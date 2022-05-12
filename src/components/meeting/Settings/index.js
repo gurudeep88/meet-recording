@@ -165,7 +165,8 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '0.75rem',
         color: '#fff',
         background: color.lightgray4,
-        borderRadius: '0px'
+        borderRadius: '0px',
+        textTransform: 'capitalize'
     },
     volume: {
         color: color.white,

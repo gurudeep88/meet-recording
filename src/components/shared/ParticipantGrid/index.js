@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import VideoBox from "../VideoBox";
 import { calculateRowsAndColumns, getLeftTop } from "../../../utils";
 import { useWindowResize } from "../../../hooks/useWindowResize";
+import { useDocumentSize } from "../../../hooks/useDocumentSize";
 
 const ParticipantGrid = ({ dominantSpeakerId }) => {
     const layout = useSelector(state => state.layout);
@@ -25,6 +26,7 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
     }));
 
     let { viewportWidth, viewportHeight } = useWindowResize();
+    let { documentWidth, documentHeight } = useDocumentSize();
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const localTracks = useSelector(state => state.localTrack);
@@ -54,8 +56,8 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
                         {[...Array(columns)].map((y, j) => {
                             return (tracks[participants[i * columns + j]?._id] || participants[i * columns + j]?._id) &&
                                 <Box className={classes.containerItem} style={{ 
-                                    left: getLeftTop(i, j, gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, conference.getParticipantCount(), viewportHeight, lastRowWidth).left, 
-                                    top: getLeftTop(i, j, gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, conference.getParticipantCount(), viewportHeight, lastRowWidth).top, 
+                                    left: getLeftTop(i, j, gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, conference.getParticipantCount(), viewportHeight, lastRowWidth, documentHeight).left, 
+                                    top: getLeftTop(i, j, gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, conference.getParticipantCount(), viewportHeight, lastRowWidth, documentHeight).top, 
                                     width: rows === (i - 1) && lastRowWidth ? lastRowWidth : gridItemWidth,
                                     height: gridItemHeight
                                 }}>

@@ -288,7 +288,7 @@ export function isMobile() {
     return check;
 }
 
-export function getLeftTop(i,  j,  gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, participantCount, viewportHeight, lastRowWidth){
+export function getLeftTop(i,  j,  gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, participantCount, viewportHeight, lastRowWidth, documentHeight){
     let left, top; 
     if ( (rows - 1 ) === i) {
        left  = lastRowOffset + (j * lastRowWidth) + j*12;
@@ -297,7 +297,7 @@ export function getLeftTop(i,  j,  gridItemWidth, gridItemHeight, offset, lastRo
     }
     top  =   (i *  gridItemHeight + i*12);
     if ( participantCount === 2 ) {
-        return { left, top: top + (viewportHeight - gridItemHeight) / 2  };
+        return { left, top: (documentHeight - gridItemHeight) / 2};
     }
     return { left, top };
 }

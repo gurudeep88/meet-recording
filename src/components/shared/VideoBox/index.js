@@ -12,6 +12,7 @@ import {videoShadow, calculateSteamHeightAndExtraDiff} from "../../../utils";
 import AudioLevelIndicator from "../AudioIndicator";
 import SubTitle from "../SubTitle";
 import {useDocumentSize} from "../../../hooks/useDocumentSize";
+import { profile } from '../../../store/reducers/profile';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -133,16 +134,13 @@ const VideoBox = ({
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
     const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
-    const avatarColors = useSelector(state => state.color);
     const audioIndicator = useSelector(state => state.audioIndicator);
     const dispatch = useDispatch();
     const [visiblePinParticipant, setVisiblePinPartcipant] = useState(true);
-    let avatarColor = avatarColors[participantDetails?.id];
     let audioLevel = audioIndicator[participantDetails?.id];
     const subtitle  = useSelector(state=>state.subtitle);
     const conference = useSelector(state => state.conference);
     const {documentWidth, documentHeight} = useDocumentSize();
-                    console.log('audio in', audioIndicator, audioLevel)
     const togglePinParticipant = (id) => {
         dispatch(setPinParticipant(id));
     }
@@ -157,6 +155,8 @@ const VideoBox = ({
     const avatarActiveClasses = classnames(classes.avatarBox);
     const { videoStreamHeight, videoStreamDiff } = calculateSteamHeightAndExtraDiff(width, height, documentWidth, documentHeight);
 
+    let avatarColor = participantDetails?.avatar || profile?.color;
+     
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
@@ -179,8 +179,8 @@ const VideoBox = ({
                 videoTrack?.isMuted() ? 
                     <Box className={avatarActiveClasses}>
                         <Avatar
-                            src={participantDetails?.avatar ? participantDetails?.avatar: null }
-                            style={isFilmstrip ? { boxShadow: videoShadow(audioLevel), background: avatarColor } : {background: avatarColor}}
+                            src={null}
+                            style={isFilmstrip ? { boxShadow: videoShadow(audioLevel), background: avatarColor} : {background: avatarColor}}
                             className={audioIndicatorActiveClasses}>
                             {participantDetails?.name.slice(0, 1).toUpperCase()}
                         </Avatar>

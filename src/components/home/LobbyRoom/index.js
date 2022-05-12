@@ -8,24 +8,22 @@ import {
 } from "@material-ui/core";
 import React, { useEffect, useState, useRef } from "react";
 import SariskaMediaTransport from "sariska-media-transport";
-import VideocamIcon from "@material-ui/icons/Videocam";
-import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import { color } from "../../../assets/styles/_color";
 import { useHistory } from "react-router-dom";
 import { localTrackMutedChanged } from "../../../store/actions/track";
 import { addConference } from "../../../store/actions/conference";
 import {
   getToken,
-  getRandomColor,
   trimSpace,
   detectUpperCaseChar,
+  getRandomColor
 } from "../../../utils";
 import { addThumbnailColor } from "../../../store/actions/color";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import TextInput from "../../shared/TextInput";
-import { setProfile, setMeeting } from "../../../store/actions/profile";
+import { setProfile, setMeeting , updateProfile} from "../../../store/actions/profile";
 import JoinTrack from "../JoinTrack";
 import { addConnection } from "../../../store/actions/connection";
 import SnackbarBox from "../../shared/Snackbar";
@@ -196,7 +194,6 @@ const LobbyRoom = ({ tracks }) => {
   const [settingsState, setSettingsState] = React.useState({
     right: false,
   });
-
   const moderator = useRef(true);
 
   const handleTitleChange = (e) => {
@@ -205,6 +202,12 @@ const LobbyRoom = ({ tracks }) => {
 
   const handleUserNameChange = (e) => {
     setName(e.target.value);
+    if (e.target.value.length === 1 ) {
+      dispatch(updateProfile({key: "color", value: getRandomColor()}));
+    }
+    if (!e.target.value) {
+      dispatch(updateProfile({key: "color", value: null}));
+    }
   };
   
   const handleSubmit = async () => {
@@ -281,6 +284,7 @@ const LobbyRoom = ({ tracks }) => {
         dispatch(addConference(conference));
         dispatch(setProfile(conference.getLocalUser()));
         dispatch(setMeeting({ meetingTitle }));
+        dispatch(addThumbnailColor({participantId: conference?.myUserId(), color:  profile?.color}));
       }
     );
 
@@ -373,7 +377,7 @@ const LobbyRoom = ({ tracks }) => {
       setMeetingTitle(queryParams.meetingId);
     }
     setName(profile.name);
-  }, [profile]);
+  }, [profile?.name]);
 
   const toggleSettingsDrawer = (anchor, open) => (event) => {
     if (

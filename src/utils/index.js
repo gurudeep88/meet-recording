@@ -60,7 +60,7 @@ export async function getToken(profile, name) {
             apiKey: process.env.REACT_APP_API_KEY,
             user: {
                 id: profile.id,
-                avatar: profile.avatar,
+                avatar: profile.color,
                 name: name,
                 email: profile.email
             },

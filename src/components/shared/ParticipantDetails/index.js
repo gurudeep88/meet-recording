@@ -124,19 +124,22 @@ const ParticipantDetails = () => {
   const avatarColors = useSelector((state) => state.color);
   const remoteTracks = useSelector((state) => state.remoteTrack);
   const localTracks = useSelector((state) => state.localTrack);
+  const profile = useSelector((state) => state.profile);
   const layout = useSelector((state) => state.layout);
   const localUser = conference.getLocalUser();
   const [participantName, setParticipantName] = useState("");
+
   const [participants, setParticipants] = useState([
     localUser?.name?.toLowerCase(),
     ...conference
       .getParticipantsWithoutHidden()
       .map((participant) => participant?._identity?.user?.name?.toLowerCase()),
   ]);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
-  const participantDetails = conference.participants?._identity?.user || conference.getLocalUser();
+  
+  const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);  
   const dispatch = useDispatch();
   
   const handleMenuClick = (event) => {
@@ -176,6 +179,10 @@ const togglePinParticipant = (id) => {
   dispatch(setPinParticipant(id));
 }
 
+const getAvatarColor =  (id)=> {
+    return conference.participants[id]?._identity?.user?.avatar || profile?.color;
+}
+ 
 const getOptions = (participantId, role) => { 
   return [
   {
@@ -213,7 +220,7 @@ const getOptions = (participantId, role) => {
           participant?.name ? (
             <Box className={classes.localBox}>
               <Box className={classes.userBox}>
-                <Avatar src={participant?.avatar ? participant?.avatar : null}>
+                <Avatar style={{ backgroundColor: getAvatarColor(participant?.id)}}>
                   {participant?.name?.slice(0, 1).toUpperCase()}
                 </Avatar>
                 <Box className={classes.userBoxContainer}>
@@ -264,12 +271,7 @@ const getOptions = (participantId, role) => {
               <Box className={classes.localBox}>
                 <Box className={classes.userBox}>
                   <Avatar
-                    src={
-                      participant?._identity?.user?.avatar
-                        ? participant?._identity?.user?.avatar
-                        : null
-                    }
-                    style={{ background: avatarColors[participant._id] }}
+                    style={{ backgroundColor: getAvatarColor(participant?._id)}}
                   >
                     {participant?._identity?.user?.name
                       .toUpperCase()

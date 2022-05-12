@@ -379,24 +379,23 @@ const ActionButtons = ({ dominantSpeakerId }) => {
 
   useEffect(() => {
     let doit;
-    document.documentElement.addEventListener('mouseleave', () => skipResize = false);
-    document.documentElement.addEventListener('mouseenter', () => skipResize = true)
+    // document.documentElement.addEventListener('mouseleave', () => skipResize = false);
+    // document.documentElement.addEventListener('mouseenter', () => skipResize = true)
 
     const interval = setInterval(() => {
       setTime(formatAMPM(new Date()));
     }, 1000);
     document.addEventListener("dblclick",  toggleFullscreen);
-    window.addEventListener("resize", ()=> {
-      clearTimeout(doit);
-      doit = setTimeout(resize, 250);
-    });
-
+    // window.addEventListener("resize", ()=> {
+    //   clearTimeout(doit);
+    //   doit = setTimeout(resize, 250);
+    // });
     addFullscreenListeners();
     return () => {
       document.removeEventListener("dblclick",  toggleFullscreen);
       clearInterval(interval);
       removeFullscreenListeners();
-      window.removeEventListener("resize", resize);
+       // window.removeEventListener("resize", resize);
     };
   }, []);
 

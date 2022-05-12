@@ -1,5 +1,6 @@
 import { Avatar, Box, makeStyles } from "@material-ui/core";
 import React, { useRef, useLayoutEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { color } from "../../../assets/styles/_color";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
 import VideoBox from "../../shared/VideoBox";
@@ -7,6 +8,7 @@ import VideoBox from "../../shared/VideoBox";
 const JoinTrack = ({ tracks, name }) => {
   const videoTrack = tracks.find((track) => track && track.isVideoTrack());
   const {documentHeight, documentWidth} = useDocumentSize();
+  const bgColor = useSelector(state=>state.profile?.color);
 
   const useStyles = makeStyles((theme) => ({
     localStream: {
@@ -68,7 +70,7 @@ const JoinTrack = ({ tracks, name }) => {
       {videoTrack?.isMuted() ? (
         <Box className={classes.avatarBox} 
         style={{ width: documentWidth, height: documentHeight }}>
-          <Avatar className={classes.avatar} style={{fontSize: name && '125px' , fontWeight: name && '100'}}>
+          <Avatar className={classes.avatar} style={{fontSize: name && '125px' , fontWeight: name && '100', backgroundColor:bgColor}}>
             {!name ? (
               <span class="material-icons material-icons-outlined">
                 person_outline

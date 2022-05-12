@@ -20,6 +20,7 @@
     "base64-js": "^1.5.1",
     "classnames": "^2.3.1",
     "compressorjs": "^1.1.1",
+    "decibel-meter": "^2.0.0",
     "dropbox": "^10.7.0",
     "env-cmd": "^10.1.0",
     "linkify-html": "^3.0.5",

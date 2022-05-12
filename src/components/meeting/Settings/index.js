@@ -21,6 +21,8 @@ import {updateLocalTrack} from "../../../store/actions/track";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
 import VideoBox from "../../shared/VideoBox";
 import Video from "../../shared/Video";
+import DecibelMeter from 'decibel-meter';
+import MicIndicator from "../../shared/MicIndicator";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -145,12 +147,33 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
+    display: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    microphone: {
+        display: 'flex',
+        alignItems: 'center',
+        color: '#fff',
+        paddingRight: '3px',
+        paddingTop: '10px'
+    },
+    offButton: {
+        padding: '4px 2px',
+        fontSize: '0.75rem',
+        color: '#fff',
+        background: color.lightgray4,
+        borderRadius: '0px'
+    },
     volume: {
         color: color.white,
         border: color.white,
         textTransform: 'capitalize',
         marginTop: '4px',
         paddingLeft: '0px',
+        paddingTop: '10px',
         "&:hover": {
             opacity: '0.6',
             background: color.lightgray4
@@ -204,12 +227,14 @@ const SettingsBox = ({tracks}) => {
     const localTracks = useSelector(state => state.localTrack);
     const [testText, setTestText] = useState('Test');
     const {documentHeight, documentWidth} = useDocumentSize();
+    const audioIndicator = useSelector(state => state.audioIndicator);
 
     const conference = useSelector(state => state.conference);
 
     const resolution = useSelector(state => state.media?.resolution);
+    const [label, setLabel] = useState(0);
     const dispatch = useDispatch();
-
+    console.log('audioIndicator',audioIndicator);
     useEffect(() => {
         SariskaMediaTransport.mediaDevices.enumerateDevices((allDevices) => {
             return setDevices(allDevices);
@@ -217,6 +242,22 @@ const SettingsBox = ({tracks}) => {
         setResolutionValue(resolution);
     }, []);
 
+    useEffect(()=>{
+        const meter = new DecibelMeter()
+        meter.sources.then(sources => console.log('sources', sources));
+        meter.listenTo(0, (dB, percent, value) => setLabel(dB));
+        meter.on('change', listening => {
+            if (listening)
+                console.log('active', listening)
+            else
+            console.log('inactive', listening)
+        });
+        return ()=>{
+            meter.stopListening();
+
+        }
+    },[])
+    
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -233,7 +274,7 @@ const SettingsBox = ({tracks}) => {
         await conference.replaceTrack(audioTrack, newAudioTrack);
         dispatch(updateLocalTrack(audioTrack, newAudioTrack));
     };
-
+    
     const handleMicrophoneClose = () => {
         setMicrophoneOpen(false);
     };
@@ -387,11 +428,29 @@ const SettingsBox = ({tracks}) => {
     );
     const audioPanel = (
         <Box className={classes.list}>
+            <Box className={classes.display}>
             <Box className={classes.marginBottom}>
-                <SelectField data={microphoneData} minWidth={'310px'} />
+                <SelectField data={microphoneData} minWidth={'200px'} />
             </Box>
+            <Box className={classes.microphone}>
+                {
+                localTracks.find(track => track.getType() === "audio").isMuted() ? <Button className={classes.offButton}>
+                    Microphone is Off
+                </Button> 
+                :
+                (<>
+                <span
+                className="material-icons material-icons-outlined"
+              >
+                mic_none
+              </span>
+                <MicIndicator passedAudioLevel={(label+100)*(1/100)}/>
+                </>)}
+            </Box>
+            </Box>
+            <Box  className={classes.display}>
             <Box className={classes.marginBottom}>
-                <SelectField data={speakerData} minWidth={'310px'} />
+                <SelectField data={speakerData} minWidth={'200px'} />
             </Box>
             <Box>
                 <Button className={classes.volume} variant='outlined' onClick={handleAudioTest}>
@@ -400,6 +459,7 @@ const SettingsBox = ({tracks}) => {
                     </span>
                     <span className={classes.test}>{testText}</span>
                 </Button>
+                </Box>
                 </Box>
         </Box>
     );

@@ -21,7 +21,6 @@ import {updateLocalTrack} from "../../../store/actions/track";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
 import VideoBox from "../../shared/VideoBox";
 import Video from "../../shared/Video";
-import DecibelMeter from 'decibel-meter';
 import MicIndicator from "../../shared/MicIndicator";
 
 function TabPanel(props) {
@@ -116,17 +115,6 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
             padding: '4px 14px',
             textTransform: "capitalize",
-        // display: "flex",
-        // alignItems: "center",
-        // "& svg": {
-        //     color: color.white,
-        //     marginRight: '12px',
-        // },
-        // "& p": {
-        //     textTransform: "capitalize",
-        //     color: color.white,
-        //     fontSize: "0.9rem",
-        // },
     },
     audioIcon: {
         paddingLeft: "0px",
@@ -145,7 +133,7 @@ const useStyles = makeStyles((theme) => ({
             "&&>p": {
                 fontSize: "0.9rem",
             },
-        },
+        }
     },
     display: {
         display: 'flex',
@@ -154,17 +142,17 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between'
     },
     microphone: {
-        display: 'flex',
-        alignItems: 'center',
-        color: '#fff',
-        paddingRight: '3px',
-        paddingTop: '10px'
+        color: "#fff",
+        display: "flex",
+        alignItems: "center",
+        paddingTop: "27px",
+        paddingRight: "3px",
+        paddingLeft: "15px"
     },
     offButton: {
         padding: '4px 2px',
         fontSize: '0.75rem',
         color: '#fff',
-        background: color.lightgray4,
         borderRadius: '0px',
         textTransform: 'capitalize'
     },
@@ -172,13 +160,14 @@ const useStyles = makeStyles((theme) => ({
         color: color.white,
         border: color.white,
         textTransform: 'capitalize',
-        marginTop: '4px',
         paddingLeft: '0px',
         paddingTop: '10px',
         "&:hover": {
             opacity: '0.6',
             background: color.lightgray4
-        }
+        },
+        paddingTop: "34px",
+        paddingLeft: "15px"
     },
     test: {
         marginLeft: '10px'
@@ -227,15 +216,13 @@ const SettingsBox = ({tracks}) => {
     const [resolutionOpen, setResolutionOpen] = React.useState(false);
     const localTracks = useSelector(state => state.localTrack);
     const [testText, setTestText] = useState('Test');
-    const {documentHeight, documentWidth} = useDocumentSize();
-    const audioIndicator = useSelector(state => state.audioIndicator);
-
     const conference = useSelector(state => state.conference);
-
+    const [vol, setVol] = useState(0);
     const resolution = useSelector(state => state.media?.resolution);
-    const [label, setLabel] = useState(0);
     const dispatch = useDispatch();
-    console.log('audioIndicator',audioIndicator);
+    const audioTrack = localTracks.find(track=>track.isAudioTrack());
+    const videoTrack = localTracks.find(track=>track.isVideoTrack());
+
     useEffect(() => {
         SariskaMediaTransport.mediaDevices.enumerateDevices((allDevices) => {
             return setDevices(allDevices);
@@ -244,24 +231,33 @@ const SettingsBox = ({tracks}) => {
     }, []);
 
     useEffect(()=>{
-        const meter = new DecibelMeter()
-        meter.sources.then(sources => console.log('sources', sources));
-        meter.listenTo(0, (dB, percent, value) => setLabel(dB));
-        meter.on('change', listening => {
-            if (listening)
-                console.log('active', listening)
-            else
-            console.log('inactive', listening)
-        });
-        return ()=>{
-            meter.stopListening();
-
+        if (!audioTrack) {
+            return;
         }
-    },[])
+        const audioContext = new AudioContext();
+        const analyser = audioContext.createAnalyser();
+        const microphone = audioContext.createMediaStreamSource(audioTrack.stream);
+        const scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
+    
+        analyser.smoothingTimeConstant = 0.8;
+        analyser.fftSize = 1024;
+    
+        microphone.connect(analyser);
+        analyser.connect(scriptProcessor);
+        scriptProcessor.connect(audioContext.destination);
+        scriptProcessor.onaudioprocess = function() {
+            const array = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(array);
+            const arraySum = array.reduce((a, value) => a + value, 0);
+            const average = arraySum / array.length;
+            setVol(average);
+        }
+    }, []);
     
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+    
     const handleMicrophoneChange = async (event) => {
         const microphoneDeviceId = event.target.value;
         setMicrophoneValue(microphoneDeviceId);
@@ -271,7 +267,6 @@ const SettingsBox = ({tracks}) => {
             devices: ["audio"],
             micDeviceId: microphoneDeviceId
         });
-        const audioTrack = localTracks.find(track => track.getType() === "audio");
         await conference.replaceTrack(audioTrack, newAudioTrack);
         dispatch(updateLocalTrack(audioTrack, newAudioTrack));
     };
@@ -304,7 +299,6 @@ const SettingsBox = ({tracks}) => {
         setCameraValue(deviceId);
         dispatch(setCamera(deviceId));
 
-        const videoTrack = localTracks.find(track => track.videoType === "camera");
         const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
             devices: ["video"],
             cameraDeviceId: deviceId,
@@ -326,7 +320,6 @@ const SettingsBox = ({tracks}) => {
         setResolutionValue(event.target.value);
         const item = resolutionList.find(item => item.value === event.target.value);
         dispatch(setYourResolution({resolution: event.target.value, aspectRatio: item.aspectRatio}));
-        const videoTrack = localTracks.find(track => track.videoType === "camera");
         
         const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
             devices: ["video"],
@@ -430,38 +423,36 @@ const SettingsBox = ({tracks}) => {
     const audioPanel = (
         <Box className={classes.list}>
             <Box className={classes.display}>
-            <Box className={classes.marginBottom}>
+            <Box style={{display: "flex"}} className={classes.marginBottom}>
                 <SelectField data={microphoneData} minWidth={'200px'} />
-            </Box>
-            <Box className={classes.microphone}>
-                {
-                localTracks.find(track => track.getType() === "audio").isMuted() ? <Button className={classes.offButton}>
+                <Box className={classes.microphone}>
+                <span className="material-icons material-icons-outlined">
+                    mic_none
+                </span>
+                { !audioTrack &&  <Button className={classes.offButton}>
+                    Check your microphone
+                </Button> }
+                { audioTrack && audioTrack?.isMuted() &&  <Button className={classes.offButton}>
                     Microphone is Off
-                </Button> 
-                :
-                (<>
-                <span
-                className="material-icons material-icons-outlined"
-              >
-                mic_none
-              </span>
-                <MicIndicator passedAudioLevel={(label+100)*(1/100)}/>
-                </>)}
+                </Button> }
+                { audioTrack && !audioTrack?.isMuted()  && <MicIndicator vol={vol}/> } 
+            </Box>
             </Box>
             </Box>
             <Box  className={classes.display}>
-            <Box className={classes.marginBottom}>
+            <Box style={{display: "flex"}} className={classes.marginBottom}>
                 <SelectField data={speakerData} minWidth={'200px'} />
+                <Box>
+                    <Button className={classes.volume} variant='outlined' onClick={handleAudioTest}>
+                        <span class="material-icons material-symbols-outlined">
+                            volume_up
+                        </span>
+                        <span className={classes.test}>{testText}</span>
+                    </Button>
+                </Box>
             </Box>
-            <Box>
-                <Button className={classes.volume} variant='outlined' onClick={handleAudioTest}>
-                    <span class="material-icons material-symbols-outlined">
-                        volume_up
-                    </span>
-                    <span className={classes.test}>{testText}</span>
-                </Button>
-                </Box>
-                </Box>
+          
+            </Box>
         </Box>
     );
     const videoPanel = (
@@ -473,14 +464,23 @@ const SettingsBox = ({tracks}) => {
                 <SelectField data={resolutionData} minWidth={'310px'}/>
             </Box>
             <Box>
-                {!localTracks.find(track => track.getType() === "video").isMuted() ? <div  className={classes.videoWrapper} style={{ width: "312px", height: "202px", overflow: "hidden", position: "relative", borderRadius: "7.5px", marginTop: '28px'}} >
-                <Video height="100" track={localTracks.find(track => track.getType() === "video")} borderRadius="7.5px" />
-                </div> : 
-                <Box className={classes.muted}>
-                 <Typography>
-                     Video is muted or check your Camera
-                 </Typography> 
-                 </Box>  }
+                { videoTrack && !videoTrack?.isMuted() && <div  className={classes.videoWrapper} style={{ width: "312px", height: "202px", overflow: "hidden", position: "relative", borderRadius: "7.5px", marginTop: '28px'}} >
+                    <Video height="100" track={videoTrack} borderRadius="7.5px" />
+                </div>}
+                { videoTrack?.isMuted() && 
+                    <Box className={classes.muted}>
+                        <Typography>
+                            Video is muted
+                        </Typography> 
+                    </Box>
+                }     
+                { !videoTrack && 
+                    <Box className={classes.muted}>
+                        <Typography>
+                            Check your Camera
+                        </Typography> 
+                    </Box>
+                }  
             </Box>
         </Box>
     );

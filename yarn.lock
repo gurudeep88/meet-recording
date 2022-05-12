@@ -4540,11 +4540,6 @@
   "resolved" "https://registry.npmjs.org/decamelize/-/decamelize-1.2.0.tgz"
   "version" "1.2.0"
 
-"decibel-meter@^2.0.0":
-  "integrity" "sha1-ex8Rp4N1YsUUSH8NiPUOdsKJPI4="
-  "resolved" "https://registry.npmjs.org/decibel-meter/-/decibel-meter-2.0.0.tgz"
-  "version" "2.0.0"
-
 "decimal.js@^10.2.1":
   "integrity" "sha512-V0pfhfr8suzyPGOx3nmq4aHqabehUZn6Ch9kyFpV79TGDTWFmHqUqXdabR7QHqxzrYolF4+tVmJhUG4OURg5dQ=="
   "resolved" "https://registry.npmjs.org/decimal.js/-/decimal.js-10.3.1.tgz"

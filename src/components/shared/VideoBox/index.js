@@ -142,7 +142,7 @@ const VideoBox = ({
     const subtitle  = useSelector(state=>state.subtitle);
     const conference = useSelector(state => state.conference);
     const {documentWidth, documentHeight} = useDocumentSize();
-
+                    console.log('audio in', audioIndicator, audioLevel)
     const togglePinParticipant = (id) => {
         dispatch(setPinParticipant(id));
     }

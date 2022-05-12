@@ -206,7 +206,7 @@ const LobbyRoom = ({ tracks }) => {
   const handleUserNameChange = (e) => {
     setName(e.target.value);
   };
-
+  
   const handleSubmit = async () => {
     if (!meetingTitle) {
       dispatch(

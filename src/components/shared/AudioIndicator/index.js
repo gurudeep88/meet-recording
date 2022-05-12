@@ -1,5 +1,6 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core";
+import { color } from '../../../assets/styles/_color';
 const AUDIO_LEVEL_DOTS = 5;
 const CENTER_DOT_INDEX = Math.floor(AUDIO_LEVEL_DOTS / 2);
 
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
             lineHeight: "1px",
             height: "5px",
             borderRadius: "50%",
-            background:  "#44a5ff",
+            background:  color.primaryLight,
             margin: "1px 0 1px 0",
             transition: "opacity .25s ease-in-out",
             "-moz-transition": "opacity .25s ease-in-out"
@@ -35,13 +36,12 @@ const useStyles = makeStyles((theme) => ({
             borderRadius: "50%",
             "-webkit-filter": "blur(.5px)",
             filter: "blur(.5px)",
-            background: "#44a5ff"
+            background: color.primaryLight,
         }
     }
 }));
 
 const AudioLevelIndicator = ({passedAudioLevel}) => {
-    console.log('newaud', passedAudioLevel)
     const classes  = useStyles();
     const audioLevel = typeof passedAudioLevel === 'number' && !isNaN(passedAudioLevel)
         ? Math.min(passedAudioLevel * 1.2, 1) : 0;

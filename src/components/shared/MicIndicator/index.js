@@ -1,6 +1,7 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core";
 import classNames from 'classnames';
+import { color } from '../../../assets/styles/_color';
 const AUDIO_LEVEL_DOTS = 5;
 const CENTER_DOT_INDEX = Math.floor(AUDIO_LEVEL_DOTS / 2);
 
@@ -13,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
         height: "8px",
         width: "8px",
         borderRadius: "8px",
-        backgroundColor: "#2616FF",
+        backgroundColor: color.primaryDark,
         display: "inline-block"
     },
     passiveBg: { 

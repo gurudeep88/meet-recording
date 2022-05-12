@@ -230,7 +230,7 @@ const getOptions = (participantId, role) => {
                   </Box>
                   <Typography variant="caption">
                     {conference.getRole() === "moderator" && (
-                      <b>Meeting Host</b>
+                      <b style={{fontWeight: '300'}}>Meeting Host</b>
                     )}
                   </Typography>
                 </Box>
@@ -287,7 +287,7 @@ const getOptions = (participantId, role) => {
                     </Box>
                     <Typography variant="caption">
                       {participant?._role === "moderator" && (
-                        <b>Meeting Host </b>
+                        <b style={{fontWeight: '300'}}>Meeting Host </b>
                       )}
                     </Typography>
                   </Box>

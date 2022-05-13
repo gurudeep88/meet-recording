@@ -41,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AudioLevelIndicator = ({passedAudioLevel}) => {
-    console.log('newaud', passedAudioLevel)
     const classes  = useStyles();
     const audioLevel = typeof passedAudioLevel === 'number' && !isNaN(passedAudioLevel)
         ? Math.min(passedAudioLevel * 1.2, 1) : 0;

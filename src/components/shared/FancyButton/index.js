@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     transition: `font-weight .5s all ease`,
     "&:hover": {
       fontWeight: "900",
-      background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
+      background: color.mainGradient,
       border: `none`,
       padding: '5px 41px',
       width: width || "178.69px",

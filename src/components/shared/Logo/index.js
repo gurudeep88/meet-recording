@@ -24,7 +24,6 @@ const useStyles = makeStyles(()=>({
   logoImage: {
     width: width,
     height: height,
-    marginRight: '10px',
   },
   logoText: {
     fontFamily: `'DM Sans', sans-serif`,

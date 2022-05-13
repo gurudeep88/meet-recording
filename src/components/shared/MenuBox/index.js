@@ -35,6 +35,9 @@ const StyledMenu = withStyles({
 const StyledMenuItem = withStyles((theme) => ({
   root: {
     border: `1px solid ${color.secondaryDark}`,
+    '&.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover': {		
+      backgroundColor: color.secondary		
+    },
     '& .MuiListItemIcon-root': {
         fontSize: '1.3rem',
         minWidth: '35px',

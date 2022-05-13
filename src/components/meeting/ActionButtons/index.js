@@ -444,7 +444,6 @@ const ActionButtons = ({ dominantSpeakerId }) => {
       }
 
       if (item._properties?.whiteboard === "start") {
-        console.log("item._properties?.whiteboard", item._properties?.whiteboard);
         setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard", value: true })
       }
 

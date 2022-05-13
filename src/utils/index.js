@@ -454,7 +454,6 @@ export function getPresignedUrl(params) {
                 }
             })
             .then(function (response) {
-                console.log('response', response)
                 resolve(response);
             }).catch((error) => {
             reject(error)

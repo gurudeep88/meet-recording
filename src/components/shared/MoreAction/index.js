@@ -111,8 +111,6 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
   const layout = useSelector((state) => state.layout);
 
   const dispatch = useDispatch();
-  console.log("featureStates", featureStates);
-
   const recordingSession = useRef(null);
   const streamingSession = useRef(null);
 

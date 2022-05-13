@@ -148,6 +148,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
+            console.log("dominant speaker", conference.participants[id]?._identity?.user?.name, id);
             setDominantSpeakerId(id);
         });
         

@@ -228,10 +228,20 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
         autoHide: false,
       })
     );
+    const appData = {
+      streamKeys: [
+          {"youtube": streamName}, 
+      ],
+      isRecording: false,
+      app: "live",
+      stream: "livestream"
+    }
     const session = await conference.startRecording({
       mode: SariskaMediaTransport.constants.recording.mode.STREAM,
-      streamId: `rtmp://a.rtmp.youtube.com/live2/${streamName}`,
+      streamId: "test",
+      appData: JSON.stringify(appData)
     });
+
     streamingSession.current = session;
     setOpenLivestreamDialog(false);
   };
@@ -271,6 +281,7 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
     }
     const session = await conference.startRecording({
       mode: SariskaMediaTransport.constants.recording.mode.STREAM,
+      streamId: "test",
       appData: JSON.stringify(appData)
     });
     streamingSession.current = session;

@@ -258,13 +258,20 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
         autoHide: false,
       })
     );
-
-    const streamName =
-      selectedStream.result.items[0]?.cdn?.ingestionInfo?.streamName;
+    const streamName =  selectedStream.result.items[0]?.cdn?.ingestionInfo?.streamName;
     setOpenLivestreamDialog(false);
+    
+    const appData = {
+      streamKeys: [
+          {"youtube": streamName}, 
+      ],
+      isRecording: false,
+      app: "live",
+      stream: "livestream"
+    }
     const session = await conference.startRecording({
       mode: SariskaMediaTransport.constants.recording.mode.STREAM,
-      streamId: `rtmp://a.rtmp.youtube.com/live2/${streamName}`,
+      appData: JSON.stringify(appData)
     });
     streamingSession.current = session;
   };

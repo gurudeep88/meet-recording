@@ -10,7 +10,19 @@ import { useTheme } from '@material-ui/core/styles';
 import {color} from "../../../assets/styles/_color";
 import {makeStyles} from "@material-ui/core";
 import {useHistory} from "react-router-dom";
+import FancyButton from '../FancyButton';
 const useStyles = makeStyles((theme) => ({
+    dialog: {
+        "& .MuiPaper-root": {
+            background: color.secondaryDark,
+            borderRadius: '7.5px',
+            color: color.white,
+            boxShadow: `0px 0px 1px 0px rgb(255 255 255 / 20%), 0px 1px 1px 1px rgb(255 255 255 / 14%), 0px 2px 4px 5px rgb(255 255 255 / 12%)`
+        },
+        "& p": {
+            color: color.white
+        }
+    },
     anchor: {
         color: color.secondary,
         textDecoration: "none",
@@ -42,17 +54,16 @@ export default function ReconnectDialog({open}) {
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="responsive-dialog-title"
+                className={classes.dialog}
             >
                 <DialogTitle id="responsive-dialog-title">{"Disconnected"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        You have disconnectd, Please reconnect again.
+                        You have disconnected, Please reconnect again.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} className={classes.anchor} autoFocus>
-                        Reconnect
-                    </Button>
+                    <FancyButton onClick={handleClose} autoFocus buttonText={'Reconnect'} top={'0px'} width={'100px'}/>
                 </DialogActions>
             </Dialog>
         </div>

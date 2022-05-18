@@ -1,39 +1,92 @@
-import {makeStyles} from '@material-ui/core'
-import React, {useRef, useLayoutEffect, useState} from 'react'
-import Video from '../../shared/Video';
+import { Avatar, Box, makeStyles } from "@material-ui/core";
+import React, { useRef, useLayoutEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { color } from "../../../assets/styles/_color";
+import { useDocumentSize } from "../../../hooks/useDocumentSize";
+import VideoBox from "../../shared/VideoBox";
 
-const useStyles = makeStyles(() => ({
+const JoinTrack = ({ tracks, name }) => {
+  const videoTrack = tracks.find((track) => track && track.isVideoTrack());
+  const {documentHeight, documentWidth} = useDocumentSize();
+  const bgColor = useSelector(state=>state.profile?.color);
+
+  const useStyles = makeStyles((theme) => ({
     localStream: {
-        borderRadius: "8px",
-        margin: "16px 16px 16px 16px",
-        overflow: "hidden",
-        position: "relative",
-        background: "black"
+      margin: "0px",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      bottom: 0,
+      background: color.secondaryDark,
+      "& .widthAuto  video" :  {
+        width: "auto!important"
+      },
+      "& .heightAuto  video": {
+        height: "auto!important"
+      }
+    },
+    avatarBox: {
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        flexGrow: 1,
+        borderRadius: '5px',
+    },
+    avatar: {
+      borderRadius: "50%",
+      position: "absolute",
+      left: "calc(70%/1.2)",
+      top: `calc(50vh - 96px)`,
+      transition: "box-shadow 0.3s ease",
+      height: '200px',
+      width: '200px',
+      "& span": {
+          fontSize: '150px'
+      }
+    },
+    videoWrapper: {
+       "& > div": { 
+           borderRadius: 0
+       },
+       "& .rightControls": {
+          display: "none"
+       },
+       "& .userDetails": {
+          display: "none"
+       },
+       "& .audioBox": {
+          display: "none"
+       }
     }
-}))
+  }));
 
-const JoinTrack = ({tracks}) => {
-    
-    const videoTrack = tracks.find(track => track && track.isVideoTrack());
-    const classes = useStyles();
-    const [dimensions, setDimensions] = useState({width: 0 , height: 0 });
+  const classes = useStyles();
 
-    useLayoutEffect(() => {
-            function updateSize() {
-                const width  = (document.documentElement.clientWidth/2)*(70/100);
-                const height  = width*9/16;
-                setDimensions({width, height});
-            }
-            window.addEventListener('resize', updateSize);
-            updateSize();
-            return () => window.removeEventListener('resize', updateSize);
-    }, []);
-
-    return (
-        <div style={{width: dimensions.width, height: dimensions.height}} className={classes.localStream}>
-            { !videoTrack?.isMuted() && <Video track={videoTrack}/> }
+  return (
+    <div
+      className={classes.localStream}
+    >
+      {videoTrack?.isMuted() ? (
+        <Box className={classes.avatarBox} 
+        style={{ width: documentWidth, height: documentHeight }}>
+          <Avatar className={classes.avatar} style={{fontSize: name && '125px' , fontWeight: name && '100', backgroundColor:bgColor}}>
+            {!name ? (
+              <span class="material-icons material-icons-outlined">
+                person_outline
+              </span>
+            ) : (
+              name?.slice(0, 1).toUpperCase()
+            )}
+          </Avatar>
+        </Box>
+      ) : (
+        <div  className={classes.videoWrapper} style={{ width: documentWidth, height: documentHeight, overflow: "hidden", position: "relative"}} >
+          <VideoBox width={documentWidth} height={documentHeight} participantTracks={tracks} />
         </div>
-    )
-}
+      )}
+    </div>
+  );
+};
 
-export default JoinTrack
+export default JoinTrack;

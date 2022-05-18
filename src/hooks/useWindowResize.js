@@ -1,54 +1,56 @@
 import React, {useEffect, useState} from 'react';
 import {useSelector} from "react-redux";
 import {ENTER_FULL_SCREEN_MODE, GRID, PRESENTATION, SPEAKER} from "../constants";
-import { useDocumentSize } from './useDocumentSize';
 
 export function useWindowResize() {
     const layout = useSelector(state => state.layout);
-    const { documentWidth, documentHeight } = useDocumentSize();
+    const remoteTracks = useSelector(state => state.remoteTrack);
+    const conference = useSelector(state => state.conference);
+
     const [windowSize, setWindowSize] = useState({viewportWidth: undefined, viewportHeight: undefined});
 
-    function getDimensions() {
+    function getDimensions(mode, type) {
+        let documentWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+        let documentHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
         let viewportHeight, viewportWidth;
-        if ( layout.type === GRID && layout.mode === ENTER_FULL_SCREEN_MODE  ) {
-            return { viewportWidth: (documentHeight -  84) * 16/9, viewportHeight: documentHeight -  84 }
-        }
         
-        if ( layout.type === GRID ) {
-            return { viewportWidth: (documentHeight -  128) * 16/9, viewportHeight: documentHeight -  128 }
-        }
-
-        if (layout.mode === ENTER_FULL_SCREEN_MODE ) {
-            viewportHeight = documentHeight - 84;
-            viewportWidth = viewportHeight * 16/9;
+        if (mode === ENTER_FULL_SCREEN_MODE ) {
+            viewportHeight = documentHeight - 108;
+            viewportWidth = documentWidth;
             return {viewportWidth , viewportHeight};
         }
 
-        viewportWidth = documentWidth - documentWidth*20/100;
-        viewportHeight = viewportWidth * 9/16;
-        
-        if (viewportHeight > documentHeight - 128) {
-            viewportHeight = documentHeight - 128
-            viewportWidth  = viewportHeight*16/9
+        if (conference?.getParticipantCount() === 1 &&  type !== PRESENTATION)  {
+            return {viewportWidth: (documentHeight - 92)*16/9 , viewportHeight: documentHeight - 92};
         }
 
+        if ( type === GRID ) {
+            return {viewportWidth: documentWidth , viewportHeight: documentHeight - 92};
+        }
+
+        viewportHeight = documentHeight - 92;        
+        viewportWidth = documentWidth - 218 
         return { viewportWidth, viewportHeight };
     }
 
     useEffect(() => {
-        setWindowSize(getDimensions());
+        setWindowSize(getDimensions(layout.mode, layout.type));
+        window.removeEventListener("resize", handleResize)
+        return ()=>{
+            window.addEventListener("resize", handleResize)
+        }
     }, [layout.mode]);
 
     useEffect(() => {
-        setWindowSize(getDimensions());
-    }, [layout.type]);
+        setWindowSize(getDimensions(layout.mode, layout.type));
+    }, [remoteTracks]);
 
     useEffect(() => {
-        setWindowSize(getDimensions());
-    }, [documentWidth, documentHeight]);
+        setWindowSize(getDimensions(layout.mode, layout.type));
+    }, [layout.type]);
 
     function handleResize() {
-        setWindowSize(getDimensions());
+        setWindowSize(getDimensions(layout.mode, layout.type));
     }
 
     useEffect(() => {

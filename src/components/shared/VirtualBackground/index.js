@@ -20,12 +20,13 @@ import { videoShadow } from '../../../utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        background: "white",
+        background: "inherit",
         flexGrow: 1,
         "& img": {
             height: "60px",
             width: '100%',
-            borderRadius: '10px'
+            borderRadius: '10px',
+            border: `1px solid ${color.secondaryLight}`
         },
         width: "100%",
         "& .MuiPaper-rounded": {
@@ -36,13 +37,17 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     backgroundTitle: {
-        fontWeight: '900',
-        marginBottom: '8px'
+        color: color.white,
+        fontWeight: "400",
+        fontSize: '28px',
+        lineHeight: '1',
+        marginLeft: theme.spacing(1),
+        marginBottom: theme.spacing(2),
     },
     item: {
         cursor: "pointer",
         height: "60px",
-        background: "white",
+        background: color.secondary,
         padding: '5px'
     },
     turn: {
@@ -99,28 +104,31 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         display: "flex",
-        marginBottom: '16px'
+        marginTop: '16px',
+        marginBottom: '16px',
     },
     mainImagesContainer: {
         display: "flex",
         marginBottom: '16px',
-        background: color.lightgray3,
-        borderRadius: '5px'
+        background: color.secondary,
+        borderRadius: '10px',
+        border: `1px solid ${color.secondaryLight}`
     },
     extraImagesContainer: {
         display: "flex",
         marginBottom: '16px',
-        background: color.lightBlue2,
-        borderRadius: '5px'
+        background: color.secondary,
+        borderRadius: '10px',
+        border: `1px solid ${color.secondaryLight}`
     },
     localVideo: {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: "360px",
-        height: "206px",
+        width: "100%",
+        height: "176px",
         marginBottom: '8px',
-        background: color.secondary
+        background: color.secondary,
     },
 
     avatarBox: {
@@ -129,7 +137,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexGrow: 1
+        flexGrow: 1,
+        borderRadius: '10px',
+        border: `1px solid ${color.secondaryLight}`
     },
     backgroundAvatar: {
         width: '80px',
@@ -258,7 +268,7 @@ export default function VirtualBackground() {
                         </Avatar>
                     </Box>
                     :
-                 loading ? <CircularProgress className={classes.buttonProgress} /> : <Video track={videoTrack}/> }
+                 loading ? <CircularProgress className={classes.buttonProgress} /> : <Video track={videoTrack} position="relative" /> }
             </div>
             <Grid container className={classes.container}>
                 <Grid item md={6}>

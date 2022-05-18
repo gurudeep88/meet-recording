@@ -15,9 +15,13 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "space-evenly",
         alignItems: "center",
         display: "flex",
+        "& iframe": {
+            borderRadius: "8px"
+        },
         "& .fullmode": {
             position: "absolute",
-            right: 0,
+            right: "48px",
+            top: "48px"
         },
         "& iframe .hasSecondary": {
            boxShadow: "none",
@@ -45,26 +49,25 @@ const PresentationLayout = ({dominantSpeakerId}) => {
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });
-    
-    const height =  layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 84:  documentHeight -  128;
-    const width  = height*16/9;
+
     return (
         <Box  className={activeClasses}>
             <SharedDocument
                 isVisible={layout.presentationType === Constants.SHARED_DOCUMENT}
                 conference={conference}
-                width={width - 20}
-                height={height}
+                width={viewportWidth - 48}
+                height={viewportHeight}
             />
             <Whiteboard
                 isVisible={layout.presentationType === Constants.WHITEBOARD}
                 conference={conference}
-                width={width - 20}
-                height={height}
+                width={viewportWidth - 48}
+                height={viewportHeight}
             />
             <PartcipantPane 
-                panelHeight = {viewportHeight}
-                gridWidth = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentWidth*20/100: documentWidth - viewportWidth} 
+                panelHeight = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 108 :documentHeight - 88}
+                gridItemWidth = {218}    
+                gridItemHeight= {123} 
                 dominantSpeakerId={dominantSpeakerId} 
                 localTracks={localTracks} 
                 remoteTracks={remoteTracks}/>

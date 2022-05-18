@@ -5,6 +5,7 @@ const initialState = {
     name: persistedData.name,
     meetingTitle: '',
     googleAPIState: 0,
+    color: persistedData.color,
     avatar: persistedData.avatar,
     email: persistedData.email,
     id: persistedData.id,
@@ -14,7 +15,7 @@ const initialState = {
 export const profile = (state = initialState, action) => {
     switch (action.type) {
         case SET_PROFILE:
-            const {name, email, avatar, id, moderator} = action.payload;
+            const {name, email, avatar, id, moderator, color} = action.payload;
             state.name = name;
             state.email = email;
             state.moderator = moderator;
@@ -22,7 +23,7 @@ export const profile = (state = initialState, action) => {
             state.id = id;
             return {...state};
         case UPDATE_PROFILE:
-            state.name = action.payload.name;
+            state[action.payload.key] = action.payload.value;
             return {...state};
         case SET_MEETING_TITLE:
             const {meetingTitle} = action.payload;

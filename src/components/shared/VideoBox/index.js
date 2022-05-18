@@ -4,35 +4,29 @@ import {color} from '../../../assets/styles/_color';
 import Video from "../Video";
 import Audio from "../Audio";
 import PanTool from "@material-ui/icons/PanTool";
-import MicOffIcon from "@material-ui/icons/MicOff";
-import MicIcon from "@material-ui/icons/Mic";
 import {useDispatch, useSelector} from "react-redux";
 import {setPinParticipant} from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
-import {videoShadow} from "../../../utils";
+import {videoShadow, calculateSteamHeightAndExtraDiff} from "../../../utils";
 import AudioLevelIndicator from "../AudioIndicator";
-import ConnectionIndicator from "../ConnectionIndicator";
 import SubTitle from "../SubTitle";
+import {useDocumentSize} from "../../../hooks/useDocumentSize";
+import { profile } from '../../../store/reducers/profile';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        background: color.secondary,
+        background: "#272931",
         position: "relative",
+        overflow: "hidden", 
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'column',  
+        borderRadius: '8px',
+        transform: 'translateZ(0)',
         "& .largeVideo": {
             height: theme.spacing(20),
             width: theme.spacing(20),
             fontSize: "40pt"
-        },
-        "& .gridSeparator": {
-            boxSizing: "border-box",
-            border: "2px solid black"
-        },
-        "& .activeSpeaker": {
-            boxSizing: "border-box",
-            border: "2px solid #44A5FF"
         }
     },
     audioBox: {
@@ -70,17 +64,17 @@ const useStyles = makeStyles((theme) => ({
         background: "transparent",
         position: "absolute",
         "& p": {
-            background: color.lightgray4,
             padding: '2px 4px'
         }
     },
     avatarBox: {
         height: '100%',
         width: '100%',
+        borderRadius: "8px",
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexGrow: 1
+        flexGrow: 1,
     },
     avatar: {
         borderRadius: "50%",
@@ -113,6 +107,14 @@ const useStyles = makeStyles((theme) => ({
     subtitle: {
         position: "absolute",
         bottom: 0
+    },
+    videoWrapper: {
+        position: "absolute",
+        right: 0,
+        left: 0,
+        top: 0,
+        bottom: 0,
+        margin: "auto"
     }
 }));
 
@@ -123,7 +125,6 @@ const VideoBox = ({
                     width,
                     height,
                     isPresenter,
-                    isBorderSeparator,
                     isActiveSpeaker,
                     isFilmstrip,
                     isLargeVideo,
@@ -133,65 +134,71 @@ const VideoBox = ({
     const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
     const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
-    const avatarColors = useSelector(state => state.color);
     const audioIndicator = useSelector(state => state.audioIndicator);
     const dispatch = useDispatch();
-    const [visiblePinParticipant, setVisiblePinPartcipant] = useState(false);
-    let avatarColor = avatarColors[participantDetails?.id];
+    const [visiblePinParticipant, setVisiblePinPartcipant] = useState(true);
     let audioLevel = audioIndicator[participantDetails?.id];
     const subtitle  = useSelector(state=>state.subtitle);
-
+    const conference = useSelector(state => state.conference);
+    const {documentWidth, documentHeight} = useDocumentSize();
     const togglePinParticipant = (id) => {
         dispatch(setPinParticipant(id));
     }
 
-    const borderActiveClasses = classnames({
-        'gridSeparator': isBorderSeparator,
-        'activeSpeaker': isActiveSpeaker
+    const borderActiveClasses = classnames(classes.root, {
+        'activeSpeaker': conference?.getParticipantCount()>1 && isActiveSpeaker
     });
 
     const audioIndicatorActiveClasses = classnames(classes.avatar, {
         'largeVideo': isLargeVideo,
     });
+    const avatarActiveClasses = classnames(classes.avatarBox);
+    const { videoStreamHeight, videoStreamDiff } = calculateSteamHeightAndExtraDiff(width, height, documentWidth, documentHeight);
 
-    const avatarActiveClasses = classnames(classes.avatarBox, {
-        'gridSeparator': isBorderSeparator,
-        'activeSpeaker': isActiveSpeaker
-    });
-    
+    let avatarColor = participantDetails?.avatar || profile?.color;
+     
     return (
-        <Box style={{width: `${width - 4-4*16/9 }px`, height: `${height - 4}px`}}
+        <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
-             onMouseLeave={() => setVisiblePinPartcipant(false)} className={classes.root}>
-            <Box className={classes.audioBox}>
-                { audioTrack?.isMuted() ? <MicOffIcon/> : <MicIcon className={classes.disable}/> }
+             onMouseLeave={() => setVisiblePinPartcipant(false)} 
+             className={borderActiveClasses}>
+            <Box className={classnames(classes.audioBox, {audioBox: true})}>
+                { audioTrack?.isMuted() ? <span
+              className="material-icons material-icons-outlined"
+            >
+              mic_off
+            </span> : <span
+              className="material-icons material-icons-outlined"
+            >
+              mic_none
+            </span>
+            }
                 { !audioTrack?.isLocal() && <Audio track={audioTrack}/> }
             </Box>
             {
                 videoTrack?.isMuted() ? 
                     <Box className={avatarActiveClasses}>
                         <Avatar
-                            src={participantDetails?.avatar ? participantDetails?.avatar: null }
-                            style={isFilmstrip ? { boxShadow: videoShadow(audioLevel), background: avatarColor } : {background: avatarColor}}
+                            src={null}
+                            style={isFilmstrip ? { boxShadow: videoShadow(audioLevel), background: avatarColor} : {background: avatarColor}}
                             className={audioIndicatorActiveClasses}>
                             {participantDetails?.name.slice(0, 1).toUpperCase()}
                         </Avatar>
                     </Box>
                     :
-                    <Box style={{width: `${width - 4-4*16/9}px`, height: `${height - 4}px`}} className={borderActiveClasses}>
-                        <Video isPresenter={isPresenter} track={videoTrack}/>
+                    <Box style={{width:  `${videoStreamHeight*16/9}px`, height: `${videoStreamHeight}px`, left: `-${videoStreamDiff/2}px`, position: "absolute"}} className={classes.videoWrapper} >
+                        <Video isPresenter={isPresenter} track={videoTrack} />
                     </Box>
             }
-            <Box className={classes.rightControls}>
-                {visiblePinParticipant && <>
+            <Box className={classnames(classes.rightControls, {rightControls: true})  }>
+                {visiblePinParticipant && 
                     <PinParticipant participantId={participantDetails?.id} pinnedParticipantId={pinnedParticipantId} togglePinParticipant={togglePinParticipant}/>
-                    <ConnectionIndicator participantId={participantDetails?.id} />
-                </>}
+                }
                 {raisedHandParticipantIds[participantDetails?.id] &&
                     <Typography className={classes.handRaise} ><PanTool /></Typography>
                 }
             </Box>
-            <Box className={classes.textBox}>
+            <Box className={classnames(classes.textBox, {userDetails: true})}>
                 <Typography>{localUserId === participantDetails?.id ? "You" : participantDetails?.name}</Typography>
             </Box>
             {!isFilmstrip && <Box>

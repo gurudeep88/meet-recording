@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {makeStyles} from "@material-ui/core";
+import { color } from '../../../assets/styles/_color';
 
 const useStyles = makeStyles(() => ({
     video: {
@@ -9,20 +10,21 @@ const useStyles = makeStyles(() => ({
 
 const Video = props => {
     const classes = useStyles();
-    const {track, isPresenter} = props;
+    const {track, isPresenter, borderRadius, width, height, left} = props;
     const videoElementRef = useRef(null);
     useEffect(() => {
-        if (!track || !videoElementRef.current) {
-            return;
-        }
-        track.attach(videoElementRef.current);
-        return ()=>{
-            track.detach(videoElementRef.current);
-        }
+        track?.attach(videoElementRef.current);
     }, [track]);
 
-    return (<video playsInline="1" autoPlay='1' className={ !isPresenter && classes.video } ref={videoElementRef}
-                               style={{width: '100%', height: '100%', objectFit: 'contain'}}/>);
+    if (!track) {
+        return null;
+    }
+
+    return (<video playsInline="1" 
+                   autoPlay='1' 
+                   className={ !isPresenter && classes.video } 
+                   ref={videoElementRef}
+                   style={{left: "-1px",top: "-1px",  position: props.position || "absolute", width: "calc(100% + 2px)", height: props.height || "calc(100% + 2px)", objectFit: 'contain', borderRadius: '8px' }}/>);
 }
 
 export default Video;

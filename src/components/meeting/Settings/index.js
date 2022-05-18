@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
@@ -12,369 +12,539 @@ import SelectField from "../../shared/SelectField";
 import SariskaMediaTransport from "sariska-media-transport";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    setCamera,
-    setMicrophone,
-    setYourResolution,
-    setSpeaker,
+  setCamera,
+  setMicrophone,
+  setYourResolution,
+  setSpeaker,
 } from "../../../store/actions/media";
-import {updateLocalTrack} from "../../../store/actions/track";
+import { updateLocalTrack } from "../../../store/actions/track";
+import { useDocumentSize } from "../../../hooks/useDocumentSize";
+import VideoBox from "../../shared/VideoBox";
+import Video from "../../shared/Video";
+import MicIndicator from "../../shared/MicIndicator";
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+  const { children, value, index, ...other } = props;
 
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`vertical-tabpanel-${index}`}
-            aria-labelledby={`vertical-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box p={0}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
-        </div>
-    );
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`vertical-tabpanel-${index}`}
+      aria-labelledby={`vertical-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={0}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
 }
 
 function a11yProps(index) {
-    return {
-        id: `vertical-tab-${index}`,
-        "aria-controls": `vertical-tabpanel-${index}`,
-    };
+  return {
+    id: `vertical-tab-${index}`,
+    "aria-controls": `vertical-tabpanel-${index}`,
+  };
 }
 
 const useStyles = makeStyles((theme) => ({
-    container: {
-        padding: theme.spacing(0),
+  container: {
+    padding: theme.spacing(0),
+  },
+  root: {
+    flexGrow: 1,
+    backgroundColor: color.secondary,
+  },
+  tabs: {
+    borderRight: `1px solid ${theme.palette.divider}`,
+    padding: "8px 0px 8px 0px",
+    "&>div>span": {
+      display: "none",
     },
-    root: {
-        flexGrow: 1,
-        backgroundColor: theme.palette.background.paper,
+  },
+  tab: {
+    height: "36px",
+    minHeight: "36px",
+    padding: "6px 20px",
+    minWidth: "56px",
+    marginRight: "4px",
+    border: `1px solid ${color.primaryLight}`,
+    borderRadius: "10px",
+    color: "#fff",
+    "& .MuiTab-wrapper": {
+      alignItems: "flex-start",
     },
-    tabs: {
-        borderRight: `1px solid ${theme.palette.divider}`,
-        padding: "8px 8px 0px 24px",
-        "&>div>span": {
-            display: "none",
-        },
+    "&.Mui-selected": {
+      background: color.mainGradient,
+      border: `none`,
+      padding: "7px 21px",
+      "& svg": {
+        color: color.white,
+      },
+      "& p": {
+        color: color.white,
+      },
     },
-    tab: {
-        color: "red",
-        padding: "6px 16px",
-        "& .MuiTab-wrapper": {
-            alignItems: "flex-start",
-        },
-        "&.Mui-selected": {
-            background: color.primary,
-            borderRadius: "25px",
-            "& svg": {
-                color: color.white,
-            },
-            "& p": {
-                color: color.white,
-            },
-        },
-        "&:hover": {
-            "& svg": {
-                color: color.secondaryDark,
-            },
-            "& p": {
-                color: color.primary,
-            },
-        },
+    "&:hover": {
+      fontWeight: "900",
+      background: color.mainGradient,
+      border: 'none',
+      padding: "7px 21px",
     },
-    setting: {
-        padding: theme.spacing(0, 3, 3, 0),
-        color: color.secondary,
+  },
+  setting: {
+    padding: theme.spacing(0, 3, 3, 0),
+    color: color.secondary,
+  },
+  title: {
+    color: color.white,
+    fontWeight: "400",
+    fontSize: "28px",
+    lineHeight: "1",
+    marginLeft: theme.spacing(1),
+    marginBottom: theme.spacing(2),
+  },
+  marginBottom: {
+    marginBottom: theme.spacing(2),
+  },
+  label: {
+    display: "flex",
+    alignItems: "center",
+    padding: "4px 14px",
+    textTransform: "capitalize",
+  },
+  audioIcon: {
+    paddingLeft: "0px",
+    marginRight: "15px",
+  },
+  videoIcon: {
+    marginRight: "13px",
+    fontSize: "2rem",
+  },
+  list: {
+    padding: theme.spacing(3, 0),
+    "&>li>div": {
+      "&>span": {
+        fontSize: "0.9rem",
+      },
+      "&&>p": {
+        fontSize: "0.9rem",
+      },
     },
-    title: {
-        fontSize: "1.5rem",
-        paddingLeft: theme.spacing(3),
-        fontWeight: '900'
+  },
+  display: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  microphone: {
+    color: "#fff",
+    display: "flex",
+    alignItems: "center",
+    paddingTop: "27px",
+    paddingRight: "3px",
+    paddingLeft: "15px",
+  },
+  offButton: {
+    padding: "4px 2px",
+    fontSize: "0.75rem",
+    color: "#fff",
+    borderRadius: "0px",
+    textTransform: "capitalize",
+  },
+  volume: {
+    color: color.white,
+    border: color.white,
+    textTransform: "capitalize",
+    paddingLeft: "0px",
+    paddingTop: "10px",
+    "&:hover": {
+      opacity: "0.6",
+      background: color.lightgray4,
     },
-    marginBottom: {
-        marginBottom: theme.spacing(2),
+    paddingTop: "34px",
+    paddingLeft: "15px",
+  },
+  test: {
+    marginLeft: "10px",
+  },
+  videoWrapper: {
+    "& > div": {
+      borderRadius: 0,
     },
-    label: {
-        display: "flex",
-        alignItems: "center",
-        "& svg": {
-            color: color.secondary,
-            marginRight: theme.spacing(2),
-        },
-        "& p": {
-            textTransform: "capitalize",
-            color: color.secondary,
-            fontSize: "0.9rem",
-        },
+    "& .rightControls": {
+      display: "none",
     },
-    audioIcon: {
-        paddingLeft: "3px",
-        marginRight: "20px",
+    "& .userDetails": {
+      display: "none",
     },
-    videoIcon: {
-        marginRight: "13px",
-        fontSize: "2rem",
+    "& .audioBox": {
+      display: "none",
     },
-    list: {
-        padding: theme.spacing(3, 3, 3, 3),
-        "&>li>div": {
-            "&>span": {
-                fontSize: "0.9rem",
-            },
-            "&&>p": {
-                fontSize: "0.9rem",
-            },
-        },
+  },
+  muted: {
+    color: color.white,
+    width: "310px",
+    height: "200px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: color.secondaryDark,
+    borderRadius: "8px",
+    marginTop: "28px",
+    "& p": {
+      fontSize: "0.9rem",
     },
+  },
 }));
 
-const SettingsBox = () => {
-    const classes = useStyles();
-    const [value, setValue] = React.useState(0);
-    const [devices, setDevices] = useState([]);
-    const [microphoneValue, setMicrophoneValue] = React.useState("");
-    const [microphoneOpen, setMicrophoneOpen] = React.useState(false);
-    const [speakerValue, setSpeakerValue] = React.useState("");
-    const [speakerOpen, setSpeakerOpen] = React.useState(false);
-    const [cameraValue, setCameraValue] = React.useState("");
-    const [cameraOpen, setCameraOpen] = React.useState(false);
-    const [resolutionValue, setResolutionValue] = React.useState("");
-    const [resolutionOpen, setResolutionOpen] = React.useState(false);
-    const localTracks = useSelector(state => state.localTrack);
+const SettingsBox = ({ tracks }) => {
+  const classes = useStyles();
+  const [value, setValue] = React.useState(0);
+  const [devices, setDevices] = useState([]);
+  const [microphoneValue, setMicrophoneValue] = React.useState("");
+  const [microphoneOpen, setMicrophoneOpen] = React.useState(false);
+  const [speakerValue, setSpeakerValue] = React.useState("");
+  const [speakerOpen, setSpeakerOpen] = React.useState(false);
+  const [cameraValue, setCameraValue] = React.useState("");
+  const [cameraOpen, setCameraOpen] = React.useState(false);
+  const [resolutionValue, setResolutionValue] = React.useState("");
+  const [resolutionOpen, setResolutionOpen] = React.useState(false);
+  const localTracks = useSelector((state) => state.localTrack);
+  const [testText, setTestText] = useState("Test");
+  const conference = useSelector((state) => state.conference);
+  const [vol, setVol] = useState(0);
+  const resolution = useSelector((state) => state.media?.resolution);
+  const dispatch = useDispatch();
+  const audioTrack = localTracks.find((track) => track.isAudioTrack());
+  const videoTrack = localTracks.find((track) => track.isVideoTrack());
 
-    const conference = useSelector(state => state.conference);
+  useEffect(() => {
+    SariskaMediaTransport.mediaDevices.enumerateDevices((allDevices) => {
+      return setDevices(allDevices);
+    });
+    setResolutionValue(resolution);
+  }, []);
 
-    const resolution = useSelector(state => state.media?.resolution);
-    const dispatch = useDispatch();
+  useEffect(() => {
+    if (!audioTrack) {
+      return;
+    }
+    const audioContext = new AudioContext();
+    const analyser = audioContext.createAnalyser();
+    const microphone = audioContext.createMediaStreamSource(audioTrack.stream);
+    const scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
 
-    useEffect(() => {
-        SariskaMediaTransport.mediaDevices.enumerateDevices((allDevices) => {
-            return setDevices(allDevices);
-        });
-        setResolutionValue(resolution);
-    }, []);
+    analyser.smoothingTimeConstant = 0.8;
+    analyser.fftSize = 1024;
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
+    microphone.connect(analyser);
+    analyser.connect(scriptProcessor);
+    scriptProcessor.connect(audioContext.destination);
+    scriptProcessor.onaudioprocess = function () {
+      const array = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(array);
+      const arraySum = array.reduce((a, value) => a + value, 0);
+      const average = arraySum / array.length;
+      setVol(average);
     };
-    const handleMicrophoneChange = async (event) => {
-        const microphoneDeviceId = event.target.value;
-        setMicrophoneValue(microphoneDeviceId);
-        dispatch(setMicrophone(microphoneDeviceId));
+  }, []);
 
-        const [newAudioTrack] = await SariskaMediaTransport.createLocalTracks({
-            devices: ["audio"],
-            micDeviceId: microphoneDeviceId
-        });
-        const audioTrack = localTracks.find(track => track.getType() === "audio");
-        await conference.replaceTrack(audioTrack, newAudioTrack);
-        dispatch(updateLocalTrack(audioTrack, newAudioTrack));
-    };
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
-    const handleMicrophoneClose = () => {
-        setMicrophoneOpen(false);
-    };
+  const handleMicrophoneChange = async (event) => {
+    const microphoneDeviceId = event.target.value;
+    setMicrophoneValue(microphoneDeviceId);
+    dispatch(setMicrophone(microphoneDeviceId));
 
-    const handleMicrophoneOpen = () => {
-        setMicrophoneOpen(true);
-    };
+    const [newAudioTrack] = await SariskaMediaTransport.createLocalTracks({
+      devices: ["audio"],
+      micDeviceId: microphoneDeviceId,
+    });
+    await conference.replaceTrack(audioTrack, newAudioTrack);
+    dispatch(updateLocalTrack(audioTrack, newAudioTrack));
+  };
 
-    const handleSpeakerChange = (event) => {
-        const deviceId = event.target.value;
-        setSpeakerValue(deviceId);
-        dispatch(setSpeaker(deviceId));
-        SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
-    };
+  const handleMicrophoneClose = () => {
+    setMicrophoneOpen(false);
+  };
 
-    const handleSpeakerClose = () => {
-        setSpeakerOpen(false);
-    };
+  const handleMicrophoneOpen = () => {
+    setMicrophoneOpen(true);
+  };
 
-    const handleSpeakerOpen = () => {
-        setSpeakerOpen(true);
-    };
+  const handleSpeakerChange = (event) => {
+    const deviceId = event.target.value;
+    setSpeakerValue(deviceId);
+    dispatch(setSpeaker(deviceId));
+    SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
+  };
 
-    const handleCameraChange = async (event) => {
-        const deviceId  =  event.target.value;
-        setCameraValue(deviceId);
-        dispatch(setCamera(deviceId));
+  const handleSpeakerClose = () => {
+    setSpeakerOpen(false);
+  };
 
-        const videoTrack = localTracks.find(track => track.videoType === "camera");
-        const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
-            devices: ["video"],
-            cameraDeviceId: deviceId,
-            resolution,
-        });
-        await conference.replaceTrack(videoTrack, newVideoTrack);
-        dispatch(updateLocalTrack(videoTrack, newVideoTrack));
-    };
+  const handleSpeakerOpen = () => {
+    setSpeakerOpen(true);
+  };
 
-    const handleCameraClose = () => {
-        setCameraOpen(false);
-    };
+  const handleCameraChange = async (event) => {
+    const deviceId = event.target.value;
+    setCameraValue(deviceId);
+    dispatch(setCamera(deviceId));
 
-    const handleCameraOpen = () => {
-        setCameraOpen(true);
-    };
+    const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
+      devices: ["video"],
+      cameraDeviceId: deviceId,
+      resolution,
+    });
+    await conference.replaceTrack(videoTrack, newVideoTrack);
+    dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+  };
 
-    const handleResolutionChange = async (event) => {
-        setResolutionValue(event.target.value);
-        const item = resolutionList.find(item => item.value === event.target.value);
-        dispatch(setYourResolution({resolution: event.target.value, aspectRatio: item.aspectRatio}));
-        const videoTrack = localTracks.find(track => track.videoType === "camera");
-        
-        const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
-            devices: ["video"],
-            resolution: event.target.value,
-        });
+  const handleCameraClose = () => {
+    setCameraOpen(false);
+  };
 
-        conference.setLocalParticipantProperty("resolution", event.target.value.toString());
-        conference.replaceTrack(videoTrack, newVideoTrack);
-        dispatch(updateLocalTrack(videoTrack, newVideoTrack));
-    };
-    
-    const handleResolutionClose = () => {
-        setResolutionOpen(false);
-    };
+  const handleCameraOpen = () => {
+    setCameraOpen(true);
+  };
 
-    const handleResolutionOpen = () => {
-        setResolutionOpen(true);
-    };
+  const handleResolutionChange = async (event) => {
+    setResolutionValue(event.target.value);
+    const item = resolutionList.find(
+      (item) => item.value === event.target.value
+    );
+    dispatch(
+      setYourResolution({
+        resolution: event.target.value,
+        aspectRatio: item.aspectRatio,
+      })
+    );
 
-    const microphoneData = {
-        label: "Microphone",
-        open: microphoneOpen,
-        handleClose: handleMicrophoneClose,
-        handleOpen: handleMicrophoneOpen,
-        value: microphoneValue,
-        handleChange: handleMicrophoneChange,
-        list: devices
-            .filter((device) => device.kind === "audioinput")
-            .map((device, index) => ({
-                value: device.deviceId,
-                label: device.label,
-            })),
-    };
-    const speakerData = {
-        label: "Speaker",
-        open: speakerOpen,
-        handleClose: handleSpeakerClose,
-        handleOpen: handleSpeakerOpen,
-        value: speakerValue,
-        handleChange: handleSpeakerChange,
-        list: devices
-            .filter((device) => device.kind === "audiooutput")
-            .map((device, index) => ({
-                value: device.deviceId,
-                label: device.label,
-            })),
-    };
-    const cameraData = {
-        label: "Camera",
-        open: cameraOpen,
-        handleClose: handleCameraClose,
-        handleOpen: handleCameraOpen,
-        value: cameraValue,
-        handleChange: handleCameraChange,
-        list: devices
-            .filter((device) => device.kind === "videoinput")
-            .map((device, index) => ({
-                value: device.deviceId,
-                label: device.label,
-            })),
-    };
-   
-    const resolutionList = [
-        { value: 2160, label: "Ultra High Definition (4k)", aspectRatio: 9 / 16 },
-        { value: 1080, label: "Full High Definition (1080p)", aspectRatio: 9 / 16 },
-        { value: 720, label: "High Definition (720p)", aspectRatio: 9 / 16 },
-        { value: 480, label: "VGA (480p)", aspectRatio: 9 / 16 },
-        { value: 360, label: "Standard Definition (360p)", aspectRatio: 9 / 16 },
-        { value: 180, label: "Low Definition (180p)", aspectRatio: 9 / 16 },
-    ];
+    const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
+      devices: ["video"],
+      resolution: event.target.value,
+    });
 
-    const resolutionData = {
-        label: "Change Resolution",
-        open: resolutionOpen,
-        handleClose: handleResolutionClose,
-        handleOpen: handleResolutionOpen,
-        value: resolutionValue,
-        handleChange: handleResolutionChange,
-        list: resolutionList,
-    };
+    conference.setLocalParticipantProperty(
+      "resolution",
+      event.target.value.toString()
+    );
+    conference.replaceTrack(videoTrack, newVideoTrack);
+    dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+  };
 
-    const audioLabel = (
-        <Box className={classes.label}>
-            <SpeakerOutlinedIcon className={classes.audioIcon} />
-            <Typography className={classes.audioText}>Audio</Typography>
+  const handleResolutionClose = () => {
+    setResolutionOpen(false);
+  };
+
+  const handleResolutionOpen = () => {
+    setResolutionOpen(true);
+  };
+
+  const handleAudioTest = () => {
+    setTestText("Playing");
+    let audio = new Audio(
+      "https://sdk.sariska.io/knock_0b1ea0a45173ae6c10b084bbca23bae2.ogg"
+    );
+    audio.play();
+    setTimeout(() => setTestText("Test"), 500);
+  };
+
+  const microphoneData = {
+    label: "Microphone",
+    open: microphoneOpen,
+    handleClose: handleMicrophoneClose,
+    handleOpen: handleMicrophoneOpen,
+    value: microphoneValue,
+    handleChange: handleMicrophoneChange,
+    list: devices
+      .filter((device) => device.kind === "audioinput")
+      .map((device, index) => ({
+        value: device.deviceId,
+        label: device.label,
+      })),
+  };
+  const speakerData = {
+    label: "Speaker",
+    open: speakerOpen,
+    handleClose: handleSpeakerClose,
+    handleOpen: handleSpeakerOpen,
+    value: speakerValue,
+    handleChange: handleSpeakerChange,
+    list: devices
+      .filter((device) => device.kind === "audiooutput")
+      .map((device, index) => ({
+        value: device.deviceId,
+        label: device.label,
+      })),
+  };
+  const cameraData = {
+    label: "Camera",
+    open: cameraOpen,
+    handleClose: handleCameraClose,
+    handleOpen: handleCameraOpen,
+    value: cameraValue,
+    handleChange: handleCameraChange,
+    list: devices
+      .filter((device) => device.kind === "videoinput")
+      .map((device, index) => ({
+        value: device.deviceId,
+        label: device.label,
+      })),
+  };
+
+  const resolutionList = [
+    { value: 2160, label: "Ultra High Definition (4k)", aspectRatio: 9 / 16 },
+    { value: 1080, label: "Full High Definition (1080p)", aspectRatio: 9 / 16 },
+    { value: 720, label: "High Definition (720p)", aspectRatio: 9 / 16 },
+    { value: 480, label: "VGA (480p)", aspectRatio: 9 / 16 },
+    { value: 360, label: "Standard Definition (360p)", aspectRatio: 9 / 16 },
+    { value: 180, label: "Low Definition (180p)", aspectRatio: 9 / 16 },
+  ];
+
+  const resolutionData = {
+    label: "Change Resolution",
+    open: resolutionOpen,
+    handleClose: handleResolutionClose,
+    handleOpen: handleResolutionOpen,
+    value: resolutionValue,
+    handleChange: handleResolutionChange,
+    list: resolutionList,
+  };
+
+  const audioLabel = (
+    <Box className={classes.label}>
+      <SpeakerOutlinedIcon className={classes.audioIcon} />
+      <Typography className={classes.audioText}>Audio</Typography>
+    </Box>
+  );
+  const videoLabel = (
+    <Box className={classes.label}>
+      <VideocamOutlinedIcon className={classes.videoIcon} />
+      <Typography className={classes.videText}>Video</Typography>
+    </Box>
+  );
+  const audioPanel = (
+    <Box className={classes.list}>
+      <Box className={classes.display}>
+        <Box style={{ display: "flex" }} className={classes.marginBottom}>
+          <SelectField data={microphoneData} minWidth={"200px"} />
+          <Box className={classes.microphone}>
+            <span className="material-icons material-icons-outlined">
+              mic_none
+            </span>
+            {!audioTrack && (
+              <Button className={classes.offButton}>
+                Check your microphone
+              </Button>
+            )}
+            {audioTrack && audioTrack?.isMuted() && (
+              <Button className={classes.offButton}>Microphone is Off</Button>
+            )}
+            {audioTrack && !audioTrack?.isMuted() && <MicIndicator vol={vol} />}
+          </Box>
         </Box>
-    );
-    const videoLabel = (
-        <Box className={classes.label}>
-            <VideocamOutlinedIcon className={classes.videoIcon} />
-            <Typography className={classes.videText}>Video</Typography>
+      </Box>
+      <Box className={classes.display}>
+        <Box style={{ display: "flex" }} className={classes.marginBottom}>
+          <SelectField data={speakerData} minWidth={"200px"} />
+          <Box>
+            <Button
+              className={classes.volume}
+              variant="outlined"
+              onClick={handleAudioTest}
+            >
+              <span class="material-icons material-symbols-outlined">
+                volume_up
+              </span>
+              <span className={classes.test}>{testText}</span>
+            </Button>
+          </Box>
         </Box>
-    );
-    const audioPanel = (
-        <Box className={classes.list}>
-            <Box className={classes.marginBottom}>
-                <SelectField data={microphoneData} />
-            </Box>
-            <Box className={classes.marginBottom}>
-                <SelectField data={speakerData} />
-            </Box>
-        </Box>
-    );
-    const videoPanel = (
-        <Box className={classes.list}>
-            <Box className={classes.marginBottom}>
-                <SelectField data={cameraData} />
-            </Box>
-            <Box className={classes.marginBottom}>
-                <SelectField data={resolutionData} />
-            </Box>
-        </Box>
-    );
-    return (
-        <Grid container className={classes.container}>
-            <Grid item md={12} className={classes.setting}>
-                <Typography className={classes.title}>Settings</Typography>
-            </Grid>
-            <Grid item md={12} className={classes.root}>
-                <Tabs
-                    variant="scrollable"
-                    scrollButtons="auto"
-                    value={value}
-                    onChange={handleChange}
-                    aria-label="Vertical tabs example"
-                    className={classes.tabs}
-                >
-                    <Tab
-                        disableRipple
-                        label={audioLabel}
-                        {...a11yProps(0)}
-                        className={classes.tab}
-                    />
-                    <Tab
-                        disableRipple
-                        label={videoLabel}
-                        {...a11yProps(1)}
-                        className={classes.tab}
-                    />
-                </Tabs>
-                <TabPanel value={value} index={0}>
-                    {audioPanel}
-                </TabPanel>
-                <TabPanel value={value} index={1}>
-                    {videoPanel}
-                </TabPanel>
-            </Grid>
-        </Grid>
-    );
+      </Box>
+    </Box>
+  );
+  const videoPanel = (
+    <Box className={classes.list}>
+      <Box className={classes.marginBottom}>
+        <SelectField data={cameraData} minWidth={"310px"} />
+      </Box>
+      <Box className={classes.marginBottom}>
+        <SelectField data={resolutionData} minWidth={"310px"} />
+      </Box>
+      <Box>
+        {videoTrack && !videoTrack?.isMuted() && (
+          <div
+            className={classes.videoWrapper}
+            style={{
+              width: "312px",
+              height: "202px",
+              overflow: "hidden",
+              position: "relative",
+              borderRadius: "7.5px",
+              marginTop: "28px",
+            }}
+          >
+            <Video height="100" track={videoTrack} borderRadius="7.5px" />
+          </div>
+        )}
+        {videoTrack?.isMuted() && (
+          <Box className={classes.muted}>
+            <Typography>Video is muted</Typography>
+          </Box>
+        )}
+        {!videoTrack && (
+          <Box className={classes.muted}>
+            <Typography>Check your Camera</Typography>
+          </Box>
+        )}
+      </Box>
+    </Box>
+  );
+  return (
+    <Grid container className={classes.container}>
+      <Grid item md={12} className={classes.setting}>
+        <Typography className={classes.title}>Settings</Typography>
+      </Grid>
+      <Grid item md={12} className={classes.root}>
+        <Tabs
+          variant="scrollable"
+          scrollButtons="auto"
+          value={value}
+          onChange={handleChange}
+          aria-label="Vertical tabs example"
+          className={classes.tabs}
+        >
+          <Tab
+            disableRipple
+            label={audioLabel}
+            {...a11yProps(0)}
+            className={classes.tab}
+          />
+          <Tab
+            disableRipple
+            label={videoLabel}
+            {...a11yProps(1)}
+            className={classes.tab}
+          />
+        </Tabs>
+        <TabPanel value={value} index={0}>
+          {audioPanel}
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          {videoPanel}
+        </TabPanel>
+      </Grid>
+    </Grid>
+  );
 };
 
 export default SettingsBox;

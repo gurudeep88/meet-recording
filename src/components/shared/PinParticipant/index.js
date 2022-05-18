@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         boxSizing: "border-box",
         border: "2px solid black",
-        background: color.secondary,
+        background: color.white,
         position: "relative",
         display: 'flex',
         flexDirection: 'column'
@@ -17,13 +17,18 @@ const useStyles = makeStyles((theme) => ({
         color: "white",
         height: "24px",
         width: "24px",
-        background: color.lightgray4
     },
     unpin: {
-        color: "#27CED7"
+        color: "#27CED7",
+        "& svg": {
+            fill: color.white,
+        }
     },
     pin: {
-        color: "white"
+        fill: color.white,
+        "& svg": {
+            fill: color.white
+        }
     }
 }));
 

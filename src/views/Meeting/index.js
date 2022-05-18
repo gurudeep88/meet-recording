@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { color } from '../../assets/styles/_color';
 import ActionButtons from '../../components/meeting/ActionButtons';
 import SariskaMediaTransport from 'sariska-media-transport';
-import Navbar from '../../components/shared/Navbar'
 import ReconnectDialog from "../../components/shared/ReconnectDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { addRemoteTrack, participantLeft, removeRemoteTrack, remoteTrackMutedChanged } from "../../store/actions/track";
@@ -25,22 +24,10 @@ import { addSubtitle } from '../../store/actions/subtitle';
 import { useHistory } from 'react-router-dom';
 import { setUserResolution } from '../../store/actions/layout';
 import {useOnlineStatus} from "../../hooks/useOnlineStatus";
-import { updateLocalTrack } from '../../store/actions/track';
-
 import ReactGA from 'react-ga4';
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        display: "flex",
-        flexDirection: "column",
-        background: color.secondaryDark,
-        minHeight: '100vh',
-    }
-}));
 
 const Meeting = () => {
     const history = useHistory();
-    const classes = useStyles();
     const dispatch = useDispatch();
     const localTracks = useSelector(state => state.localTrack);
     const conference = useSelector(state => state.conference);
@@ -51,17 +38,33 @@ const Meeting = () => {
     const isOnline = useOnlineStatus()
     const resolution = useSelector(state=>state.media?.resolution);
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
-    const [lobbyUserJoined, setLobbyUserJoined] = useState({});
+    const [lobbyUser, setLobbyUser] = useState([]);
+
+    const useStyles = makeStyles((theme) => ({
+        root: {
+            display: "flex",
+            flexDirection: "column",
+            background: color.secondaryDark,
+            minHeight: layout.mode === ENTER_FULL_SCREEN_MODE ? "100vh":  "calc(100vh - 16px)",
+            "& .activeSpeaker": {
+                boxSizing: "border-box",
+                border: `3px solid ${color.primaryLight}`,
+                borderRadius: "8px"
+            }
+        }
+    }));
+
+    const classes = useStyles();
     let ingoreFirstEvent = true;
 
-    const allowLobbyAccess = () => {
-        conference.lobbyApproveAccess(lobbyUserJoined.id)
-        setLobbyUserJoined({});
+    const allowLobbyAccess = (userId) => {
+        conference.lobbyApproveAccess(userId);
+        setLobbyUser(lobbyUser =>lobbyUser.filter(item=>item.id !== userId));
     }
 
-    const denyLobbyAccess = () => {
-        conference.lobbyDenyAccess(lobbyUserJoined.id);
-        setLobbyUserJoined({});
+    const denyLobbyAccess = (userId) => {
+        conference.lobbyDenyAccess(userId);
+        setLobbyUser(lobbyUser =>lobbyUser.filter(item=>item.id !== userId));
     }
 
     const deviceListChanged = async (devices) => {
@@ -83,6 +86,10 @@ const Meeting = () => {
     }
 
     const destroy = async () => {
+        if (conference.getParticipantCount() - 1 === 0) {
+            fetch(`https://whiteboard.sariska.io/boards/delete/${conference.connection.name}`, { method: 'DELETE',  mode: 'cors' });
+            fetch(`https://etherpad.sariska.io/api/1/deletePad?apikey=a97b8845463ab348a91717f9887842edf0df15e395977c2dad12c56bca146d6e&padID=${conference.connection.name}`, { method: 'GET',  mode: 'cors' });
+        }
         if (conference?.isJoined()) {
             await conference?.leave();
         }
@@ -141,10 +148,10 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
-            console.log("DOMINANT_SPEAKER_CHANGED", id);
+            console.log("dominant speaker", conference.participants[id]?._identity?.user?.name, id);
             setDominantSpeakerId(id);
         });
-
+        
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
             if (key === "presenting" && newValue === "start") {
                 dispatch(showNotification({ autoHide: true, message: `Screen sharing started by ${participant._identity?.user?.name}` }));
@@ -194,7 +201,7 @@ const Meeting = () => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.LOBBY_USER_JOINED, (id, displayName) => {
             new Audio("https://sdk.sariska.io/knock_0b1ea0a45173ae6c10b084bbca23bae2.ogg").play();
-            setLobbyUserJoined({ id, displayName });
+            setLobbyUser(lobbyUser => [...lobbyUser, { id, displayName }]);
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.MESSAGE_RECEIVED, (id, text, ts) => {
@@ -230,7 +237,7 @@ const Meeting = () => {
 
         conference.addEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, async ( participant, data) => {
             if (data.event === "LOBBY-ACCESS-GRANTED" || data.event === "LOBBY-ACCESS-DENIED") {
-                setLobbyUserJoined({});
+                setLobbyUser(lobbyUser =>lobbyUser.filter(item=>item.displayName !== data.name));
             }
         });
 
@@ -255,8 +262,16 @@ const Meeting = () => {
             })
         });
 
+        conference.addEventListener(SariskaMediaTransport.events.conference.KICKED, (id)=> { // if a user kicked by moderator 
+            // kicked participant id
+          });
+
+        conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_KICKED, (actorParticipant, kickedParticipant, reason) => {
+
+        })
+ 
         preloadIframes(conference);
-        SariskaMediaTransport.effects.createRnnoiseProcessor();
+        // SariskaMediaTransport.effects.createRnnoiseProcessor();
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.AUDIO_OUTPUT_DEVICE_CHANGED, audioOutputDeviceChanged);
 
@@ -274,15 +289,16 @@ const Meeting = () => {
     if (!conference || !conference.isJoined()) {
         return <Home />;
     }
-
-    let justifyContent = "center";
+    
+    let justifyContent = "space-between";
+    let paddingTop = 16;
     if (layout.mode === ENTER_FULL_SCREEN_MODE) {
         justifyContent = "space-around";
+        paddingTop = 0 ;
     }
 
     return (
-        <Box style={{ justifyContent }} className={classes.root}>
-            <Navbar dominantSpeakerId={dominantSpeakerId} />
+        <Box style={{ justifyContent, paddingTop:  paddingTop}} className={classes.root}>
             {layout.type === SPEAKER &&
                 <SpeakerLayout dominantSpeakerId={dominantSpeakerId} />
             }
@@ -293,11 +309,11 @@ const Meeting = () => {
                 <PresentationLayout dominantSpeakerId={dominantSpeakerId} />
             }
             <ActionButtons dominantSpeakerId={dominantSpeakerId} />
-            {lobbyUserJoined.id && <PermissionDialog
+            {lobbyUser.map((item)=><PermissionDialog
                 denyLobbyAccess={denyLobbyAccess}
                 allowLobbyAccess={allowLobbyAccess}
-                displayName={lobbyUserJoined.displayName} />}
-
+                userId={item.id}
+                displayName={item.displayName} />)}
             <SnackbarBox notification={notification} />
             <ReconnectDialog open={layout.disconnected === "lost"} />
             <Notification snackbar={snackbar} />

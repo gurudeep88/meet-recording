@@ -1,4 +1,4 @@
-import {SET_FULLSCREEN_MODE, SET_USER_RESOLUTION, SET_LAYOUT, SET_HAND_RAISE, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE, SET_MODERATOR} from "../actions/types";
+import {SET_FULLSCREEN_MODE, SET_USER_RESOLUTION, SET_LAYOUT, SET_HAND_RAISE, SET_PIN_PARTICIPANT, SET_PRESENTER, SET_DISCONNECTED, SET_PRESENTATION_TYPE, SET_MODERATOR, SET_START_WHITEBOARD, SET_STOP_WHITEBOARD, SET_START_SHARED_DOCUMENTS, SET_STOP_SHARED_DOCUMENTS} from "../actions/types";
 import {EXIT_FULL_SCREEN_MODE, SPEAKER} from "../../constants";
 
 const initialState  = {
@@ -10,7 +10,7 @@ const initialState  = {
     disconnected: null,
     resolution: {},
     presentationType: null,
-    moderator: {}
+    moderator: {},
 };
 
 export const layoutInitialState  = { ... initialState };
@@ -57,7 +57,7 @@ export const layout = (state = initialState, action) => {
             return {...state};
         case SET_PRESENTATION_TYPE:
             state.presentationType = action.payload.presentationType;
-            return {...state};    
+            return {...state};
         default:
             return state;
     }

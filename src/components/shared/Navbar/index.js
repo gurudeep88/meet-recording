@@ -20,13 +20,13 @@ import {useSelector, useDispatch} from "react-redux";
 import {setLayout} from "../../../store/actions/layout";
 import {RECEIVED_PRESENTATION_STATUS, GET_PRESENTATION_STATUS, GRID, PRESENTATION, SHARED_DOCUMENT, SPEAKER, WHITEBOARD, DROPBOX_APP_KEY, EXIT_FULL_SCREEN_MODE, RECORDING_ERROR_CONSTANTS} from "../../../constants";
 import classnames from "classnames";
-import Chat from "../Chat";
-import ParticipantDetails from "../ParticipantDetails";
+//import Chat from "../Chat";
+//import ParticipantDetails from "../ParticipantDetails";
 import VirtualBackground from "../VirtualBackground";
 import FlipToFrontOutlinedIcon from '@material-ui/icons/FlipToFrontOutlined';
 import SettingsIcon from "@material-ui/icons/Settings";
 import {withStyles} from '@material-ui/core/styles';
-import {unreadMessage} from "../../../store/actions/chat";
+//import {unreadMessage} from "../../../store/actions/chat";
 import {setPresentationtType} from "../../../store/actions/layout";
 import SettingsBox from "../../meeting/Settings"; 
 import {showNotification} from "../../../store/actions/notification";
@@ -100,6 +100,9 @@ const useStyles = makeStyles((theme) => ({
         "& svg": {
             verticalAlign: 'middle'
         },
+        "& span": {
+            verticalAlign: 'middle'
+        },
         [theme.breakpoints.down("xs")]: {
             display: "none",
         },
@@ -138,11 +141,11 @@ const useStyles = makeStyles((theme) => ({
         width: '360px',
         padding: theme.spacing(3, 0, 0, 0),
     },
-    chatList: {
-        height: "100%",
-        width: '360px',
-        padding: theme.spacing(3, 3, 0, 3),
-    },
+    // chatList: {
+    //     height: "100%",
+    //     width: '360px',
+    //     padding: theme.spacing(3, 3, 0, 3),
+    // },
     detailedList: {
         width: '360px',
         padding: theme.spacing(3),
@@ -193,7 +196,7 @@ const Navbar = ({dominantSpeakerId}) => {
     const dispatch = useDispatch()
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state => state.layout);
-    const unread = useSelector(state => state.chat.unreadMessage);
+    //const unread = useSelector(state => state.chat.unreadMessage);
     const classes = useStyles();
     const recordingSession = useRef(null);
     const streamingSession = useRef(null);
@@ -202,13 +205,13 @@ const Navbar = ({dominantSpeakerId}) => {
         right: false,
     });
 
-    const [chatState, setChatState] = React.useState({
-        right: false,
-    });
+    // const [chatState, setChatState] = React.useState({
+    //     right: false,
+    // });
 
-    const [participantState, setParticipantState] = React.useState({
-        right: false,
-    });
+    // const [participantState, setParticipantState] = React.useState({
+    //     right: false,
+    // });
 
     const [backgroundState, setBackgroundState] = React.useState({
         right: false,
@@ -253,20 +256,20 @@ const Navbar = ({dominantSpeakerId}) => {
         setState({...state, [anchor]: open});
     };
 
-    const toggleChatDrawer = (anchor, open) => (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
-        setChatState({...chatState, [anchor]: open});
-        dispatch(unreadMessage(0));
-    };
+    // const toggleChatDrawer = (anchor, open) => (event) => {
+    //     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+    //         return;
+    //     }
+    //     setChatState({...chatState, [anchor]: open});
+    //     dispatch(unreadMessage(0));
+    // };
 
-    const toggleParticipantDrawer = (anchor, open) => (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
-        setParticipantState({...participantState, [anchor]: open});
-    };
+    // const toggleParticipantDrawer = (anchor, open) => (event) => {
+    //     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+    //         return;
+    //     }
+    //     setParticipantState({...participantState, [anchor]: open});
+    // };
 
     const toggleView = () => {
        if ( layout.type === SPEAKER  || layout.type === PRESENTATION) {
@@ -649,25 +652,25 @@ const Navbar = ({dominantSpeakerId}) => {
             </Box>
         </Box>
     );
-    const chatList = (anchor) => (
-        <Box
-            className={classes.chatList}
-            role="presentation"
-        >
-            <Typography variant="h6" className={classes.title}>Chat Details</Typography>
-            <Chat/>
-        </Box>
-    );
-    const participantList = (anchor) => (
-        <Box
-            className={classes.list}
-            role="presentation"
-        >
-            <Typography variant="h6" className={classes.title} style={{paddingLeft: '24px'}}>Participant
-                Details</Typography>
-            <ParticipantDetails/>
-        </Box>
-    );
+    // const chatList = (anchor) => (
+    //     <Box
+    //         className={classes.chatList}
+    //         role="presentation"
+    //     >
+    //         <Typography variant="h6" className={classes.title}>Chat Details</Typography>
+    //         <Chat/>
+    //     </Box>
+    // );
+    // const participantList = (anchor) => (
+    //     <Box
+    //         className={classes.list}
+    //         role="presentation"
+    //     >
+    //         <Typography variant="h6" className={classes.title} style={{paddingLeft: '24px'}}>Participant
+    //             Details</Typography>
+    //         <ParticipantDetails/>
+    //     </Box>
+    // );
     const virtualBackgroundList = (anchor) => (
         <Box
             className={classes.virtualList}
@@ -700,9 +703,13 @@ const Navbar = ({dominantSpeakerId}) => {
                             <Logo/>
                             <Box className={classes.navLink}>
                                 <Toolbar className={classes.toolbar}>
-                                    <Button className={classes.link} onClick={toggleDrawer("right", true)}>
+                                    {/* <Button className={classes.link} onClick={toggleDrawer("right", true)}>
                                         <Tooltip title="Meeting Details">
-                                            <DetailsIcon/>
+                                        <span
+                                            className="material-icons material-icons-outlined"
+                                        >
+                                            details
+                                        </span>
                                         </Tooltip>
                                     </Button>
 
@@ -714,19 +721,21 @@ const Navbar = ({dominantSpeakerId}) => {
                                     {layout.type === SPEAKER ?
                                         <Button onClick={toggleView} className={classes.link}>
                                             <Tooltip title="Grid View">
-                                                <svg
-                                                    className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-bnlyqp-MuiSvgIcon-root"
-                                                    focusable="false" viewBox="0 0 24 24" aria-hidden="true"
-                                                    data-testid="ViewSidebarIcon">
-                                                    <path
-                                                        d="M16 20H2V4h14v16zm2-12h4V4h-4v4zm0 12h4v-4h-4v4zm0-6h4v-4h-4v4z"></path>
-                                                </svg>
+                                            <span
+                                            className="material-icons material-icons-outlined"
+                                            >
+                                                view_sidebar
+                                            </span>
                                             </Tooltip>
                                         </Button>
                                         :
                                         <Button onClick={toggleView} className={classes.link}>
                                             <Tooltip title="Speaker View">
-                                                <ViewComfyIcon/>
+                                            <span
+                                            className="material-icons material-icons-outlined"
+                                            >
+                                                view_comfy
+                                            </span>
                                             </Tooltip>
                                         </Button>
                                     }
@@ -734,13 +743,23 @@ const Navbar = ({dominantSpeakerId}) => {
                                         <Button onClick={stopRecording}
                                                 className={classnames(classes.link, classes.stopRecording)}>
                                             <Tooltip title="Stop Recording">
-                                                <AlbumIcon style={{color: color.red}}/>
+                                            <span
+                                            className="material-icons material-icons-outlined"
+                                            style={{color: color.red}}
+                                            >
+                                                album
+                                            </span>
                                             </Tooltip>
                                         </Button>
                                         :
                                         <Button onClick={startRecording} className={classes.link}>
                                             <Tooltip title="Start Recording">
-                                                <AlbumIcon style={{color: color.white}}/>
+                                            <span
+                                            className="material-icons material-icons-outlined"
+                                            style={{color: color.white}}
+                                            >
+                                                album
+                                            </span>
                                             </Tooltip>
                                         </Button>
                                     }
@@ -748,31 +767,51 @@ const Navbar = ({dominantSpeakerId}) => {
                                         <Button onClick={stopStreaming}
                                                 className={classnames(classes.link, classes.stopStreaming)}>
                                             <Tooltip title="Stop Streaming">
-                                                <PublicIcon style={{color: color.red}}/>
+                                            <span
+                                            className="material-icons material-icons-outlined"
+                                            style={{color: color.red}}
+                                            >
+                                                public
+                                            </span>
                                             </Tooltip>
                                         </Button>
                                         :
                                         <Button onClick={startStreaming}
                                                 className={classnames(classes.link, classes.stopStreaming)}>
                                             <Tooltip title="Start Streaming">
-                                                <PublicIcon style={{color: color.white}} />
+                                            <span
+                                            className="material-icons material-icons-outlined"
+                                            style={{color: color.white}}
+                                            >
+                                                public
+                                            </span>
                                             </Tooltip>
                                         </Button>
                                     }
                                     { caption ?
                                         <Button onClick={stopCaption} className={classes.link}>
                                             <Tooltip title="Turn off captions">
-                                                <ClosedCaptionIcon style={{color: color.red}}/>
+                                            <span
+                                            className="material-icons material-icons-outlined"
+                                            style={{color: color.red}}
+                                            >
+                                                closed_caption
+                                            </span>
                                             </Tooltip>
                                         </Button>
                                         :
                                         <Button onClick={startCaption} className={classes.link}>
                                             <Tooltip title="Turn on captions">
-                                                <ClosedCaptionIcon style={{color: color.white}}/>
+                                            <span
+                                            className="material-icons material-icons-outlined"
+                                            style={{color: color.white}}
+                                            >
+                                                closed_caption
+                                            </span>
                                             </Tooltip>
                                         </Button>
-                                    }
-                                    <Button onClick={toggleParticipantDrawer("right", true)} className={classes.link}>
+                                    } */}
+                                    {/* <Button onClick={toggleParticipantDrawer("right", true)} className={classes.link}>
                                         <Tooltip title="Participants Details">
                                             <GroupIcon/>
                                         </Tooltip>
@@ -781,8 +820,8 @@ const Navbar = ({dominantSpeakerId}) => {
                                             onClose={toggleParticipantDrawer("right", false)}
                                             className={classes.drawer}>
                                         {participantList("right")}
-                                    </Drawer>
-                                    <StyledBadge badgeContent={unread}>
+                                    </Drawer> */}
+                                    {/* <StyledBadge badgeContent={unread}>
                                         <Button onClick={toggleChatDrawer("right", true)} className={classes.link}>
                                             <Tooltip title="Chat Box">
                                                 <CommentIcon/>
@@ -792,8 +831,8 @@ const Navbar = ({dominantSpeakerId}) => {
                                     <Drawer anchor="right" open={chatState["right"]}
                                             onClose={toggleChatDrawer("right", false)} className={classes.drawer}>
                                         {chatList("right")}
-                                    </Drawer>
-                                    <Button onClick={toggleBackgroundDrawer("right", true)} className={classes.link}>
+                                    </Drawer> */}
+                                    {/* <Button onClick={toggleBackgroundDrawer("right", true)} className={classes.link}>
                                         <Tooltip title="Virtual Background">
                                             <FlipToFrontOutlinedIcon/>
                                         </Tooltip>
@@ -801,13 +840,13 @@ const Navbar = ({dominantSpeakerId}) => {
                                     <Drawer anchor="right" open={backgroundState["right"]}
                                             onClose={toggleBackgroundDrawer("right", false)} className={classes.drawer}>
                                         {virtualBackgroundList("right")}
-                                    </Drawer>
-                                    <Button onClick={toggleSettingsDrawer("right", true)} className={classes.link}>
+                                    </Drawer> */}
+                                    {/* <Button onClick={toggleSettingsDrawer("right", true)} className={classes.link}>
                                         <Tooltip title="Settings">
                                             <SettingsIcon/>
                                         </Tooltip>
-                                    </Button>
-                                    {whiteboard ?
+                                    </Button> */}
+                                    {/* {whiteboard ?
                                         <Button onClick={stopWhiteboard} className={classes.link}>
                                             <Tooltip title="Stop Whiteboard">
                                                 <CreateIcon style={{color: "#27ced7"}}/>
@@ -834,7 +873,7 @@ const Navbar = ({dominantSpeakerId}) => {
                                                 <DescriptionIcon style={{color: color.white}} />
                                             </Tooltip>
                                         </Button>
-                                    }
+                                    } */}
                                     {/* <Button onClick={cancelNoise} className={classes.link}>
                                         <Tooltip title="Cancel noise">
                                             <svg className={classes.noiseCancellation} fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M 2.9902344 1.9902344 A 1.0001 1.0001 0 0 0 2.2929688 3.7070312 L 7.1640625 8.578125 L 6.6582031 8.7617188 C 6.2622031 8.9047188 6 9.2801719 6 9.7011719 L 6 14.298828 C 6 14.719828 6.2622031 15.095281 6.6582031 15.238281 L 8.4511719 15.888672 L 8.1679688 16.689453 C 7.9549687 17.290453 8.2690937 17.949109 8.8710938 18.162109 L 11.048828 18.933594 C 11.649828 19.146594 12.310437 18.830516 12.523438 18.228516 L 12.792969 17.462891 L 17.902344 19.316406 L 20.292969 21.707031 A 1.0001 1.0001 0 0 0 21.771484 20.361328 C 21.773734 20.357778 21.777076 20.355132 21.779297 20.351562 L 9.25 7.8222656 L 9.2402344 7.8261719 L 3.7070312 2.2929688 A 1.0001 1.0001 0 0 0 2.9902344 1.9902344 z M 20.65625 3 C 20.24125 3 19.851656 3.1915312 19.597656 3.5195312 L 19 4.2851562 L 11.324219 7.0683594 L 22 17.744141 L 22 4.34375 C 22 3.60175 21.39825 3 20.65625 3 z M 3 9 C 2.448 9 2 9.448 2 10 L 2 14 C 2 14.552 2.448 15 3 15 C 3.552 15 4 14.552 4 14 L 4 10 C 4 9.448 3.552 9 3 9 z"></path></svg>

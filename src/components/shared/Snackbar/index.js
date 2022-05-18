@@ -23,7 +23,7 @@ const useStyles = makeStyles(()=>({
         marginRight: '10px',
     },
     logoText: {
-        fontFamily: `'Montserrat', sans-serif`,
+        fontFamily: `'DM Sans', sans-serif`,
         width: 'fit-content',
         height: "63px",
         display: "flex",

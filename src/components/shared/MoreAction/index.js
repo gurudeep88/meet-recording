@@ -230,7 +230,7 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
     );
     const appData = {
       streamKeys: [
-          {key: "youtube",  value: streamName}, 
+          {streamKey: "youtube",  streamValue: streamName}, 
       ],
       isRecording: false,
       app: "live",
@@ -273,12 +273,13 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
     
     const appData = {
       streamKeys: [
-          {key: "youtube", value: streamName}
+          {streamKey: "youtube",  streamValue: streamName}, 
       ],
       isRecording: false,
       app: "live",
       stream: "livestream"
     }
+    
     const session = await conference.startRecording({
       mode: SariskaMediaTransport.constants.recording.mode.STREAM,
       streamId: "test",

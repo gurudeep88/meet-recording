@@ -230,7 +230,7 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
     );
     const appData = {
       streamKeys: [
-          {"youtube": streamName}, 
+          {key: "youtube",  value: streamName}, 
       ],
       isRecording: false,
       app: "live",
@@ -273,7 +273,7 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
     
     const appData = {
       streamKeys: [
-          {"youtube": streamName}, 
+          {key: "youtube", value: streamName}
       ],
       isRecording: false,
       app: "live",

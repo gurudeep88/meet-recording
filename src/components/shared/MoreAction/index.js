@@ -16,7 +16,7 @@ import {
   SPEAKER,
   WHITEBOARD,
 } from "../../../constants";
-
+import LiveStreamDialog from "../LiveStreamDialog";
 import VirtualBackground from "../VirtualBackground";
 import { showSnackbar } from "../../../store/actions/snackbar";
 import { showNotification } from "../../../store/actions/notification";
@@ -270,6 +270,8 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
   };
 
   const stopStreaming = async () => {
+    console.log("stop", featureStates);
+
     if (!featureStates.streaming) {
       return;
     }
@@ -571,6 +573,8 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
       >
         {settingsList("right")}
       </DrawerBox>
+      <LiveStreamDialog close={closeLiveStreamDialog} createLiveStream={createLiveStream} open={openLivestreamDialog} broadcasts={broadcasts}
+                              selectedBroadcast={selectedBroadcast}/>
     </>
   );
 }

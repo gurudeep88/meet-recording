@@ -24,10 +24,10 @@ const ParticipantPaneSpeakerLayout = ({remoteTracks, localTracks, largeVideoId, 
     });
     const actualWidth = gridWidth;
     const actualHeight = gridHeight;
-
     return (
         <Box style={{height: `${panelHeight}px`}} className={activeClasses}>
             {conference.getParticipantsWithoutHidden().map((participant, index) => {
+
                 if (participant._id === largeVideoId) {
                     return <VideoBox localUserId={conference.myUserId()}
                                      isPresenter={layout.presenterParticipantIds.find(item=>item===conference.myUserId())}

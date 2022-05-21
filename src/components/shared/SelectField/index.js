@@ -46,12 +46,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function SelectField({data, minWidth}) {
+export default function SelectField({data, minWidth, width}) {
   const classes = useStyles();
 
   return (
     <Box className={classes.button}>
-      <FormControl className={classes.formControl} style={minWidth && {minWidth}}>
+      <FormControl className={classes.formControl} style={{minWidth:  minWidth && minWidth, width:  width && width}}>
         <InputLabel id="demo-controlled-open-select-label">{data.label}</InputLabel>
         <Select
           labelId={data.label}

@@ -15,12 +15,10 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "capitalize",
     marginTop: top || theme.spacing(3),
     width: width || "178.69px",
-    transition: `font-weight .5s all ease`,
+    transition: `0.1s all ease`,
     "&:hover": {
-      fontWeight: "900",
       background: color.mainGradient,
-      border: `none`,
-      padding: '5px 41px',
+      border: `1px solid transparent`,
       width: width || "178.69px",
     },
     homeButton: {
@@ -28,7 +26,9 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       right: 0,
       margin: "auto",
-      bottom: "-57px"
+      bottom: "-57px",
+      fontSize: '1vw',
+      minWidth: '175px',
     }
   },
 }));

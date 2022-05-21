@@ -1,5 +1,5 @@
 import {Avatar, Box, makeStyles, Tooltip, Typography} from '@material-ui/core'
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {color} from '../../../assets/styles/_color';
 import Video from "../Video";
 import Audio from "../Audio";
@@ -13,6 +13,7 @@ import AudioLevelIndicator from "../AudioIndicator";
 import SubTitle from "../SubTitle";
 import {useDocumentSize} from "../../../hooks/useDocumentSize";
 import { profile } from '../../../store/reducers/profile';
+import { localTrackMutedChanged } from '../../../store/actions/track';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -157,6 +158,10 @@ const VideoBox = ({
 
     let avatarColor = participantDetails?.avatar || profile?.color;
      
+    useEffect(()=>{
+        dispatch(localTrackMutedChanged())
+    },[])
+    
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}

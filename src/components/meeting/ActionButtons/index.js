@@ -41,6 +41,7 @@ import MoreAction from "../../shared/MoreAction";
 import DrawerBox from "../../shared/DrawerBox";
 import { addSubtitle } from "../../../store/actions/subtitle";
 import { showSnackbar } from "../../../store/actions/snackbar";
+import StyledTooltip from "../../shared/StyledTooltip";
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -544,7 +545,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         <Box className={classes.separator}>|</Box>
         <Box>{profile.meetingTitle}</Box>
       </Box>
-      <Tooltip title="Leave Call">
+      <StyledTooltip title="Leave Call">
         <span
           className={classNames(
             "material-icons material-icons-outlined",
@@ -554,9 +555,9 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         >
           call_end
         </span>
-      </Tooltip>
+      </StyledTooltip>
       <Box className={classes.permissions}>
-        <Tooltip title={audioTrack ? audioTrack?.isMuted() ? "Unmute Audio" : "Mute Audio" : "Check the mic or Speaker"}>
+        <StyledTooltip title={audioTrack ? audioTrack?.isMuted() ? "Unmute Audio" : "Mute Audio" : "Check the mic or Speaker"}>
           {audioTrack ? audioTrack?.isMuted() ? (
             <span
               className={classnames("material-icons material-icons-outlined", classes.active)}
@@ -578,8 +579,8 @@ const ActionButtons = ({ dominantSpeakerId }) => {
             mic_none
           </span>
           }
-        </Tooltip>
-        <Tooltip title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}>
+        </StyledTooltip>
+        <StyledTooltip title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}>
           {videoTrack?.isMuted() ? (
             <span
               className={classnames("material-icons material-icons-outlined", classes.active)}
@@ -595,8 +596,8 @@ const ActionButtons = ({ dominantSpeakerId }) => {
               videocam
             </span>
           )}
-        </Tooltip>
-        <Tooltip title={presenting ? "Stop Presenting" : "Share Screen"}>
+        </StyledTooltip>
+        <StyledTooltip title={presenting ? "Stop Presenting" : "Share Screen"}>
           {presenting ? (
             <span
               className={classnames("material-icons material-icons-outlined", classes.active)}
@@ -612,8 +613,8 @@ const ActionButtons = ({ dominantSpeakerId }) => {
               screen_share
             </span>
           )}
-        </Tooltip>
-        <Tooltip title={raiseHand ? "Hand Down" : "Raise Hand"}>
+        </StyledTooltip>
+        <StyledTooltip title={raiseHand ? "Hand Down" : "Raise Hand"}>
           {raiseHand ? (
             <span
               className={classnames("material-icons material-icons-outlined", classes.active, classes.panTool)}
@@ -629,22 +630,22 @@ const ActionButtons = ({ dominantSpeakerId }) => {
               pan_tool
             </span>
           )}
-        </Tooltip>
-        <Tooltip title="Participants Details">
+        </StyledTooltip>
+        <StyledTooltip title="Participants Details">
           <span
             className="material-icons material-icons-outlined"
             onClick={toggleParticipantDrawer("right", true)}
           >
             group
           </span>
-        </Tooltip>
+        </StyledTooltip>
         <DrawerBox
           open={participantState["right"]}
           onClose={toggleParticipantDrawer("right", false)}
         >
           {participantList("right")}
         </DrawerBox>
-        <Tooltip title="Chat Box">
+        <StyledTooltip title="Chat Box">
           <StyledBadge badgeContent={unread}>
             <span
               className={classnames("material-icons material-icons-outlined", classes.chat)}
@@ -653,14 +654,14 @@ const ActionButtons = ({ dominantSpeakerId }) => {
               chat
             </span>
           </StyledBadge>
-        </Tooltip>
+        </StyledTooltip>
         <DrawerBox
           open={chatState["right"]}
           onClose={toggleChatDrawer("right", false)}
         >
           {chatList("right")}
         </DrawerBox>
-        <Tooltip
+        <StyledTooltip
           title={
             layout.type === SPEAKER || layout.type === PRESENTATION
               ? "Grid View" : "Speaker View"
@@ -688,15 +689,15 @@ const ActionButtons = ({ dominantSpeakerId }) => {
               view_comfy
             </span>
           )}
-        </Tooltip>
-        <Tooltip title="More Actions">
+        </StyledTooltip>
+        <StyledTooltip title="More Actions">
           <span
             className={classnames("material-icons material-icons-outlined", classes.more)}
             onClick={toggleMoreActionDrawer("right", true)}
           >
             more_vert
           </span>
-        </Tooltip>
+        </StyledTooltip>
         <DrawerBox
           open={moreActionState["right"]}
           onClose={toggleMoreActionDrawer("right", false)}

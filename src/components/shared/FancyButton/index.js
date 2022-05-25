@@ -3,7 +3,7 @@ import classNames from "classnames";
 import React from "react";
 import { color } from "../../../assets/styles/_color";
 
-const FancyButton = ({disabled, onClick, buttonText, width, top, homeButton}) => {
+const FancyButton = ({disabled, onClick, buttonText, width, top, homeButton, fontSize}) => {
 
 const useStyles = makeStyles((theme) => ({
   anchor: {
@@ -16,6 +16,8 @@ const useStyles = makeStyles((theme) => ({
     marginTop: top || theme.spacing(3),
     width: width || "178.69px",
     transition: `0.1s all ease`,
+    fontSize: fontSize || '0.875rem',
+    minWidth: '175px',
     "&:hover": {
       background: color.mainGradient,
       border: `1px solid transparent`,
@@ -27,8 +29,6 @@ const useStyles = makeStyles((theme) => ({
       right: 0,
       margin: "auto",
       bottom: "-57px",
-      fontSize: '1vw',
-      minWidth: '175px',
     }
   },
 }));

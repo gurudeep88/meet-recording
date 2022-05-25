@@ -63,6 +63,9 @@ const useStyles = makeStyles((theme) => ({
     "&>div>span": {
       display: "none",
     },
+    "& .MuiTabs-scrollable":{
+      overflowX: 'hidden'
+    },
     "& .MuiTabScrollButton-root":{
       display: 'none'
     }
@@ -158,7 +161,7 @@ const useStyles = makeStyles((theme) => ({
   },
   offButton: {
     padding: "4px 2px 4px 10px",
-    fontSize: "0.75rem",
+    fontSize: "0.875rem",
     color: "#fff",
     borderRadius: "0px",
     textTransform: "capitalize",
@@ -167,8 +170,9 @@ const useStyles = makeStyles((theme) => ({
     color: color.white,
     border: color.white,
     textTransform: "capitalize",
-    paddingLeft: "15px",
-    marginTop: "34px",
+    paddingLeft: "10px",
+    marginTop: "23px",
+    marginLeft: '5px',
     "&:hover": {
       opacity: "0.6",
       background: color.lightgray4,
@@ -443,18 +447,18 @@ const SettingsBox = ({ tracks }) => {
         <Box style={{ display: "flex" }} className={classes.marginBottom}>
           <SelectField data={microphoneData} minWidth={"200px"} width={"200px"} />
           <Box className={classes.microphone}>
-            {audioTrack?.isMuted() ? <span className="material-icons material-icons-outlined">
+            {audioTrack ? audioTrack?.isMuted() ? <span className="material-icons material-icons-outlined">
               mic_off
             </span> : <span className="material-icons material-icons-outlined">
               mic_none
-            </span>}
+            </span> : null}
             {!audioTrack && (
               <span className={classes.offButton}>
-                Check your microphone
+                Check your mic
               </span>
             )}
             {audioTrack && audioTrack?.isMuted() && (
-              <span className={classes.offButton}>OFF</span>
+              <span className={classes.offButton}>Mic Off</span>
             )}
             {audioTrack && !audioTrack?.isMuted() && <MicIndicator vol={vol} />}
           </Box>

@@ -169,14 +169,14 @@ const useStyles = makeStyles((theme) => ({
   buttonProgress: {
     color: color.primary,
     position: "absolute",
-    top: "84%",
+    bottom: "2.1vw",
     left: "50%",
     marginLeft: -12,
   },
   buttonProgressJoin: {
     color: color.primary,
     position: "absolute",
-    top: '76%',
+    bottom: '2.1vw',
     left: "50%",
     marginLeft: -12,
   },
@@ -422,11 +422,11 @@ const LobbyRoom = ({ tracks }) => {
         <Box className={!queryParams.meetingId ? classes.permissions : classes.joinPermissions}>
           {audioTrack?.isMuted() ? (
             <StyledTooltip title="Unmute Audio">
-              <MicNoneOutlinedIcon onClick={unmuteAudioLocalTrack} />
+              <MicOffOutlinedIcon onClick={unmuteAudioLocalTrack} />
             </StyledTooltip>
           ) : (
             <StyledTooltip title="Mute Audio">
-              <MicOffOutlinedIcon onClick={muteAudioLocalTrack} />
+              <MicNoneOutlinedIcon onClick={muteAudioLocalTrack} />
             </StyledTooltip>
           )}
           {videoTrack?.isMuted() ? (
@@ -452,23 +452,23 @@ const LobbyRoom = ({ tracks }) => {
                     e.preventDefault();
                     handleSubmit();
                   }
-                  if (e.charCode === 32) {
-                    dispatch(
-                      showNotification({
-                        message: "Space is not allowed",
-                        severity: "warning",
-                        autoHide: true,
-                      })
-                    );
-                  } else if (detectUpperCaseChar(e.key)) {
-                    dispatch(
-                      showNotification({
-                        message: "Capital Letter is not allowed",
-                        severity: "warning",
-                        autoHide: true,
-                      })
-                    );
-                  }
+                  // if (e.charCode === 32) {
+                  //   dispatch(
+                  //     showNotification({
+                  //       message: "Space is not allowed",
+                  //       severity: "warning",
+                  //       autoHide: true,
+                  //     })
+                  //   );
+                  // // } else if (detectUpperCaseChar(e.key)) {
+                  // //   dispatch(
+                  // //     showNotification({
+                  // //       message: "Capital Letter is not allowed",
+                  // //       severity: "warning",
+                  // //       autoHide: true,
+                  // //     })
+                  // //   );
+                  // }
                 }}
                 label="Meeting Title"
                 width="20vw"
@@ -492,7 +492,11 @@ const LobbyRoom = ({ tracks }) => {
                 />
               </Box>
             </Box>
-            <FancyButton 
+            
+          </div>
+        </Box>
+        <Box style={{textAlign: 'center'}}>
+        <FancyButton 
               homeButton={true}
               disabled={loading}
               onClick={handleSubmit}
@@ -503,8 +507,7 @@ const LobbyRoom = ({ tracks }) => {
             {loading && (
               <CircularProgress size={24} className={ !queryParams?.meetingId ? classes.buttonProgress : classes.buttonProgressJoin} />
             )}
-          </div>
-        </Box>
+            </Box>
       </Box>
       <DrawerBox
         open={settingsState["right"]}

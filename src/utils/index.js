@@ -101,12 +101,14 @@ export function isSquare  (n) {
     return n > 0 && Math.sqrt(n) % 1 === 0;
 };
 
-export function  calculateSteamHeightAndExtraDiff(viewportWidth, viewportHeight, documentWidth, documentHeight)  {
+export function  calculateSteamHeightAndExtraDiff(viewportWidth, viewportHeight, documentWidth, documentHeight, isPresenter, isActiveSpeaker)  {
     let videoStreamHeight = viewportHeight, videoStreamDiff = 0;
-    if ( viewportWidth > documentWidth  ) {
+    if (isPresenter) {
+        return {videoStreamHeight: viewportHeight, videoStreamDiff: 0};
+    }
+    if ( viewportWidth > documentWidth) {
         return {videoStreamHeight: documentWidth*9/16, videoStreamDiff: 0};
     }
-    
     if ( viewportHeight * (16 / 9)  < viewportWidth )  {
         let diff = viewportWidth - viewportHeight*16/9;
         videoStreamHeight =  (viewportHeight * 16 / 9 + diff)*9/16;

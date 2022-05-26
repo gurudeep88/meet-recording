@@ -1,4 +1,5 @@
 import {Box, makeStyles, Tooltip} from "@material-ui/core";
+import zIndex from "@material-ui/core/styles/zIndex";
 import React from "react";
 import {color} from "../../../assets/styles/_color";
 
@@ -9,9 +10,9 @@ const useStyles = makeStyles((theme) => ({
         background: color.white,
         position: "relative",
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        zIndex: "99999"
     },
-
     controls: {
         cursor: "pointer",
         color: "white",

@@ -45,12 +45,7 @@ const Meeting = () => {
             display: "flex",
             flexDirection: "column",
             background: color.secondaryDark,
-            minHeight: layout.mode === ENTER_FULL_SCREEN_MODE ? "100vh":  "calc(100vh - 16px)",
-            "& .activeSpeaker": {
-                boxSizing: "border-box",
-                border: `3px solid ${color.primaryLight}`,
-                borderRadius: "8px"
-            }
+            minHeight: layout.mode === ENTER_FULL_SCREEN_MODE ? "100vh":  "calc(100vh - 16px)"
         }
     }));
 
@@ -143,7 +138,7 @@ const Meeting = () => {
             dispatch(addSubtitle({ name, text }));
         });
 
-        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_MUTE_CHANGED, (track) => {
+        conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_MUTE_CHANGED, (track) => {            
             dispatch(remoteTrackMutedChanged());
         });
 

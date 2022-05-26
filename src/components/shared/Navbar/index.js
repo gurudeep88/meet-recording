@@ -500,7 +500,7 @@ const Navbar = ({dominantSpeakerId}) => {
     }
     useEffect(()=>{
         if ( conference.getParticipantsWithoutHidden()[0]?._id ) {
-            setTimeout(()=>conference.sendEndpointMessage(conference.getParticipantsWithoutHidden()[0]._id, {action: GET_PRESENTATION_STATUS}), 1000);    
+            setTimeout(()=>conference.sendEndpointMessage(conference.getParticipantsWithoutHidden()[0]._id, {action: GET_PRESENTATION_STATUS}), 3000);    
         }
         const checkPresentationStatus = (participant, payload)=> {
             if (payload?.action === GET_PRESENTATION_STATUS) {

@@ -16,6 +16,9 @@ import { profile } from '../../../store/reducers/profile';
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        position: "relative",
+        overflow: "hidden", 
+        borderRadius: "8px",
         background: "#272931",
         position: "relative",
         overflow: "hidden", 
@@ -55,6 +58,15 @@ const useStyles = makeStyles((theme) => ({
         bottom: 0,
         right: 0
     },
+    videoBorder: {
+        boxSizing: "border-box",
+        border: `3px solid ${color.primaryLight}`,
+        borderRadius: "8px",
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        zIndex: "999"
+    },
     textBox: {
         bottom: 0,
         display: 'flex',
@@ -89,7 +101,8 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "center",
         position: "absolute",
         padding: theme.spacing(1),
-        right: 0
+        right: 0,
+        zIndex: "9999"
     },
     handRaise: {
         marginLeft: "8px",
@@ -145,23 +158,20 @@ const VideoBox = ({
         dispatch(setPinParticipant(id));
     }
 
-    const borderActiveClasses = classnames(classes.root, {
-        'activeSpeaker': conference?.getParticipantCount()>1 && isActiveSpeaker
-    });
-
     const audioIndicatorActiveClasses = classnames(classes.avatar, {
         'largeVideo': isLargeVideo,
     });
     const avatarActiveClasses = classnames(classes.avatarBox);
-    const { videoStreamHeight, videoStreamDiff } = calculateSteamHeightAndExtraDiff(width, height, documentWidth, documentHeight);
-
+    const { videoStreamHeight, videoStreamDiff } = calculateSteamHeightAndExtraDiff(width, height, documentWidth, documentHeight, isPresenter, isActiveSpeaker);
     let avatarColor = participantDetails?.avatar || profile?.color;
-     
+
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
-             onMouseLeave={() => setVisiblePinPartcipant(false)} 
-             className={borderActiveClasses}>
+             onMouseLeave={() => setVisiblePinPartcipant(false)}
+             className={classes.root} 
+             >
+            { conference?.getParticipantCount()>1 && isActiveSpeaker && <div className={classes.videoBorder}></div>}    
             <Box className={classnames(classes.audioBox, {audioBox: true})}>
                 { audioTrack?.isMuted() ? <span
               className="material-icons material-icons-outlined"

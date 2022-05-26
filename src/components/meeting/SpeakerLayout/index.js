@@ -7,7 +7,6 @@ import {useWindowResize} from "../../../hooks/useWindowResize";
 import {useDocumentSize} from "../../../hooks/useDocumentSize";
 import classnames from "classnames";
 import * as Constants from "../../../constants";
-import {getVideoWidthHeight} from "../../../utils";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,7 +34,6 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
     largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId || myUserId;
-
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
         "onStageEndpoints":  [largeVideoId],

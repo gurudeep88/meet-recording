@@ -169,14 +169,14 @@ const useStyles = makeStyles((theme) => ({
   buttonProgress: {
     color: color.primary,
     position: "absolute",
-    bottom: "2.1vw",
+    bottom: "4.5vh",
     left: "50%",
     marginLeft: -12,
   },
   buttonProgressJoin: {
     color: color.primary,
     position: "absolute",
-    bottom: '2.1vw',
+    bottom: '4.5vh',
     left: "50%",
     marginLeft: -12,
   },

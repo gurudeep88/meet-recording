@@ -17,20 +17,36 @@ const useStyles = makeStyles((theme) => ({
     width: width || "178.69px",
     transition: `0.1s all ease`,
     fontSize: fontSize || '0.875rem',
-    minWidth: '175px',
+    minWidth: homeButton && '175px',
     "&:hover": {
       background: color.mainGradient,
       border: `1px solid transparent`,
       width: width || "178.69px",
+      color: color.white,
     },
-    homeButton: {
-      position: "absolute",
-      left: 0,
-      right: 0,
-      margin: "auto",
-      bottom: "-57px",
+    "&:active": {
+      background: color.mainGradient,
+      border: `1px solid transparent`,
+      width: width || "178.69px",
+      color: color.white,
+    },
+    "&:focus": {
+      background: color.mainGradient,
+      border: `1px solid transparent`,
+      width: width || "178.69px",
+      color: color.white,
+    },
+    "&.MuiButton-root.Mui-disabled": {
+      color: color.white,
     }
   },
+    // homeButton: {
+    //   position: "absolute",
+    //   left: 0,
+    //   right: 0,
+    //   margin: "auto",
+    //   bottom: "-57px",
+    // }
 }));
   const classes = useStyles();
 

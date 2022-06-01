@@ -5,6 +5,8 @@ import Video from "../Video";
 import Audio from "../Audio";
 import PanTool from "@material-ui/icons/PanTool";
 import {useDispatch, useSelector} from "react-redux";
+import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
+import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
 import {setPinParticipant} from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
@@ -168,15 +170,7 @@ const VideoBox = ({
              onMouseLeave={() => setVisiblePinPartcipant(false)} 
              className={borderActiveClasses}>
             <Box className={classnames(classes.audioBox, {audioBox: true})}>
-                { audioTrack?.isMuted() ? <span
-              className="material-icons material-icons-outlined"
-            >
-              mic_off
-            </span> : <span
-              className="material-icons material-icons-outlined"
-            >
-              mic_none
-            </span>
+                { audioTrack?.isMuted() ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon />
             }
                 { !audioTrack?.isLocal() && <Audio track={audioTrack}/> }
             </Box>

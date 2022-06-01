@@ -11,6 +11,9 @@ import { color } from "../../../assets/styles/_color";
 import SelectField from "../../shared/SelectField";
 import SariskaMediaTransport from "sariska-media-transport";
 import { useDispatch, useSelector } from "react-redux";
+import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
+import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
+import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import {
   setCamera,
   setMicrophone,
@@ -447,11 +450,7 @@ const SettingsBox = ({ tracks }) => {
         <Box style={{ display: "flex" }} className={classes.marginBottom}>
           <SelectField data={microphoneData} minWidth={"200px"} width={"200px"} />
           <Box className={classes.microphone}>
-            {audioTrack ? audioTrack?.isMuted() ? <span className="material-icons material-icons-outlined">
-              mic_off
-            </span> : <span className="material-icons material-icons-outlined">
-              mic_none
-            </span> : null}
+            {audioTrack ? audioTrack?.isMuted() ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon /> : null}
             {!audioTrack && (
               <span className={classes.offButton}>
                 Check your mic
@@ -473,9 +472,7 @@ const SettingsBox = ({ tracks }) => {
               variant="outlined"
               onClick={handleAudioTest}
             >
-              <span class="material-icons material-symbols-outlined">
-                volume_up
-              </span>
+              <VolumeUpIcon />
               <span className={classes.test}>{testText}</span>
             </Button>
           </Box>

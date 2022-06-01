@@ -4,6 +4,7 @@ import { Divider, makeStyles } from "@material-ui/core";
 import SariskaMediaTransport from "sariska-media-transport";
 import { Tooltip } from "@material-ui/core";
 import classNames from "classnames";
+import SignalCellularAltIcon from '@material-ui/icons/SignalCellularAlt';
 
 const QUALITY_TO_WIDTH = [
   // full 3 bars
@@ -133,14 +134,7 @@ const ConnectionIndicator = ({ participantId }) => {
     conference.participants[participantId]?.getConnectionStatus();
 
   const connectionSvgIcon = (
-    <span
-      className={classNames(
-        "material-icons material-symbols-outlined",
-        classes.icon
-      )}
-    >
-      signal_cellular_alt
-    </span>
+    <SignalCellularAltIcon  className={classes.icon} />
   );
 
   const getVisibilityClass = () => {

@@ -30,12 +30,12 @@ const THEME = createMuiTheme({
 
 ReactDOM.render(
   <React.StrictMode>
-  <MuiThemeProvider theme={THEME}>
-    <Router>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </Router>
+    <MuiThemeProvider theme={THEME}>
+      <Router>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </Router>
     </MuiThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')

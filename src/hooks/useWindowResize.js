@@ -6,7 +6,6 @@ export function useWindowResize() {
     const layout = useSelector(state => state.layout);
     const remoteTracks = useSelector(state => state.remoteTrack);
     const conference = useSelector(state => state.conference);
-
     const [windowSize, setWindowSize] = useState({viewportWidth: undefined, viewportHeight: undefined});
 
     function getDimensions(mode, type) {
@@ -39,15 +38,12 @@ export function useWindowResize() {
         return ()=>{
             window.addEventListener("resize", handleResize)
         }
-    }, [layout.mode]);
+    }, [layout.mode, layout.type]);
+
 
     useEffect(() => {
         setWindowSize(getDimensions(layout.mode, layout.type));
     }, [remoteTracks]);
-
-    useEffect(() => {
-        setWindowSize(getDimensions(layout.mode, layout.type));
-    }, [layout.type]);
 
     function handleResize() {
         setWindowSize(getDimensions(layout.mode, layout.type));
@@ -57,7 +53,7 @@ export function useWindowResize() {
         handleResize();
         window.addEventListener("resize", handleResize)
         return () => window.removeEventListener("resize", handleResize);
-    }, []);
+    }, [layout.mode, layout.type]);
 
     return windowSize;
 }

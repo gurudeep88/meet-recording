@@ -27,7 +27,7 @@ export const layout = (state = initialState, action) => {
         case SET_LAYOUT:
             state.type = action.payload;
             return {...state};
-        case SET_FULLSCREEN_MODE:
+        case SET_FULLSCREEN_MODE:             
             state.mode = action.payload;
             return {...state};
         case SET_DISCONNECTED:

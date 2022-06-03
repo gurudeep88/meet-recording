@@ -13,7 +13,7 @@ import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import classnames from "classnames";
 import CallEndIcon from '@material-ui/icons/CallEnd';
-import MicNoneIcon from '@material-ui/icons/MicNone';
+import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
@@ -565,9 +565,9 @@ const ActionButtons = ({ dominantSpeakerId }) => {
           {audioTrack ? audioTrack?.isMuted() ? (
             <MicOffIcon  onClick={unmuteAudio} className={classes.active} />
           ) : (
-            <MicNoneIcon onClick={muteAudio} />
+            <MicIcon onClick={muteAudio} />
           ) : 
-          <MicNoneIcon onClick={muteAudio} style={{ cursor: 'unset' }} />
+          <MicIcon onClick={muteAudio} style={{ cursor: 'unset' }} />
           }
         </StyledTooltip>
         <StyledTooltip title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}>

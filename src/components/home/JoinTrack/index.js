@@ -1,6 +1,7 @@
 import { Avatar, Box, makeStyles } from "@material-ui/core";
 import React, { useRef, useLayoutEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import PersonOutlinedIcon from '@material-ui/icons/PersonOutlined';
 import { color } from "../../../assets/styles/_color";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
 import VideoBox from "../../shared/VideoBox";
@@ -72,9 +73,7 @@ const JoinTrack = ({ tracks, name }) => {
         style={{ width: documentWidth, height: documentHeight }}>
           <Avatar className={classes.avatar} style={{fontSize: name && '125px' , fontWeight: name && '100', backgroundColor:bgColor}}>
             {!name ? (
-              <span class="material-icons material-icons-outlined">
-                person_outline
-              </span>
+              <PersonOutlinedIcon />
             ) : (
               name?.slice(0, 1).toUpperCase()
             )}

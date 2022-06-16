@@ -9,6 +9,12 @@ import { color } from "../../../assets/styles/_color";
 import { Box, Drawer } from "@material-ui/core";
 import CopyLink from "../CopyLink";
 import { useDispatch, useSelector } from "react-redux";
+import AlbumIcon from '@material-ui/icons/Album';
+import PublicIcon from '@material-ui/icons/Public';
+import FlipToFrontIcon from '@material-ui/icons/FlipToFront';
+import DescriptionIcon from '@material-ui/icons/Description';
+import SettingsIcon from '@material-ui/icons/Settings';
+import CreateIcon from '@material-ui/icons/Create';
 import {
   DROPBOX_APP_KEY,
   PRESENTATION,
@@ -52,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
     },
     "& span.material-icons": {
       color: color.white,
+    },
+    "& svg": {
+      color: color.white
     },
   },
   drawer: {
@@ -416,42 +425,23 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
   const menuData = [
     {
       icon: (
-        <span
-          className={
-            featureStates.recording
-              ? classnames(
-                  "material-icons material-icons-outlined",
-                  classes.stopRecording
-                )
-              : classnames(
-                  "material-icons material-icons-outlined",
-                  classes.startRecording
-                )
+        <AlbumIcon className={
+          featureStates.recording
+            ? classes.stopRecording
+            : classes.startRecording
           }
-        >
-          album
-        </span>
+        />
       ),
       title: featureStates.recording ? "Stop Recording" : "Start Recording",
       onClick: featureStates.recording ? stopRecording : startRecording,
     },
     {
       icon: (
-        <span
-          className={
-            featureStates.streaming
-              ? classnames(
-                  "material-icons material-icons-outlined",
-                  classes.stopRecording
-                )
-              : classnames(
-                  "material-icons material-icons-outlined",
-                  classes.startRecording
-                )
-          }
-        >
-          public
-        </span>
+        <PublicIcon className={
+          featureStates.streaming
+            ? classes.stopRecording
+            : classes.startRecording
+        }/>
       ),
       title: featureStates.streaming ? "Stop Streaming" : "Start Streaming",
       onClick: featureStates.streaming ? stopStreaming: startStreaming,
@@ -479,43 +469,28 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
     // },
     {
       icon: (
-        <span className="material-icons material-icons-outlined">
-          flip_to_front
-        </span>
+        <FlipToFrontIcon />
       ),
       title: "Virtual Background",
       onClick: toggleBackgroundDrawer("right", true),
     },
     {
       icon: (
-        <span
-          className={featureStates.whiteboard ? classnames("material-icons material-icons-outlined", classes.stopRecording) : classnames("material-icons material-icons-outlined", classes.startRecording)}
-        >
-          create
-        </span>
+        <CreateIcon className={featureStates.whiteboard ? classes.stopRecording : classes.startRecording} />
       ),
       title: featureStates.whiteboard ? "Stop Whiteboard" : "Start Whiteboard",
       onClick: featureStates.whiteboard ? stopWhiteboard: startWhiteboard,
     },
     {
       icon: (
-        <span
-        className={featureStates.sharedDocument ? classnames("material-icons material-icons-outlined", classes.stopRecording) : classnames("material-icons material-icons-outlined", classes.startRecording)}
-        >
-          description
-        </span>
+        <DescriptionIcon className={featureStates.sharedDocument ? classes.stopRecording : classes.startRecording}/>
       ),
       title: featureStates.sharedDocument ? "Stop Shared Documents" : "Start Shared Documents",
       onClick: featureStates.sharedDocument ? stopSharedDocument: startSharedDocument,
     },
     {
       icon: (
-        <span
-          className="material-icons material-icons-outlined"
-          style={{ color: color.white }}
-        >
-          settings
-        </span>
+        <SettingsIcon style={{ color: color.white }}/>
       ),
       title: "Settings",
       onClick: toggleSettingsDrawer("right", true),

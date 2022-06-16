@@ -11,6 +11,9 @@ import { color } from "../../../assets/styles/_color";
 import SelectField from "../../shared/SelectField";
 import SariskaMediaTransport from "sariska-media-transport";
 import { useDispatch, useSelector } from "react-redux";
+import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
+import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
+import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import {
   setCamera,
   setMicrophone,
@@ -59,18 +62,22 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: color.secondary,
   },
   tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
     padding: "8px 0px 8px 0px",
     "&>div>span": {
       display: "none",
     },
+    "& .MuiTabs-scrollable":{
+      overflowX: 'hidden'
+    },
+    "& .MuiTabScrollButton-root":{
+      display: 'none'
+    }
   },
   tab: {
     height: "36px",
     minHeight: "36px",
     padding: "6px 20px",
     minWidth: "56px",
-    marginRight: "4px",
     border: `1px solid ${color.primaryLight}`,
     borderRadius: "10px",
     color: "#fff",
@@ -124,6 +131,12 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "13px",
     fontSize: "2rem",
   },
+  audioText: {
+    paddingTop: "2px",
+  },
+  videoText: {
+    paddingTop: "2px",
+  },
   list: {
     padding: theme.spacing(3, 0),
     "&>li>div": {
@@ -150,8 +163,8 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: "15px",
   },
   offButton: {
-    padding: "4px 2px",
-    fontSize: "0.75rem",
+    padding: "4px 2px 4px 10px",
+    fontSize: "0.875rem",
     color: "#fff",
     borderRadius: "0px",
     textTransform: "capitalize",
@@ -160,14 +173,13 @@ const useStyles = makeStyles((theme) => ({
     color: color.white,
     border: color.white,
     textTransform: "capitalize",
-    paddingLeft: "0px",
-    paddingTop: "10px",
+    paddingLeft: "10px",
+    marginTop: "23px",
+    marginLeft: '5px',
     "&:hover": {
       opacity: "0.6",
       background: color.lightgray4,
     },
-    paddingTop: "34px",
-    paddingLeft: "15px",
   },
   test: {
     marginLeft: "10px",
@@ -429,25 +441,23 @@ const SettingsBox = ({ tracks }) => {
   const videoLabel = (
     <Box className={classes.label}>
       <VideocamOutlinedIcon className={classes.videoIcon} />
-      <Typography className={classes.videText}>Video</Typography>
+      <Typography className={classes.videoText}>Video</Typography>
     </Box>
   );
   const audioPanel = (
     <Box className={classes.list}>
       <Box className={classes.display}>
         <Box style={{ display: "flex" }} className={classes.marginBottom}>
-          <SelectField data={microphoneData} minWidth={"200px"} />
+          <SelectField data={microphoneData} minWidth={"200px"} width={"200px"} />
           <Box className={classes.microphone}>
-            <span className="material-icons material-icons-outlined">
-              mic_none
-            </span>
+            {audioTrack ? audioTrack?.isMuted() ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon /> : null}
             {!audioTrack && (
-              <Button className={classes.offButton}>
-                Check your microphone
-              </Button>
+              <span className={classes.offButton}>
+                Check your mic
+              </span>
             )}
             {audioTrack && audioTrack?.isMuted() && (
-              <Button className={classes.offButton}>Microphone is Off</Button>
+              <span className={classes.offButton}>Mic Off</span>
             )}
             {audioTrack && !audioTrack?.isMuted() && <MicIndicator vol={vol} />}
           </Box>
@@ -455,16 +465,14 @@ const SettingsBox = ({ tracks }) => {
       </Box>
       <Box className={classes.display}>
         <Box style={{ display: "flex" }} className={classes.marginBottom}>
-          <SelectField data={speakerData} minWidth={"200px"} />
+          <SelectField data={speakerData} minWidth={"200px"}  width={"200px"} />
           <Box>
             <Button
               className={classes.volume}
               variant="outlined"
               onClick={handleAudioTest}
             >
-              <span class="material-icons material-symbols-outlined">
-                volume_up
-              </span>
+              <VolumeUpIcon />
               <span className={classes.test}>{testText}</span>
             </Button>
           </Box>
@@ -527,6 +535,7 @@ const SettingsBox = ({ tracks }) => {
             disableRipple
             label={audioLabel}
             {...a11yProps(0)}
+            style={{marginRight: '4px'}}
             className={classes.tab}
           />
           <Tab

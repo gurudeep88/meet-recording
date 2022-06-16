@@ -3,6 +3,7 @@ export const color = {
     black: '#000',
     white: '#fff',
     whiteLight: '#aaa',
+    whitePointOne: 'rgba(255, 255, 255, 0.1)',
     primaryLight: '#718EFF',
     primary: '#2616FF',
     primaryDark: '#093234',

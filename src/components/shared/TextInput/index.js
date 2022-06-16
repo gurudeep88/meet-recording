@@ -9,7 +9,8 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
       width: props => props.width || '25ch',
       "& input": {
-        color: color.secondaryLight
+        color: color.white,
+        fontSize: '1.145vw'
       },
       "&:hover": {
         "& .MuiInput-underline:before": {
@@ -18,7 +19,8 @@ const useStyles = makeStyles((theme) => ({
       }
     },
     "& .MuiFormLabel-root": {
-      color: color.white
+      color: color.white,
+      fontSize: '1.15vw'
     },
     '& .MuiFormLabel-root.Mui-focused': {
         color: color.white,

@@ -1,10 +1,12 @@
 import {Avatar, Box, makeStyles, Tooltip, Typography} from '@material-ui/core'
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {color} from '../../../assets/styles/_color';
 import Video from "../Video";
 import Audio from "../Audio";
 import PanTool from "@material-ui/icons/PanTool";
 import {useDispatch, useSelector} from "react-redux";
+import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
+import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
 import {setPinParticipant} from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
@@ -13,6 +15,7 @@ import AudioLevelIndicator from "../AudioIndicator";
 import SubTitle from "../SubTitle";
 import {useDocumentSize} from "../../../hooks/useDocumentSize";
 import { profile } from '../../../store/reducers/profile';
+import { localTrackMutedChanged } from '../../../store/actions/track';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -164,7 +167,6 @@ const VideoBox = ({
     const avatarActiveClasses = classnames(classes.avatarBox);
     const { videoStreamHeight, videoStreamDiff } = calculateSteamHeightAndExtraDiff(width, height, documentWidth, documentHeight, isPresenter, isActiveSpeaker);
     let avatarColor = participantDetails?.avatar || profile?.color;
-
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
@@ -173,15 +175,7 @@ const VideoBox = ({
              >
             { conference?.getParticipantCount()>1 && isActiveSpeaker && !isPresenter && <div className={classes.videoBorder}></div>}    
             <Box className={classnames(classes.audioBox, {audioBox: true})}>
-                { audioTrack?.isMuted() ? <span
-              className="material-icons material-icons-outlined"
-            >
-              mic_off
-            </span> : <span
-              className="material-icons material-icons-outlined"
-            >
-              mic_none
-            </span>
+                { audioTrack?.isMuted() ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon />
             }
                 { !audioTrack?.isLocal() && <Audio track={audioTrack}/> }
             </Box>

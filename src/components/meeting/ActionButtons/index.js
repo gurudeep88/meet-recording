@@ -103,6 +103,11 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "10px",
     marginRight: "10px",
   },
+  screenShare: {
+    padding: "8px",
+    marginRight: "2px",
+    borderRadius: "8px"
+  },
   permissions: {
     display: "flex",
     alignItems: "center",
@@ -241,10 +246,10 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         stopPresenting();
       }
     );
-    setPresenting(true);
     conference.setLocalParticipantProperty("presenting", "start");
     dispatch(addLocalTrack(desktopTrack));
     dispatch(setPresenter({ participantId: conference.myUserId(), presenter: true }));
+    setPresenting(true);
   };
 
   const stopPresenting = async () => {
@@ -567,13 +572,23 @@ const ActionButtons = ({ dominantSpeakerId }) => {
             <VideocamIcon onClick={muteVideo} />
           )}
         </StyledTooltip>
-        <StyledTooltip title={presenting ? "Stop Presenting" : "Share Screen"}>
+        <Tooltip title={presenting ? "Stop Presenting" : "Share Screen"}>
           {presenting ? (
-            <ScreenShareIcon onClick={stopPresenting} classNAme={classes.active} />
+            <span
+              className={classnames("material-icons material-icons-outlined", classes.active, classes.screenShare)}
+              onClick={stopPresenting}
+            >
+              stop_screen_share
+            </span>
           ) : (
-            <ScreenShareIcon onClick={shareScreen} />
+            <span
+              className={classnames("material-icons material-icons-outlined", classes.screenShare)}
+              onClick={shareScreen}
+            >
+              screen_share
+            </span>
           )}
-        </StyledTooltip>
+        </Tooltip>
         <StyledTooltip title={raiseHand ? "Hand Down" : "Raise Hand"}>
           {raiseHand ? (
             <PanToolIcon onClick={stopRaiseHand} className={classnames(classes.active, classes.panTool)} />

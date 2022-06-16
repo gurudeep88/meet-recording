@@ -5,20 +5,21 @@ import VideoBox from "../VideoBox";
 import classnames from "classnames";
 import * as Constants from "../../../constants";
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        overflowY: "auto",
-        alignItems: "center",
-        "& > div": {
-            marginBottom: "16px"
-        }
-    }
-}));
 
 const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeight, gridItemWidth, gridItemHeight, largeVideoId, isPresenter}) => {
-    const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state => state.layout);
+    const useStyles = makeStyles((theme) => ({
+        root: {
+            overflowY: "auto",
+            alignItems: "center",
+            "& > div": {
+                marginBottom: layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? "0px" : "16px",
+                marginTop: layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? "16px" : "0px"
+            }
+        }
+    }));
+    const classes = useStyles();
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });

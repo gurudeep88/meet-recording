@@ -1,7 +1,7 @@
 import {Box, makeStyles} from '@material-ui/core';
 import React from 'react'
 import VideoBox from '../../shared/VideoBox';
-import ParticipantPaneSpeakerLayout from "../../shared/ParticipantPaneSpeakerLayout";
+import ParticipantPane from "../../shared/ParticipantPane";
 import {useSelector} from "react-redux";
 import {useWindowResize} from "../../../hooks/useWindowResize";
 import {useDocumentSize} from "../../../hooks/useDocumentSize";
@@ -34,16 +34,16 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
     largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId || myUserId;
-    const constraints = {
-        "colibriClass": "ReceiverVideoConstraints",
-        "onStageEndpoints":  [largeVideoId],
-        "defaultConstraints": { "maxHeight":  180 },
-        "constraints": {
-            [largeVideoId]: { "maxHeight": layout?.resolution[largeVideoId] || resolution }
-        }
-    }
+    // const constraints = {
+    //     "colibriClass": "ReceiverVideoConstraints",
+    //     "onStageEndpoints":  [largeVideoId],
+    //     "defaultConstraints": { "maxHeight":  180 },
+    //     "constraints": {
+    //         [largeVideoId]: { "maxHeight": layout?.resolution[largeVideoId] || resolution }
+    //     }
+    // }
 
-    conference.setReceiverConstraints(constraints);
+    // conference.setReceiverConstraints(constraints);
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });    
@@ -53,6 +53,9 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     }  else {
         viewportWidth = viewportWidth - 48; 
     }
+    let isPresenter = layout.presenterParticipantIds.find(item=>item===largeVideoId);
+     
+    console.log("remoteTracks", remoteTracks[largeVideoId], conference.participants[largeVideoId]?._identity?.user);
 
     return (
         <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}}  className={activeClasses} >
@@ -63,16 +66,17 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
                 height={viewportHeight}
                 isLargeVideo={true}
                 isActiveSpeaker={ largeVideoId === dominantSpeakerId }
-                isPresenter={layout.presenterParticipantIds.find(item=>item===largeVideoId)}
+                isPresenter={isPresenter}
                 participantDetails={conference.participants[largeVideoId]?._identity?.user || conference.getLocalUser()}
                 participantTracks={remoteTracks[largeVideoId] || localTracks}
                 localUserId={conference.myUserId()}
             />
-            {  conference.getParticipantCount() > 1 &&
-                <ParticipantPaneSpeakerLayout
+            { (isPresenter ||  conference.getParticipantCount() > 1) &&
+                <ParticipantPane
+                    isPresenter={isPresenter}
                     panelHeight = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 108 :documentHeight - 88}
-                    gridWidth = {218}    
-                    gridHeight= {123}    
+                    gridItemWidth = {218}    
+                    gridItemHeight= {123}   
                     dominantSpeakerId={dominantSpeakerId} 
                     largeVideoId={largeVideoId} 
                     localTracks={localTracks} 

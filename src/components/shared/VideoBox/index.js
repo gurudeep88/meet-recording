@@ -171,7 +171,7 @@ const VideoBox = ({
              onMouseLeave={() => setVisiblePinPartcipant(false)}
              className={classes.root} 
              >
-            { conference?.getParticipantCount()>1 && isActiveSpeaker && <div className={classes.videoBorder}></div>}    
+            { conference?.getParticipantCount()>1 && isActiveSpeaker && !isPresenter && <div className={classes.videoBorder}></div>}    
             <Box className={classnames(classes.audioBox, {audioBox: true})}>
                 { audioTrack?.isMuted() ? <span
               className="material-icons material-icons-outlined"

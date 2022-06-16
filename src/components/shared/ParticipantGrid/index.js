@@ -66,7 +66,7 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
                                         width={(rows - 1) === i && lastRowWidth ? lastRowWidth : gridItemWidth}
                                         isBorderSeparator={participants.length > 1}
                                         isFilmstrip={true}
-                                        isPresenter={layout.presenterParticipantIds.find(item => item === participants[i * columns + j]._id)}
+                                        isPresenter={false}
                                         isActiveSpeaker={dominantSpeakerId === participants[i * columns + j]._id}
                                         participantDetails={participants[i * columns + j]?._identity?.user}
                                         participantTracks={tracks[participants[i * columns + j]._id] || []}

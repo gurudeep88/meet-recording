@@ -216,15 +216,12 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   };
 
   const shareScreen = async () => {
-    const videoTrack = localTracks.find(
-      (track) => track.videoType === "camera"
-    );
     const [desktopTrack] = await SariskaMediaTransport.createLocalTracks({
       resolution: 720,
       devices: ["desktop"],
     });
 
-    await conference.replaceTrack(videoTrack, desktopTrack);
+    await conference.addTrack(desktopTrack);
     desktopTrack.addEventListener(
       SariskaMediaTransport.events.track.LOCAL_TRACK_STOPPED,
       async () => {
@@ -238,16 +235,9 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   };
 
   const stopPresenting = async () => {
-    const videoTrack = localTracks.find(
-      (track) => track.videoType === "camera"
-    );
-    const desktopTrack = localTracks.find(
-      (track) => track.videoType === "desktop"
-    );
-    await conference.replaceTrack(desktopTrack, videoTrack);
-    dispatch(
-      setPresenter({ participantId: conference.myUserId(), presenter: false })
-    );
+    const desktopTrack = localTracks.find(track => track.videoType === "desktop");        
+    await conference.removeTrack(desktopTrack);
+    dispatch(setPresenter({ participantId: conference.myUserId(), presenter: false }));
     dispatch(removeLocalTrack(desktopTrack));
     conference.setLocalParticipantProperty("presenting", "stop");
     setPresenting(false);
@@ -378,7 +368,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   }
 
   useEffect(() => {
-    let doit;
+    // let doit;
     // document.documentElement.addEventListener('mouseleave', () => skipResize = false);
     // document.documentElement.addEventListener('mouseenter', () => skipResize = true)
 

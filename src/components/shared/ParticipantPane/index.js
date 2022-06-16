@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeight, gridItemWidth, gridItemHeight}) => {
+const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeight, gridItemWidth, gridItemHeight, largeVideoId, isPresenter}) => {
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const layout = useSelector(state => state.layout);
@@ -24,20 +24,21 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeig
     });
     return (
         <Box style={{height: `${panelHeight}px`}} className={activeClasses}>
-             <VideoBox localUserId={conference.myUserId()}
-                    isPresenter={layout.presenterParticipantIds.find(item=>item===conference.myUserId())}
+            { (largeVideoId !== conference.myUserId() || isPresenter) && <VideoBox localUserId={conference.myUserId()}
+                    isPresenter={false}
                     isFilmstrip={false}
                     width={gridItemWidth}
                     height={gridItemHeight}
                     isActiveSpeaker={dominantSpeakerId===conference.myUserId()}
                     participantDetails={conference.getLocalUser()}
                     participantTracks={localTracks}
-            />
+            />}
             { conference.getParticipantsWithoutHidden().map(participant => {              
-                return <VideoBox localUserId={conference.myUserId()}
+                return (largeVideoId === participant._id && !isPresenter)  ? null : <VideoBox 
+                            localUserId={conference.myUserId()}
                             width={gridItemWidth}
                             height={gridItemHeight}
-                            isPresenter={layout.presenterParticipantIds.find(item=>item===participant._id)}
+                            isPresenter={false}
                             isFilmstrip={false}
                             isActiveSpeaker={dominantSpeakerId===participant._id}
                             participantDetails={participant?._identity?.user}

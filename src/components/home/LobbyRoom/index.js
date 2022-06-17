@@ -501,8 +501,6 @@ const LobbyRoom = ({ tracks }) => {
               disabled={loading}
               onClick={handleSubmit}
               buttonText={buttonText}
-              width="12.8vw"
-              fontSize="1vw"
             />
             {loading && (
               <CircularProgress size={24} className={ !queryParams?.meetingId ? classes.buttonProgress : classes.buttonProgressJoin} />

@@ -15,7 +15,6 @@ import AudioLevelIndicator from "../AudioIndicator";
 import SubTitle from "../SubTitle";
 import {useDocumentSize} from "../../../hooks/useDocumentSize";
 import { profile } from '../../../store/reducers/profile';
-import { localTrackMutedChanged } from '../../../store/actions/track';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -147,9 +146,14 @@ const VideoBox = ({
                     isTranscription
                   }) => {
     const classes = useStyles();
-    const videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
+    const { pinnedParticipant, raisedHandParticipantIds } = useSelector(state => state.layout);
+
+    let videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
+    if (isLargeVideo && pinnedParticipant.isPresenter === false ) {
+        videoTrack = participantTracks.find(track => track.getType()==="video");
+    }
+
     const audioTrack = participantTracks.find(track => track.isAudioTrack());
-    const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);
     const audioIndicator = useSelector(state => state.audioIndicator);
     const dispatch = useDispatch();
     const [visiblePinParticipant, setVisiblePinPartcipant] = useState(true);
@@ -157,16 +161,20 @@ const VideoBox = ({
     const subtitle  = useSelector(state=>state.subtitle);
     const conference = useSelector(state => state.conference);
     const {documentWidth, documentHeight} = useDocumentSize();
+
     const togglePinParticipant = (id) => {
-        dispatch(setPinParticipant(id));
+        console.log("id, isPresenter", id, isPresenter);
+        dispatch(setPinParticipant(id, isPresenter));
     }
 
     const audioIndicatorActiveClasses = classnames(classes.avatar, {
         'largeVideo': isLargeVideo,
     });
+
     const avatarActiveClasses = classnames(classes.avatarBox);
     const { videoStreamHeight, videoStreamDiff } = calculateSteamHeightAndExtraDiff(width, height, documentWidth, documentHeight, isPresenter, isActiveSpeaker);
     let avatarColor = participantDetails?.avatar || profile?.color;
+
     return (
         <Box style={{width: `${width}px`, height: `${height}px`}}
              onMouseEnter={() => setVisiblePinPartcipant(true)}
@@ -196,7 +204,7 @@ const VideoBox = ({
             }
             <Box className={classnames(classes.rightControls, {rightControls: true})  }>
                 {visiblePinParticipant && 
-                    <PinParticipant participantId={participantDetails?.id} pinnedParticipantId={pinnedParticipantId} togglePinParticipant={togglePinParticipant}/>
+                    <PinParticipant participantId={participantDetails?.id} pinnedParticipantId={pinnedParticipant.participantId} togglePinParticipant={togglePinParticipant}/>
                 }
                 {raisedHandParticipantIds[participantDetails?.id] &&
                     <Typography className={classes.handRaise} ><PanTool /></Typography>

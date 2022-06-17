@@ -141,7 +141,7 @@ const ParticipantDetails = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   
-  const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);  
+  const { pinnedParticipant, raisedHandParticipantIds } = useSelector(state => state.layout);  
   const dispatch = useDispatch();
   
   const handleMenuClick = (event) => {
@@ -188,9 +188,9 @@ const getAvatarColor =  (id)=> {
 const getOptions = (participantId, role) => { 
   return [
   {
-    icon: <span className={pinnedParticipantId ===participantId ? classnames("material-icons material-icons-outlined", classes.pin): "material-icons material-icons-outlined"}>push_pin</span>,
-    text:  pinnedParticipantId ===participantId ? "Unpin from screen" : "Pin to screen",
-    onClick: ()=>pinnedParticipantId ===participantId ? togglePinParticipant(null) : togglePinParticipant(participantId) 
+    icon: <span className={pinnedParticipant.participantId ===participantId ? classnames("material-icons material-icons-outlined", classes.pin): "material-icons material-icons-outlined"}>push_pin</span>,
+    text:  pinnedParticipant.participantId ===participantId ? "Unpin from screen" : "Pin to screen",
+    onClick: ()=>pinnedParticipant.participantId ===participantId ? togglePinParticipant(null) : togglePinParticipant(participantId) 
   },
   {
     icon: (

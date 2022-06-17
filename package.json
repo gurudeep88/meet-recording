@@ -33,7 +33,7 @@
     "redux": "^4.1.0",
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
-    "sariska-media-transport": "https://github.com/SariskaIO/sariska-media-transport.git#2.0.13",
+    "sariska-media-transport": "https://github.com/SariskaIO/sariska-media-transport.git#2.0.14",
     "source-map-explorer": "^2.5.2",
     "web-vitals": "^1.0.1",
     "windows-iana": "^5.0.2"

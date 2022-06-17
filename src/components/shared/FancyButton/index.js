@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     minWidth: homeButton && '175px',
     "&:hover": {
       background: color.mainGradient,
-      border: `1px solid transparent`,
       width: width || "178.69px",
       color: color.white,
     },

@@ -33,30 +33,43 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     if ( conference.getParticipantCount() === 2 ) {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
-    largeVideoId = layout.pinnedParticipantId || layout.presenterParticipantIds.slice(-1).pop() || largeVideoId || dominantSpeakerId || myUserId;
-    // const constraints = {
-    //     "colibriClass": "ReceiverVideoConstraints",
-    //     "onStageEndpoints":  [largeVideoId],
-    //     "defaultConstraints": { "maxHeight":  180 },
-    //     "constraints": {
-    //         [largeVideoId]: { "maxHeight": layout?.resolution[largeVideoId] || resolution }
-    //     }
-    // }
 
-    // conference.setReceiverConstraints(constraints);
+    largeVideoId = layout.pinnedParticipant.participantId || layout.presenterParticipantIds.slice(0).pop() || largeVideoId || dominantSpeakerId || myUserId;
+    let isPresenter = layout.presenterParticipantIds.find(item=>item===largeVideoId);
+    if ( layout.pinnedParticipant.isPresenter === false ) {
+        isPresenter = false;
+    }
+
+    let participantTracks = remoteTracks[largeVideoId] || localTracks;
+    const videoTrack = participantTracks.find(track => track.getVideoType() === "camera");
+
+    const constraints = {
+        "lastN": 25,
+        "colibriClass": "ReceiverVideoConstraints",
+        "selectedSources":  [],
+        "defaultConstraints": {"maxHeight": 180 },
+        "onStageSources":  [videoTrack?.getSourceName()],
+        constraints: {
+            [videoTrack?.getSourceName()]:  { "maxHeight": 720 }
+        }
+    }
+
+    if (isPresenter)  {
+        const desktopTrack = participantTracks.find(track => track.getVideoType() === "desktop");
+        constraints["onStageSources"] = [desktopTrack?.getSourceName()];
+        constraints["selectedSources"] = [desktopTrack?.getSourceName()];
+        constraints["constraints"] = { [desktopTrack?.getSourceName()]: { "maxHeight": 2160 }};
+    }
+
+    conference.setReceiverConstraints(constraints);
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });    
-
     if (conference?.getParticipantCount() === 1  || layout.mode === Constants.ENTER_FULL_SCREEN_MODE) {
         viewportWidth = viewportWidth;
     }  else {
         viewportWidth = viewportWidth - 48; 
     }
-    let isPresenter = layout.presenterParticipantIds.find(item=>item===largeVideoId);
-     
-    console.log("remoteTracks", remoteTracks[largeVideoId], conference.participants[largeVideoId]?._identity?.user);
-
     return (
         <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}}  className={activeClasses} >
             <VideoBox
@@ -68,21 +81,19 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
                 isActiveSpeaker={ largeVideoId === dominantSpeakerId }
                 isPresenter={isPresenter}
                 participantDetails={conference.participants[largeVideoId]?._identity?.user || conference.getLocalUser()}
-                participantTracks={remoteTracks[largeVideoId] || localTracks}
+                participantTracks={participantTracks}
                 localUserId={conference.myUserId()}
             />
-            { (isPresenter ||  conference.getParticipantCount() > 1) &&
-                <ParticipantPane
-                    isPresenter={isPresenter}
-                    panelHeight = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 108 :documentHeight - 88}
-                    gridItemWidth = {218}    
-                    gridItemHeight= {123}   
-                    dominantSpeakerId={dominantSpeakerId} 
-                    largeVideoId={largeVideoId} 
-                    localTracks={localTracks} 
-                    remoteTracks={remoteTracks}
-                />
-            }
+            <ParticipantPane
+                isPresenter={isPresenter}
+                panelHeight = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 108 :documentHeight - 88}
+                gridItemWidth = {218}    
+                gridItemHeight= {123}   
+                dominantSpeakerId={dominantSpeakerId} 
+                largeVideoId={largeVideoId} 
+                localTracks={localTracks} 
+                remoteTracks={remoteTracks}
+            />
         </Box>
     )
 }

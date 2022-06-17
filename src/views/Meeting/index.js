@@ -147,6 +147,10 @@ const Meeting = () => {
             setDominantSpeakerId(id);
         });
         
+        conference.addEventListener(SariskaMediaTransport.events.conference.LAST_N_ENDPOINTS_CHANGED, (enterIds, exitingIds) => {
+            console.log("LAST_N_ENDPOINTS_CHANGED", enterIds, exitingIds);
+        });
+        
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
             if (key === "presenting" && newValue === "start") {
                 dispatch(showNotification({ autoHide: true, message: `Screen sharing started by ${participant._identity?.user?.name}` }));
@@ -179,7 +183,7 @@ const Meeting = () => {
                 setDominantSpeakerId(null);
             }
 
-            if (id === layout.pinnedParticipantId) {
+            if (id === layout.pinnedParticipant.participantId) {
                 dispatch(setPinParticipant(null))
             }
 
@@ -266,7 +270,7 @@ const Meeting = () => {
         })
  
         preloadIframes(conference);
-        // SariskaMediaTransport.effects.createRnnoiseProcessor();
+        SariskaMediaTransport.effects.createRnnoiseProcessor();
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.AUDIO_OUTPUT_DEVICE_CHANGED, audioOutputDeviceChanged);
 

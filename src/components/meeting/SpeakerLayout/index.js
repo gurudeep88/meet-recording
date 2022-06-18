@@ -29,20 +29,24 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const myUserId = conference.myUserId();
     const classes = useStyles();
 
-    let largeVideoId;
+    let largeVideoId, isPresenter, participantTracks, participantDetails;
     if ( conference.getParticipantCount() === 2 ) {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
 
     largeVideoId = layout.pinnedParticipant.participantId || layout.presenterParticipantIds.slice(0).pop() || largeVideoId || dominantSpeakerId || myUserId;
-    let isPresenter = layout.presenterParticipantIds.find(item=>item===largeVideoId);
+    isPresenter = layout.presenterParticipantIds.find(item=>item===largeVideoId);
     if ( layout.pinnedParticipant.isPresenter === false ) {
         isPresenter = false;
     }
+    participantTracks = remoteTracks[largeVideoId];
+    participantDetails =  conference.participants[largeVideoId]?._identity?.user; 
 
-    let participantTracks = remoteTracks[largeVideoId] || localTracks;
-    const videoTrack = participantTracks.find(track => track.getVideoType() === "camera");
-
+    if (largeVideoId === conference.myUserId()){
+        participantTracks = localTracks;
+        participantDetails = conference.getLocalUser();
+    }
+    const videoTrack = participantTracks?.find(track => track.getVideoType() === "camera");
     const constraints = {
         "lastN": 25,
         "colibriClass": "ReceiverVideoConstraints",
@@ -55,7 +59,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     }
 
     if (isPresenter)  {
-        const desktopTrack = participantTracks.find(track => track.getVideoType() === "desktop");
+        const desktopTrack = participantTracks?.find(track => track.getVideoType() === "desktop");
         constraints["onStageSources"] = [desktopTrack?.getSourceName()];
         constraints["selectedSources"] = [desktopTrack?.getSourceName()];
         constraints["constraints"] = { [desktopTrack?.getSourceName()]: { "maxHeight": 2160 }};
@@ -85,7 +89,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
                 isLargeVideo={true}
                 isActiveSpeaker={ largeVideoId === dominantSpeakerId }
                 isPresenter={isPresenter}
-                participantDetails={conference.participants[largeVideoId]?._identity?.user || conference.getLocalUser()}
+                participantDetails={participantDetails}
                 participantTracks={participantTracks}
                 localUserId={conference.myUserId()}
             />

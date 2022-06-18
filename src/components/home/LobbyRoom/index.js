@@ -170,11 +170,13 @@ const useStyles = makeStyles((theme) => ({
     color: color.primary,
     position: "absolute",
     bottom: "4.5vh",
+    top: "30px",
     left: "50%",
     marginLeft: -12,
   },
   buttonProgressJoin: {
     color: color.primary,
+    top: "30px",
     position: "absolute",
     bottom: '4.5vh',
     left: "50%",
@@ -495,7 +497,7 @@ const LobbyRoom = ({ tracks }) => {
             
           </div>
         </Box>
-        <Box style={{textAlign: 'center'}}>
+        <Box style={{textAlign: 'center', position: 'relative'}}>
         <FancyButton 
               homeButton={true}
               disabled={loading}

@@ -234,11 +234,17 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   };
 
   const shareScreen = async () => {
-    const [desktopTrack] = await SariskaMediaTransport.createLocalTracks({
-      resolution: 720,
-      devices: ["desktop"],
-    });
-
+    let desktopTrack;
+    try {
+      const tracks = await SariskaMediaTransport.createLocalTracks({
+        resolution: 720,
+        devices: ["desktop"],
+      });
+      desktopTrack = tracks.find(track=>track.videoType === "desktop");
+    } catch(e) {
+      dispatch(showSnackbar({autoHide: false, message: "Oops, Something wrong with screen sharing permissions. Try reload"}));
+      return;
+    }
     await conference.addTrack(desktopTrack);
     desktopTrack.addEventListener(
       SariskaMediaTransport.events.track.LOCAL_TRACK_STOPPED,

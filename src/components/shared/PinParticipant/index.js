@@ -34,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PinParticipant =  ({pinnedParticipantId, togglePinParticipant, participantId})=>{
-
     const classes = useStyles();
     return (<Box className={classes.controls}>
         { pinnedParticipantId === participantId ? 

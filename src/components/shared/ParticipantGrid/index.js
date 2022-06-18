@@ -40,8 +40,6 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
     participants.filter( p => layout.presenterParticipantIds.indexOf(p._id) >= 0).forEach(p=>{
         participants.push({...p, presenter: true});
     });
-
-    console.log("participants", participants);
     const {
         rows,
         columns,

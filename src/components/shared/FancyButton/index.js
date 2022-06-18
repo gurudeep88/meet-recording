@@ -25,13 +25,11 @@ const useStyles = makeStyles((theme) => ({
     },
     "&:active": {
       background: color.mainGradient,
-      border: `1px solid transparent`,
       width: width || "178.69px",
       color: color.white,
     },
     "&:focus": {
       background: color.mainGradient,
-      border: `1px solid transparent`,
       width: width || "178.69px",
       color: color.white,
     },
@@ -39,13 +37,6 @@ const useStyles = makeStyles((theme) => ({
       color: color.white,
     }
   },
-    // homeButton: {
-    //   position: "absolute",
-    //   left: 0,
-    //   right: 0,
-    //   margin: "auto",
-    //   bottom: "-57px",
-    // }
 }));
   const classes = useStyles();
 

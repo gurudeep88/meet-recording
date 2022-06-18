@@ -147,13 +147,11 @@ const VideoBox = ({
                   }) => {
     const classes = useStyles();
     const { pinnedParticipant, raisedHandParticipantIds } = useSelector(state => state.layout);
-
-    let videoTrack = isPresenter ? participantTracks.find(track => track.getVideoType() === "desktop") : participantTracks.find(track => track.getType()==="video");
+    let videoTrack = isPresenter ? participantTracks?.find(track => track.getVideoType() === "desktop") : participantTracks?.find(track => track.getType()==="video");
     if (isLargeVideo && pinnedParticipant.isPresenter === false ) {
-        videoTrack = participantTracks.find(track => track.getType()==="video");
+        videoTrack = participantTracks?.find(track => track.getType()==="video");
     }
-
-    const audioTrack = participantTracks.find(track => track.isAudioTrack());
+    const audioTrack = participantTracks?.find(track => track.isAudioTrack());
     const audioIndicator = useSelector(state => state.audioIndicator);
     const dispatch = useDispatch();
     const [visiblePinParticipant, setVisiblePinPartcipant] = useState(true);
@@ -163,7 +161,6 @@ const VideoBox = ({
     const {documentWidth, documentHeight} = useDocumentSize();
 
     const togglePinParticipant = (id) => {
-        console.log("id, isPresenter", id, isPresenter);
         dispatch(setPinParticipant(id, isPresenter));
     }
 
@@ -194,7 +191,7 @@ const VideoBox = ({
                             src={null}
                             style={isFilmstrip ? { boxShadow: videoShadow(audioLevel), background: avatarColor} : {background: avatarColor}}
                             className={audioIndicatorActiveClasses}>
-                            {participantDetails?.name.slice(0, 1).toUpperCase()}
+                            {participantDetails?.name?.slice(0, 1)?.toUpperCase()}
                         </Avatar>
                     </Box>
                     :

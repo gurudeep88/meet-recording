@@ -5,7 +5,7 @@ import ActionButtons from '../../components/meeting/ActionButtons';
 import SariskaMediaTransport from 'sariska-media-transport';
 import ReconnectDialog from "../../components/shared/ReconnectDialog";
 import { useDispatch, useSelector } from "react-redux";
-import { addRemoteTrack, participantLeft, removeRemoteTrack, remoteTrackMutedChanged } from "../../store/actions/track";
+import { addRemoteTrack, participantLeft, removeRemoteTrack, updateLocalTrack , remoteTrackMutedChanged } from "../../store/actions/track";
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
@@ -63,21 +63,21 @@ const Meeting = () => {
     }
 
     const deviceListChanged = async (devices) => {
-        // const [audioTrack, videoTrack] = localTracks;
-        // const options = {
-        //     devices: ["audio", "video"],
-        //     resolution
-        // };
-        // const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
-        // await conference.replaceTrack(audioTrack, newAudioTrack);
-        // await conference.replaceTrack(videoTrack, newVideoTrack);
-        // dispatch(updateLocalTrack(audioTrack, newAudioTrack));
-        // dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+        const [audioTrack, videoTrack] = localTracks;
+        const options = {
+            devices: ["audio", "video"],
+            resolution
+        };
+        const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
+        await conference.replaceTrack(audioTrack, newAudioTrack);
+        await conference.replaceTrack(videoTrack, newVideoTrack);
+        dispatch(updateLocalTrack(audioTrack, newAudioTrack));
+        dispatch(updateLocalTrack(videoTrack, newVideoTrack));
     }
     
     const audioOutputDeviceChanged = (deviceId)=> {
-        //  console.log("audio output deviceId", deviceId);
-        //  SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
+         console.log("audio output deviceId", deviceId);
+         SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
     }
 
     const destroy = async () => {

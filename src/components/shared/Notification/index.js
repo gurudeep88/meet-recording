@@ -16,8 +16,7 @@ const useStyles = makeStyles(()=>({
         background: "grey",
         height: "50px",
         paddingLeft: "20px",
-        paddingRight: "20px",
-        maxWidth: "200px"
+        paddingRight: "20px"
     }}));
 
 

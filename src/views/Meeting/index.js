@@ -63,7 +63,9 @@ const Meeting = () => {
     }
 
     const deviceListChanged = async (devices) => {
-        const [audioTrack, videoTrack] = localTracks;
+        console.log("devicesdevices", devices);
+        const audioTrack = localTracks.find(track=>track.getType==="audio");
+        const videoTrack = localTracks.find(track=>track.getType==="video");
         const options = {
             devices: ["audio", "video"],
             resolution

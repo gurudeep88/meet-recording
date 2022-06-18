@@ -54,7 +54,7 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         "defaultConstraints": {"maxHeight": 180 },
         "onStageSources":  [videoTrack?.getSourceName()],
         constraints: {
-            [videoTrack?.getSourceName()]:  { "maxHeight": 720 }
+            [videoTrack?.getSourceName()]:  { "maxHeight":  layout?.resolution[largeVideoId] || resolution  }
         }
     }
 

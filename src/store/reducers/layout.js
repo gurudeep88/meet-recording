@@ -53,7 +53,7 @@ export const layout = (state = initialState, action) => {
             }
             return {...state};
         case SET_PIN_PARTICIPANT:
-            state.pinnedParticipant = {isPresenter: action.payload.type, participantId: action.payload.participantId} ;
+            state.pinnedParticipant = action.payload.participantId ? {isPresenter: action.payload.type, participantId: action.payload.participantId} : {} ;
             return {...state};
         case SET_PRESENTATION_TYPE:
             state.presentationType = action.payload.presentationType;

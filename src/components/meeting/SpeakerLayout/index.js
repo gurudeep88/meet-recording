@@ -70,8 +70,13 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     }  else {
         viewportWidth = viewportWidth - 48; 
     }
+
+    let justifyContent = "center";
+    if ( layout.presenterParticipantIds.length || conference.getParticipantCount() > 1 ) {
+        justifyContent = "space-evenly";
+    }    
     return (
-        <Box style={{justifyContent: conference.getParticipantCount() === 1 ? "center" : "space-evenly"}}  className={activeClasses} >
+        <Box style={{justifyContent}}  className={activeClasses} >
             <VideoBox
                 isFilmstrip={true}
                 isTranscription={true}

@@ -19,21 +19,21 @@ const useStyles = makeStyles((theme) => ({
 }));
  
 const SpeakerLayout = ({dominantSpeakerId}) => {
-    let {viewportWidth, viewportHeight} = useWindowResize();
+    const conference = useSelector(state => state.conference);
+    const layout = useSelector(state=>state.layout);
+    const totalParticipantGrid = conference?.getParticipantCount()+layout.presenterParticipantIds.length;
+    let {viewportWidth, viewportHeight} = useWindowResize(totalParticipantGrid);
     const {documentWidth, documentHeight} = useDocumentSize();
     const localTracks = useSelector(state => state.localTrack);
     const remoteTracks = useSelector(state => state.remoteTrack);
     const resolution = useSelector(state => state.media?.resolution);
-    const conference = useSelector(state => state.conference);
-    const layout = useSelector(state=>state.layout);
     const myUserId = conference.myUserId();
     const classes = useStyles();
+    let largeVideoId, isPresenter, participantTracks, participantDetails, justifyContent;
 
-    let largeVideoId, isPresenter, participantTracks, participantDetails;
     if ( conference.getParticipantCount() === 2 ) {
         largeVideoId = conference.getParticipantsWithoutHidden()[0]?._id;
     }
-
     largeVideoId = layout.pinnedParticipant.participantId || layout.presenterParticipantIds.slice(0).pop() || largeVideoId || dominantSpeakerId || myUserId;
     isPresenter = layout.presenterParticipantIds.find(item=>item===largeVideoId);
     if ( layout.pinnedParticipant.isPresenter === false ) {
@@ -69,16 +69,13 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
     const activeClasses = classnames(classes.root, {
         'fullmode': layout.mode === Constants.ENTER_FULL_SCREEN_MODE
     });    
-    if (conference?.getParticipantCount() === 1  || layout.mode === Constants.ENTER_FULL_SCREEN_MODE) {
-        viewportWidth = viewportWidth;
-    }  else {
+
+    justifyContent = "center";
+    if ( totalParticipantGrid > 1 && layout.mode !== Constants.ENTER_FULL_SCREEN_MODE ) {
         viewportWidth = viewportWidth - 48; 
+        justifyContent = "space-evenly";
     }
 
-    let justifyContent = "center";
-    if ( layout.presenterParticipantIds.length || conference.getParticipantCount() > 1 ) {
-        justifyContent = "space-evenly";
-    }    
     return (
         <Box style={{justifyContent}}  className={activeClasses} >
             <VideoBox

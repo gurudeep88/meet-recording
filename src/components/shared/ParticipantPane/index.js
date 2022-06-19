@@ -53,7 +53,7 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeig
                     isFilmstrip={false}
                     isActiveSpeaker={dominantSpeakerId===participant._id}
                     participantDetails={participant?._identity?.user}
-                    participantTracks={tracks[participant._id] || []}
+                    participantTracks={tracks[participant._id]}
                 />
             )}
         </Box>)

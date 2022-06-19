@@ -499,9 +499,12 @@ const Navbar = ({dominantSpeakerId}) => {
         }
     }
     useEffect(()=>{
-        if ( conference.getParticipantsWithoutHidden()[0]?._id ) {
-            setTimeout(()=>conference.sendEndpointMessage(conference.getParticipantsWithoutHidden()[0]._id, {action: GET_PRESENTATION_STATUS}), 3000);    
-        }
+        conference.addEventListener(SariskaMediaTransport.events.conference.DATA_CHANNEL_OPENED, ()=>{
+            if ( conference.getParticipantsWithoutHidden()[0]?._id ) {
+                conference.sendEndpointMessage(conference.getParticipantsWithoutHidden()[0]._id, {action: GET_PRESENTATION_STATUS});    
+            }
+        });
+        
         const checkPresentationStatus = (participant, payload)=> {
             if (payload?.action === GET_PRESENTATION_STATUS) {
                 conference.sendEndpointMessage(participant._id, {
@@ -586,13 +589,6 @@ const Navbar = ({dominantSpeakerId}) => {
                 dispatch(addSubtitle({}));
                 setCaption(false);
             }
-
-            // if (status === "OFF") {
-            //     conference.removeLocalParticipantProperty("transcribing");
-            //     dispatch(showSnackbar({autoHide: true, message: "Caption stopped"}));
-            //     dispatch(addSubtitle({}));
-            //     setCaption(false);
-            // }
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useSelector} from "react-redux";
 import {ENTER_FULL_SCREEN_MODE, GRID, PRESENTATION, SPEAKER} from "../constants";
 
-export function useWindowResize() {
+export function useWindowResize(participantCount) {
     const layout = useSelector(state => state.layout);
     const remoteTracks = useSelector(state => state.remoteTrack);
     const conference = useSelector(state => state.conference);
@@ -19,7 +19,7 @@ export function useWindowResize() {
             return {viewportWidth , viewportHeight};
         }
 
-        if (conference?.getParticipantCount() === 1 &&  type !== PRESENTATION)  {
+        if (participantCount === 1 &&  type !== PRESENTATION)  {
             return {viewportWidth: (documentHeight - 92)*16/9 , viewportHeight: documentHeight - 92};
         }
 
@@ -43,7 +43,7 @@ export function useWindowResize() {
 
     useEffect(() => {
         setWindowSize(getDimensions(layout.mode, layout.type));
-    }, [remoteTracks]);
+    }, [remoteTracks, participantCount]);
 
     function handleResize() {
         setWindowSize(getDimensions(layout.mode, layout.type));

@@ -24,9 +24,6 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
             height: "100%"
         }
     }));
-
-    let { viewportWidth, viewportHeight } = useWindowResize();
-    let { documentWidth, documentHeight } = useDocumentSize();
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const localTracks = useSelector(state => state.localTrack);
@@ -40,6 +37,8 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
     participants.filter( p => layout.presenterParticipantIds.indexOf(p._id) >= 0).forEach(p=>{
         participants.push({...p, presenter: true});
     });
+    let { viewportWidth, viewportHeight } = useWindowResize(participants.length);
+    let { documentWidth, documentHeight } = useDocumentSize();
     const {
         rows,
         columns,
@@ -71,7 +70,7 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
                                         isPresenter={participants[i * columns + j].presenter ? true : false}
                                         isActiveSpeaker={dominantSpeakerId === participants[i * columns + j]._id}
                                         participantDetails={participants[i * columns + j]?._identity?.user}
-                                        participantTracks={tracks[participants[i * columns + j]._id] || []}
+                                        participantTracks={tracks[participants[i * columns + j]._id]}
                                         localUserId={conference.myUserId()}
                                     />
                                 </Box>

@@ -63,13 +63,14 @@ const Meeting = () => {
     }
 
     const deviceListChanged = async (devices) => {
-        console.log("devicesdevices", devices);
-        const audioTrack = localTracks.find(track=>track.getType==="audio");
-        const videoTrack = localTracks.find(track=>track.getType==="video");
+        const audioTrack = localTracks.find(track=>track.getType()==="audio");
+        const videoTrack = localTracks.find(track=>track.getType()==="video");
         const options = {
             devices: ["audio", "video"],
             resolution
         };
+        audioTrack.stopStream();
+        videoTrack.stopStream();
         const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
         await conference.replaceTrack(audioTrack, newAudioTrack);
         await conference.replaceTrack(videoTrack, newVideoTrack);
@@ -145,7 +146,6 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
-            console.log("dominant speaker", conference.participants[id]?._identity?.user?.name, id);
             setDominantSpeakerId(id);
         });
         

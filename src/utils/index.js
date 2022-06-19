@@ -472,11 +472,9 @@ export function compressFile(file, type) {
             new Compressor(file, {
                 quality: 0.6,
                 success(result) {
-                    console.log('result', result)
                     resolve(result);
                 },
                 error(err) {
-                    console.log('err', err)
                     reject(err.message);
                 }
             });

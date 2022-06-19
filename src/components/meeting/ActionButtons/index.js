@@ -242,7 +242,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
       });
       desktopTrack = tracks.find(track=>track.videoType === "desktop");
     } catch(e) {
-      dispatch(showSnackbar({autoHide: false, message: "Oops, Something wrong with screen sharing permissions. Try reload"}));
+      dispatch(showSnackbar({autoHide: true, message: "Oops, Something wrong with screen sharing permissions. Try reload"}));
       return;
     }
     await conference.addTrack(desktopTrack);

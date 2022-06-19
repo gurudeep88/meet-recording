@@ -277,8 +277,6 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
   };
 
   const stopStreaming = async () => {
-    console.log("stop", featureStates);
-
     if (!featureStates.streaming) {
       return;
     }

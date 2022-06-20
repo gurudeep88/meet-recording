@@ -12,7 +12,7 @@ import PresentationLayout from "../../components/meeting/PresentationLayout";
 import Notification from "../../components/shared/Notification";
 import { SPEAKER, PRESENTATION, GRID, ENTER_FULL_SCREEN_MODE} from "../../constants";
 import { addMessage } from "../../store/actions/message";
-import { getUserById, preloadIframes } from "../../utils";
+import { getUserById, preloadIframes, getDefaultDeviceId } from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
 import SnackbarBox from '../../components/shared/Snackbar';
 import { unreadMessage } from '../../store/actions/chat';
@@ -25,6 +25,7 @@ import { useHistory } from 'react-router-dom';
 import { setUserResolution } from '../../store/actions/layout';
 import {useOnlineStatus} from "../../hooks/useOnlineStatus";
 import ReactGA from 'react-ga4';
+import { setCamera, setDevices, setMicrophone } from '../../store/actions/media';
 
 const Meeting = () => {
     const history = useHistory();
@@ -39,6 +40,7 @@ const Meeting = () => {
     const resolution = useSelector(state=>state.media?.resolution);
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUser, setLobbyUser] = useState([]);
+    let oldDevices;
 
     const useStyles = makeStyles((theme) => ({
         root: {
@@ -62,24 +64,52 @@ const Meeting = () => {
         setLobbyUser(lobbyUser =>lobbyUser.filter(item=>item.id !== userId));
     }
 
-    const deviceListChanged = async (devices) => {
-        const audioTrack = localTracks.find(track=>track.getType()==="audio");
-        const videoTrack = localTracks.find(track=>track.getType()==="video");
-        const options = {
-            devices: ["audio", "video"],
-            resolution
-        };
-        audioTrack.stopStream();
-        videoTrack.stopStream();
-        const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
-        await conference.replaceTrack(audioTrack, newAudioTrack);
-        await conference.replaceTrack(videoTrack, newVideoTrack);
-        dispatch(updateLocalTrack(audioTrack, newAudioTrack));
-        dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+    const deviceListChanged = async (devices) => { 
+        let selectedDeviceOld, audioInputDeviceOld, audioOuputDeviceOld, videoInputDeviceOld;
+        if (oldDevices) {
+            selectedDeviceOld = oldDevices.filter(item=>item.deviceId === "default");
+            audioInputDeviceOld =  selectedDeviceOld.find(item=>item.kind==="audioinput");
+            audioOuputDeviceOld  =  selectedDeviceOld.find(item=>item.kind==="audiooutput");
+            videoInputDeviceOld = oldDevices.filter(item=>item.deviceId === "videoinput");
+        }
+
+        const selectedDeviceNew = devices.filter(item=>item.deviceId === "default");
+        const audioInputDeviceNew =  selectedDeviceNew.find(item=>item.kind==="audioinput");
+        const audioOuputDeviceNew  =  selectedDeviceNew.find(item=>item.kind==="audiooutput");
+        const videoInputDeviceNew = selectedDeviceNew.find(item=>item.kind ==="videoinput");
+
+        if ( audioInputDeviceNew?.label  &&  audioInputDeviceOld?.label &&  audioInputDeviceNew?.label !== audioInputDeviceOld?.label ) {
+            const audioTrack = localTracks.find(track=>track.getType()==="audio");
+            const[newAudioTrack] = await SariskaMediaTransport.createLocalTracks({
+                devices: ["audio"],
+                micDeviceId: "default",
+            });
+            dispatch(setMicrophone("default"));
+            await conference.replaceTrack(audioTrack, newAudioTrack);
+            console.log("audio input update done!!!!");
+        }
+
+        if ( videoInputDeviceNew?.label  &&  videoInputDeviceOld?.label &&  videoInputDeviceNew?.label !== videoInputDeviceOld?.label ) {
+            const videoTrack = localTracks.find(track=>track.getType()==="video");
+            const[newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
+                devices: ["video"],
+                cameraDeviceId: "default",
+                resolution
+            });
+            dispatch(setCamera("default"));
+            await conference.replaceTrack(videoTrack, newVideoTrack);
+            console.log("video input update done!!!!");
+        }
+
+        if ( audioOuputDeviceNew?.label  &&  audioOuputDeviceOld?.label &&  audioOuputDeviceNew?.label !== audioOuputDeviceOld?.label ) {
+            SariskaMediaTransport.mediaDevices.setAudioOutputDevice(audioOuputDeviceNew.deviceId);
+            console.log("audio output update done!!!!");
+        }
+        dispatch(setDevices(devices));
+        oldDevices = devices;
     }
     
     const audioOutputDeviceChanged = (deviceId)=> {
-         console.log("audio output deviceId", deviceId);
          SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
     }
 
@@ -92,7 +122,7 @@ const Meeting = () => {
             await conference?.leave();
         }
         for (const track of localTracks) {
-            await track.dispose();
+            await track.dispose();  
         }
         await connection?.disconnect();
         SariskaMediaTransport.mediaDevices.removeEventListener(SariskaMediaTransport.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);

@@ -66,10 +66,10 @@ const useStyles = makeStyles((theme) => ({
     "&>div>span": {
       display: "none",
     },
-    "& .MuiTabs-scrollable":{
+    "& .MuiTabs-scrollable": {
       overflowX: 'hidden'
     },
-    "& .MuiTabScrollButton-root":{
+    "& .MuiTabScrollButton-root": {
       display: 'none'
     }
   },
@@ -218,28 +218,25 @@ const SettingsBox = ({ tracks }) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const [devices, setDevices] = useState([]);
-  const [microphoneValue, setMicrophoneValue] = React.useState("");
   const [microphoneOpen, setMicrophoneOpen] = React.useState(false);
-  const [speakerValue, setSpeakerValue] = React.useState("");
   const [speakerOpen, setSpeakerOpen] = React.useState(false);
-  const [cameraValue, setCameraValue] = React.useState("");
   const [cameraOpen, setCameraOpen] = React.useState(false);
-  const [resolutionValue, setResolutionValue] = React.useState("");
   const [resolutionOpen, setResolutionOpen] = React.useState(false);
   const localTracks = useSelector((state) => state.localTrack);
   const [testText, setTestText] = useState("Test");
   const conference = useSelector((state) => state.conference);
   const [vol, setVol] = useState(0);
-  const resolution = useSelector((state) => state.media?.resolution);
+  const { resolution, camera, speaker, microphone } = useSelector((state) => state?.media);
   const dispatch = useDispatch();
   const audioTrack = localTracks.find((track) => track.isAudioTrack());
   const videoTrack = localTracks.find((track) => track.isVideoTrack());
 
+
   useEffect(() => {
     SariskaMediaTransport.mediaDevices.enumerateDevices((allDevices) => {
+      dispatch(setDevices(allDevices));
       return setDevices(allDevices);
     });
-    setResolutionValue(resolution);
   }, []);
 
   useEffect(() => {
@@ -272,15 +269,13 @@ const SettingsBox = ({ tracks }) => {
 
   const handleMicrophoneChange = async (event) => {
     const microphoneDeviceId = event.target.value;
-    setMicrophoneValue(microphoneDeviceId);
-    dispatch(setMicrophone(microphoneDeviceId));
-
     const [newAudioTrack] = await SariskaMediaTransport.createLocalTracks({
       devices: ["audio"],
-      micDeviceId: microphoneDeviceId,
+      micDeviceId: microphoneDeviceId
     });
     await conference.replaceTrack(audioTrack, newAudioTrack);
     dispatch(updateLocalTrack(audioTrack, newAudioTrack));
+    dispatch(setCamera(microphoneDeviceId));
   };
 
   const handleMicrophoneClose = () => {
@@ -293,7 +288,6 @@ const SettingsBox = ({ tracks }) => {
 
   const handleSpeakerChange = (event) => {
     const deviceId = event.target.value;
-    setSpeakerValue(deviceId);
     dispatch(setSpeaker(deviceId));
     SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
   };
@@ -307,17 +301,15 @@ const SettingsBox = ({ tracks }) => {
   };
 
   const handleCameraChange = async (event) => {
-    const deviceId = event.target.value;
-    setCameraValue(deviceId);
-    dispatch(setCamera(deviceId));
-
-    const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
-      devices: ["video"],
-      cameraDeviceId: deviceId,
-      resolution,
-    });
-    await conference.replaceTrack(videoTrack, newVideoTrack);
-    dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+      const deviceId = event.target.value;
+      const [newVideoTrack] = await SariskaMediaTransport.createLocalTracks({
+          devices: ["video"],
+          cameraDeviceId: deviceId,
+          resolution,
+      });
+      await conference.replaceTrack(videoTrack, newVideoTrack);
+      dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+      dispatch(setCamera(deviceId));
   };
 
   const handleCameraClose = () => {
@@ -329,7 +321,6 @@ const SettingsBox = ({ tracks }) => {
   };
 
   const handleResolutionChange = async (event) => {
-    setResolutionValue(event.target.value);
     const item = resolutionList.find(
       (item) => item.value === event.target.value
     );
@@ -375,7 +366,7 @@ const SettingsBox = ({ tracks }) => {
     open: microphoneOpen,
     handleClose: handleMicrophoneClose,
     handleOpen: handleMicrophoneOpen,
-    value: microphoneValue,
+    value: microphone,
     handleChange: handleMicrophoneChange,
     list: devices
       .filter((device) => device.kind === "audioinput")
@@ -389,7 +380,7 @@ const SettingsBox = ({ tracks }) => {
     open: speakerOpen,
     handleClose: handleSpeakerClose,
     handleOpen: handleSpeakerOpen,
-    value: speakerValue,
+    value: speaker,
     handleChange: handleSpeakerChange,
     list: devices
       .filter((device) => device.kind === "audiooutput")
@@ -403,7 +394,7 @@ const SettingsBox = ({ tracks }) => {
     open: cameraOpen,
     handleClose: handleCameraClose,
     handleOpen: handleCameraOpen,
-    value: cameraValue,
+    value: camera,
     handleChange: handleCameraChange,
     list: devices
       .filter((device) => device.kind === "videoinput")
@@ -414,12 +405,12 @@ const SettingsBox = ({ tracks }) => {
   };
 
   const resolutionList = [
-    { value: 2160, label: "Ultra High Definition (4k)", aspectRatio: 9 / 16 },
-    { value: 1080, label: "Full High Definition (1080p)", aspectRatio: 9 / 16 },
-    { value: 720, label: "High Definition (720p)", aspectRatio: 9 / 16 },
-    { value: 480, label: "VGA (480p)", aspectRatio: 9 / 16 },
-    { value: 360, label: "Standard Definition (360p)", aspectRatio: 9 / 16 },
-    { value: 180, label: "Low Definition (180p)", aspectRatio: 9 / 16 },
+    { value: 2160, label: "Ultra High Definition (4k)", aspectRatio: 16 / 9 },
+    { value: 1080, label: "Full High Definition (1080p)", aspectRatio: 16 / 9 },
+    { value: 720, label: "High Definition (720p)", aspectRatio: 16 / 9 },
+    { value: 480, label: "VGA (480p)", aspectRatio: 4 / 3 },
+    { value: 360, label: "Standard Definition (360p)", aspectRatio: 16 / 9 },
+    { value: 180, label: "Low Definition (180p)", aspectRatio: 16 / 9 },
   ];
 
   const resolutionData = {
@@ -427,7 +418,7 @@ const SettingsBox = ({ tracks }) => {
     open: resolutionOpen,
     handleClose: handleResolutionClose,
     handleOpen: handleResolutionOpen,
-    value: resolutionValue,
+    value: resolution,
     handleChange: handleResolutionChange,
     list: resolutionList,
   };
@@ -465,7 +456,7 @@ const SettingsBox = ({ tracks }) => {
       </Box>
       <Box className={classes.display}>
         <Box style={{ display: "flex" }} className={classes.marginBottom}>
-          <SelectField data={speakerData} minWidth={"200px"}  width={"200px"} />
+          <SelectField data={speakerData} minWidth={"200px"} width={"200px"} />
           <Box>
             <Button
               className={classes.volume}
@@ -535,7 +526,7 @@ const SettingsBox = ({ tracks }) => {
             disableRipple
             label={audioLabel}
             {...a11yProps(0)}
-            style={{marginRight: '4px'}}
+            style={{ marginRight: '4px' }}
             className={classes.tab}
           />
           <Tab

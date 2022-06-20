@@ -578,7 +578,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
             <VideocamIcon onClick={muteVideo} />
           )}
         </StyledTooltip>
-        <Tooltip title={presenting ? "Stop Presenting" : "Share Screen"}>
+        <StyledTooltip title={presenting ? "Stop Presenting" : "Share Screen"}>
           {presenting ? (
             <span
               className={classnames("material-icons material-icons-outlined", classes.active, classes.screenShare)}
@@ -594,7 +594,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
               screen_share
             </span>
           )}
-        </Tooltip>
+        </StyledTooltip>
         <StyledTooltip title={raiseHand ? "Hand Down" : "Raise Hand"}>
           {raiseHand ? (
             <PanToolIcon onClick={stopRaiseHand} className={classnames(classes.active, classes.panTool)} />

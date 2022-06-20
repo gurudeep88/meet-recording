@@ -1,10 +1,8 @@
 import { useLocation } from "react-router-dom";
 import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL, ENTER_FULL_SCREEN_MODE} from "../constants";
 import linkifyHtml from 'linkify-html';
-import { conference } from "../store/reducers/conference";
 
 const Compressor = require('compressorjs');
-
 
 export function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -462,7 +460,6 @@ export function getPresignedUrl(params) {
         })
     });
 }
-
 
 export function compressFile(file, type) {
     return new Promise((resolve, reject) => {

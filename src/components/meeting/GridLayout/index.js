@@ -12,4 +12,4 @@ const GridLayout = ({dominantSpeakerId}) => {
     return <ParticipantGrid dominantSpeakerId={dominantSpeakerId} />
 }
 
-export default GridLayout
+export default GridLayout;

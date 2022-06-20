@@ -4,7 +4,7 @@ import {EXIT_FULL_SCREEN_MODE, SPEAKER} from "../../constants";
 const initialState  = {
     type: SPEAKER,  //default layout,
     mode: EXIT_FULL_SCREEN_MODE, //default mode,
-    pinnedParticipantId: null,
+    pinnedParticipant: {},
     presenterParticipantIds: [],
     raisedHandParticipantIds: {},
     disconnected: null,
@@ -53,7 +53,7 @@ export const layout = (state = initialState, action) => {
             }
             return {...state};
         case SET_PIN_PARTICIPANT:
-            state.pinnedParticipantId = action.payload;
+            state.pinnedParticipant = action.payload.participantId ? {isPresenter: action.payload.type, participantId: action.payload.participantId} : {} ;
             return {...state};
         case SET_PRESENTATION_TYPE:
             state.presentationType = action.payload.presentationType;

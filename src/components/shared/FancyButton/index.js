@@ -3,7 +3,7 @@ import classNames from "classnames";
 import React from "react";
 import { color } from "../../../assets/styles/_color";
 
-const FancyButton = ({disabled, onClick, buttonText, width, top, homeButton}) => {
+const FancyButton = ({disabled, onClick, buttonText, width, top, homeButton, fontSize}) => {
 
 const useStyles = makeStyles((theme) => ({
   anchor: {
@@ -15,20 +15,26 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "capitalize",
     marginTop: top || theme.spacing(3),
     width: width || "178.69px",
-    transition: `font-weight .5s all ease`,
+    transition: `0.1s all ease`,
+    fontSize: fontSize || '0.875rem',
+    minWidth: homeButton && '175px',
     "&:hover": {
-      fontWeight: "900",
       background: color.mainGradient,
-      border: `none`,
-      padding: '5px 41px',
       width: width || "178.69px",
+      color: color.white,
     },
-    homeButton: {
-      position: "absolute",
-      left: 0,
-      right: 0,
-      margin: "auto",
-      bottom: "-57px"
+    "&:active": {
+      background: color.mainGradient,
+      width: width || "178.69px",
+      color: color.white,
+    },
+    "&:focus": {
+      background: color.mainGradient,
+      width: width || "178.69px",
+      color: color.white,
+    },
+    "&.MuiButton-root.Mui-disabled": {
+      color: color.white,
     }
   },
 }));

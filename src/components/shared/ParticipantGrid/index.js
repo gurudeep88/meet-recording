@@ -24,20 +24,21 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
             height: "100%"
         }
     }));
-
-    let { viewportWidth, viewportHeight } = useWindowResize();
-    let { documentWidth, documentHeight } = useDocumentSize();
     const classes = useStyles();
     const conference = useSelector(state => state.conference);
     const localTracks = useSelector(state => state.localTrack);
     const remoteTracks = useSelector(state => state.remoteTrack);
     const localUser = conference.getLocalUser();
 
-    //merge local and remote track
+    // all participants 
     const tracks = { ...remoteTracks, [localUser.id]: localTracks };
-    // merge local and remote participant
+    // all tracks
     const participants = [...conference.getParticipantsWithoutHidden(), { _identity: { user: localUser }, _id: localUser.id }];
-
+    participants.filter( p => layout.presenterParticipantIds.indexOf(p._id) >= 0).forEach(p=>{
+        participants.push({...p, presenter: true});
+    });
+    let { viewportWidth, viewportHeight } = useWindowResize(participants.length);
+    let { documentWidth, documentHeight } = useDocumentSize();
     const {
         rows,
         columns,
@@ -46,7 +47,7 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
         offset,
         lastRowOffset,
         lastRowWidth
-    } = calculateRowsAndColumns(conference.getParticipantCount(), viewportWidth, viewportHeight); // get grid item dimension
+    } = calculateRowsAndColumns(participants.length, viewportWidth, viewportHeight); // get grid item dimension
     // now render them as a grid
     return (
         <Box className={classes.root}>
@@ -56,8 +57,8 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
                         {[...Array(columns)].map((y, j) => {
                             return (tracks[participants[i * columns + j]?._id] || participants[i * columns + j]?._id) &&
                                 <Box className={classes.containerItem} style={{ 
-                                    left: getLeftTop(i, j, gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, conference.getParticipantCount(), viewportHeight, lastRowWidth, documentHeight).left, 
-                                    top: getLeftTop(i, j, gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, conference.getParticipantCount(), viewportHeight, lastRowWidth, documentHeight).top, 
+                                    left: getLeftTop(i, j, gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, participants.length, viewportHeight, lastRowWidth, documentHeight).left, 
+                                    top: getLeftTop(i, j, gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, participants.length, viewportHeight, lastRowWidth, documentHeight).top, 
                                     width: rows === (i - 1) && lastRowWidth ? lastRowWidth : gridItemWidth,
                                     height: gridItemHeight
                                 }}>
@@ -66,10 +67,10 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
                                         width={(rows - 1) === i && lastRowWidth ? lastRowWidth : gridItemWidth}
                                         isBorderSeparator={participants.length > 1}
                                         isFilmstrip={true}
-                                        isPresenter={layout.presenterParticipantIds.find(item => item === participants[i * columns + j]._id)}
+                                        isPresenter={participants[i * columns + j].presenter ? true : false}
                                         isActiveSpeaker={dominantSpeakerId === participants[i * columns + j]._id}
                                         participantDetails={participants[i * columns + j]?._identity?.user}
-                                        participantTracks={tracks[participants[i * columns + j]._id] || []}
+                                        participantTracks={tracks[participants[i * columns + j]._id]}
                                         localUserId={conference.myUserId()}
                                     />
                                 </Box>

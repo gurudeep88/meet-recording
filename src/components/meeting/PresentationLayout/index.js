@@ -32,13 +32,14 @@ const useStyles = makeStyles((theme) => ({
 
 const PresentationLayout = ({dominantSpeakerId}) => {
     const classes = useStyles();
-    const {viewportWidth, viewportHeight} = useWindowResize();
+    const layout = useSelector(state=>state.layout);
+    const conference = useSelector(state => state.conference);
+    const totalParticipantGrid = conference?.getParticipantCount()+layout.presenterParticipantIds.length;
+    const {viewportWidth, viewportHeight} = useWindowResize(totalParticipantGrid);
     const {documentWidth, documentHeight} = useDocumentSize();
 
     const localTracks = useSelector(state => state.localTrack);
     const remoteTracks = useSelector(state => state.remoteTrack);
-    const conference = useSelector(state => state.conference);
-    const layout = useSelector(state=>state.layout);
 
     const constraints = {
         "colibriClass": "ReceiverVideoConstraints",
@@ -65,6 +66,7 @@ const PresentationLayout = ({dominantSpeakerId}) => {
                 height={viewportHeight}
             />
             <PartcipantPane 
+                isPresenter={true}
                 panelHeight = {layout.mode === Constants.ENTER_FULL_SCREEN_MODE ? documentHeight - 108 :documentHeight - 88}
                 gridItemWidth = {218}    
                 gridItemHeight= {123} 

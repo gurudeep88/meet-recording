@@ -30,7 +30,6 @@ const MicIndicator = ({vol}) => {
     const classes  =  useStyles();
     const allPids = ["#718EFF", "#6a86f5", "#7d73ff", "#7268fa", "#685cf9", "#7b05f8","#2010f9"];
     const numberOfPidsToColor = Math.round(vol / 10);
-    console.log("allPids", allPids, numberOfPidsToColor);
 
     return (
         <div className={classes.root}>

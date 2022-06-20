@@ -22,6 +22,11 @@ import { addThumbnailColor } from "../../../store/actions/color";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
+import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
+import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
+import VideocamOffOutlinedIcon from '@material-ui/icons/VideocamOffOutlined';
+import SettingsIcon from '@material-ui/icons/Settings';
 import TextInput from "../../shared/TextInput";
 import { setProfile, setMeeting , updateProfile} from "../../../store/actions/profile";
 import JoinTrack from "../JoinTrack";
@@ -33,6 +38,8 @@ import Logo from "../../shared/Logo";
 import DrawerBox from "../../shared/DrawerBox";
 import SettingsBox from "../../meeting/Settings";
 import FancyButton from "../../shared/FancyButton";
+import StyledTooltip from "../../shared/StyledTooltip";
+import Icons from "../../shared/iconList";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,15 +51,15 @@ const useStyles = makeStyles((theme) => ({
   permissions: {
     display: "flex",
     justifyContent: "space-around",
-    paddingLeft: "15px",
-    paddingRight: "15px",
-    marginTop: "16px",
-    "& span": {
+    paddingLeft: "0",
+    paddingRight: "0",
+    marginTop: "3.73vh",
+    "& svg": {
       //border: `1px solid ${color.white}`,
-      padding: "12px",
+      padding: "12px 0px",
       borderRadius: "7.5px",
       color: color.white,
-      fontSize: "26px",
+      fontSize: "1.87vw",
       "&:hover": {
         color: color.primaryLight,
         cursor: "pointer",
@@ -63,16 +70,16 @@ const useStyles = makeStyles((theme) => ({
   joinPermissions: {
     display: "flex",
     justifyContent: "space-around",
-    paddingLeft: "15px",
-    paddingRight: "15px",
-    marginTop: theme.spacing(2),
+    paddingLeft: "0",
+    paddingRight: "0",
+    marginTop: "3.73vh",
     //marginBottom: theme.spacing(3),
-    "& span": {
+    "& svg": {
       //border: `1px solid ${color.white}`,
-      padding: "12px",
+      padding: "12px 0px",
       borderRadius: "7.5px",
       color: color.white,
-      fontSize: "26px",
+      fontSize: "1.87vw",
       "&:hover": {
         color: color.primaryLight,
         cursor: "pointer",
@@ -107,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0.5, 5),
     borderRadius: "10px",
     textTransform: "capitalize",
-    marginTop: theme.spacing(3),
+    marginTop: '5.4vh',
     width: '178.69px',
     "&:hover": {
       fontWeight: "900",
@@ -118,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       minWidth: "300px",
     },
-    borderRadius: "60px",
+    borderRadius: "4px",
     backgroundColor: color.blurEffect,
     backdropFilter: `blur(48px)`,	
     '-webkit-backdrop-filter': 'blur(48px)',
@@ -127,8 +134,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     flexDirection: "column",
     zIndex: 1,
-    padding: "32px 24px",
-    border: `1px solid ${color.primaryLight}`,
+    padding: "1.74vw 1.74vw",
+    border: `1px solid ${color.whitePointOne}`,
     marginLeft: '15%',
     marginRight: 'auto',
     minHeight: '60vh',
@@ -137,19 +144,19 @@ const useStyles = makeStyles((theme) => ({
   header: {
     color: color.white,
     textAlign: "center",
-    fontSize: "32px",
+    fontSize: "2.385vw",
     fontWeight: 300,
-    marginTop: theme.spacing(3),
+    marginTop: '5.5vh',
   },
   headerJoin: {
     color: color.white,
     textAlign: "center",
-    fontSize: "32px",
+    fontSize: "2.385vw",
     fontWeight: 300,
     marginTop: theme.spacing(11),
   },
   wrapper: {
-    margin: "10px 0px 12px 0px",
+    margin: "2.3vh 0px 0.5vh 0px",
     position: "relative",
     textAlign: "center",
   },
@@ -162,14 +169,16 @@ const useStyles = makeStyles((theme) => ({
   buttonProgress: {
     color: color.primary,
     position: "absolute",
-    top: "84%",
+    bottom: "4.5vh",
+    top: "30px",
     left: "50%",
     marginLeft: -12,
   },
   buttonProgressJoin: {
     color: color.primary,
+    top: "30px",
     position: "absolute",
-    top: '76%',
+    bottom: '4.5vh',
     left: "50%",
     marginLeft: -12,
   },
@@ -403,7 +412,7 @@ const LobbyRoom = ({ tracks }) => {
       <JoinTrack tracks={tracks} name={name} />
       <Box className={classes.videoContainer}>
         <Box className={classes.logoContainer}>
-          <Logo height={"80px"} />
+          <Logo height={"5.7vw"} />
         </Box>
         <Box>
         {queryParams.meetingId ? 
@@ -414,51 +423,26 @@ const LobbyRoom = ({ tracks }) => {
         </Box>
         <Box className={!queryParams.meetingId ? classes.permissions : classes.joinPermissions}>
           {audioTrack?.isMuted() ? (
-            <Tooltip title="Unmute Audio">
-              <span
-                className="material-icons material-icons-outlined"
-                onClick={unmuteAudioLocalTrack}
-              >
-                mic_off
-              </span>
-            </Tooltip>
+            <StyledTooltip title="Unmute Audio">
+              <MicOffOutlinedIcon onClick={unmuteAudioLocalTrack} />
+            </StyledTooltip>
           ) : (
-            <Tooltip title="Mute Audio">
-              <span
-                className="material-icons material-icons-outlined"
-                onClick={muteAudioLocalTrack}
-              >
-                mic_none
-              </span>
-            </Tooltip>
+            <StyledTooltip title="Mute Audio">
+              <MicNoneOutlinedIcon onClick={muteAudioLocalTrack} />
+            </StyledTooltip>
           )}
           {videoTrack?.isMuted() ? (
-            <Tooltip title="Unmute Video">
-              <span
-                className="material-icons material-icons-outlined"
-                onClick={unmuteVideoLocalTrack}
-              >
-                videocam_off
-              </span>
-            </Tooltip>
+            <StyledTooltip title="Unmute Video">
+              <VideocamOffOutlinedIcon onClick={unmuteVideoLocalTrack} />
+            </StyledTooltip>
           ) : (
-            <Tooltip title="Mute Video">
-              <span
-                className="material-icons material-icons-outlined"
-                onClick={muteVideoLocalTrack}
-              >
-                videocam
-              </span>
-            </Tooltip>
+            <StyledTooltip title="Mute Video">
+              <VideocamOutlinedIcon onClick={muteVideoLocalTrack} />
+            </StyledTooltip>
           )}
-          <Tooltip title="Settings">
-            <span
-              className="material-icons material-icons-outlined"
-              onClick={toggleSettingsDrawer("right", true)}
-            >
-              settings
-            </span>
-          </Tooltip>
+          <StyledTooltip title="Settings">
+            <SettingsIcon onClick={toggleSettingsDrawer("right", true)} />
+          </StyledTooltip>
         </Box>
         <Box className={classes.action}>
           <div className={classes.wrapper}>
@@ -470,45 +454,51 @@ const LobbyRoom = ({ tracks }) => {
                     e.preventDefault();
                     handleSubmit();
                   }
-                  if (e.charCode === 32) {
-                    dispatch(
-                      showNotification({
-                        message: "Space is not allowed",
-                        severity: "warning",
-                        autoHide: true,
-                      })
-                    );
-                  } else if (detectUpperCaseChar(e.key)) {
-                    dispatch(
-                      showNotification({
-                        message: "Capital Letter is not allowed",
-                        severity: "warning",
-                        autoHide: true,
-                      })
-                    );
-                  }
+                  // if (e.charCode === 32) {
+                  //   dispatch(
+                  //     showNotification({
+                  //       message: "Space is not allowed",
+                  //       severity: "warning",
+                  //       autoHide: true,
+                  //     })
+                  //   );
+                  // // } else if (detectUpperCaseChar(e.key)) {
+                  // //   dispatch(
+                  // //     showNotification({
+                  // //       message: "Capital Letter is not allowed",
+                  // //       severity: "warning",
+                  // //       autoHide: true,
+                  // //     })
+                  // //   );
+                  // }
                 }}
                 label="Meeting Title"
-                width="35ch"
+                width="20vw"
                 value={meetingTitle}
                 onChange={handleTitleChange}
               />
               </> : 
               null}
-              <TextInput
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleSubmit();
-                  }
-                }}
-                label="Username"
-                width="35ch"
-                value={name}
-                onChange={handleUserNameChange}
-              />
+              <Box style={{marginTop: '1vh', marginBottom: '1vh'}}>
+                <TextInput
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
+                  }}
+                  label="Username"
+                  width="20vw"
+                  value={name}
+                  onChange={handleUserNameChange}
+                />
+              </Box>
             </Box>
-            <FancyButton 
+            
+          </div>
+        </Box>
+        <Box style={{textAlign: 'center', position: 'relative'}}>
+        <FancyButton 
               homeButton={true}
               disabled={loading}
               onClick={handleSubmit}
@@ -517,8 +507,7 @@ const LobbyRoom = ({ tracks }) => {
             {loading && (
               <CircularProgress size={24} className={ !queryParams?.meetingId ? classes.buttonProgress : classes.buttonProgressJoin} />
             )}
-          </div>
-        </Box>
+            </Box>
       </Box>
       <DrawerBox
         open={settingsState["right"]}

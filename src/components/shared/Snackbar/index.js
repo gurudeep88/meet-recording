@@ -6,33 +6,6 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { useDispatch } from "react-redux";
 import { showNotification } from "../../../store/actions/notification";
 
-const useStyles = makeStyles(()=>({
-    logo: {
-        display: 'flex',
-        textDecoration: 'none',
-        color: color.white,
-        alignItems: 'center',
-        "&:hover": {
-            textDecoration: 'none',
-            color: color.white,
-        }
-    },
-    logoImage: {
-        width: '38px',
-        height: '38px',
-        marginRight: '10px',
-    },
-    logoText: {
-        fontFamily: `'DM Sans', sans-serif`,
-        width: 'fit-content',
-        height: "63px",
-        display: "flex",
-        alignItems: "center",
-        color: `${color.white}`,
-        fontSize: '1.2rem'
-    },
-}));
-
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
   }
@@ -69,7 +42,7 @@ const SnackbarBox = ({notification}) => {
             autoHideDuration={2000}
             open={open}
         >
-            <Alert severity={notification.severity}>{notification.message}</Alert>
+            <Alert classes={{maxWidth: "auto"}} severity={notification.severity}>{notification.message}</Alert>
         </Snackbar>
     )
 }

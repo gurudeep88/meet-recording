@@ -11,7 +11,9 @@ import React, { useEffect, useState } from "react";
 import { color } from "../../../assets/styles/_color";
 import MicNoneOutlinedIcon from "@material-ui/icons/MicNoneOutlined";
 import MicOffOutlinedIcon from "@material-ui/icons/MicOffOutlined";
+import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
 import { useDispatch, useSelector } from "react-redux";
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import SearchBox from "../SearchBox";
 import classnames from "classnames";
 import CopyMeetingLink from "../CopyMeetingLink";
@@ -139,7 +141,7 @@ const ParticipantDetails = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   
-  const { pinnedParticipantId, raisedHandParticipantIds } = useSelector(state => state.layout);  
+  const { pinnedParticipant, raisedHandParticipantIds } = useSelector(state => state.layout);  
   const dispatch = useDispatch();
   
   const handleMenuClick = (event) => {
@@ -186,15 +188,13 @@ const getAvatarColor =  (id)=> {
 const getOptions = (participantId, role) => { 
   return [
   {
-    icon: <span className={pinnedParticipantId ===participantId ? classnames("material-icons material-icons-outlined", classes.pin): "material-icons material-icons-outlined"}>push_pin</span>,
-    text:  pinnedParticipantId ===participantId ? "Unpin from screen" : "Pin to screen",
-    onClick: ()=>pinnedParticipantId ===participantId ? togglePinParticipant(null) : togglePinParticipant(participantId) 
+    icon: <span className={pinnedParticipant.participantId ===participantId ? classnames("material-icons material-icons-outlined", classes.pin): "material-icons material-icons-outlined"}>push_pin</span>,
+    text:  pinnedParticipant.participantId ===participantId ? "Unpin from screen" : "Pin to screen",
+    onClick: ()=>pinnedParticipant.participantId ===participantId ? togglePinParticipant(null) : togglePinParticipant(participantId) 
   },
   {
     icon: (
-      <span className="material-icons material-icons-outlined">
-        remove_circle_outline
-      </span>
+     <RemoveCircleOutlineIcon />
     ),
     text: "Remove from the call",
     onClick: (event, index)=>{ 
@@ -244,17 +244,7 @@ const getOptions = (participantId, role) => {
                   <MicNoneOutlinedIcon />
                 )}
                 <Tooltip title="More Actions">
-                  <span
-                    className={classnames(
-                      "material-icons material-icons-outlined",
-                      classes.more
-                    )}
-                    onClick={handleMenuClick}
-                    aria-controls="more-action-menu" 
-                    aria-haspopup="true"
-                  >
-                    more_vert
-                  </span>
+                  <MoreVertOutlinedIcon className={classes.more} onClick={handleMenuClick}/>
                 </Tooltip>
                 {anchorEl && <MenuBox
                   anchorEl={anchorEl}
@@ -301,17 +291,7 @@ const getOptions = (participantId, role) => {
                     <MicNoneOutlinedIcon />
                   )}
                   <Tooltip title="More Actions">
-                    <span
-                      className={classnames(
-                        "material-icons material-icons-outlined",
-                        classes.more
-                      )}
-                      aria-controls="more-action-menu" 
-                      aria-haspopup="true"
-                      onClick={handleMenuClick}
-                    >
-                      more_vert
-                    </span>
+                    <MoreVertOutlinedIcon className={classes.more} onClick={handleMenuClick}/>
                   </Tooltip>
                   {anchorEl && <MenuBox
                     anchorEl={anchorEl}

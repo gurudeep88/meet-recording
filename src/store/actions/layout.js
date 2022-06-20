@@ -15,10 +15,10 @@ export const setFullScreen = (mode) => {
 }
 
 
-export const setPinParticipant = (id) => {
+export const setPinParticipant = (id, type) => {
     return {
         type: Constants.SET_PIN_PARTICIPANT,
-        payload: id,
+        payload: { participantId: id, type},
     }
 }
 

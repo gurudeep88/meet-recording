@@ -5,7 +5,7 @@ import ActionButtons from '../../components/meeting/ActionButtons';
 import SariskaMediaTransport from 'sariska-media-transport';
 import ReconnectDialog from "../../components/shared/ReconnectDialog";
 import { useDispatch, useSelector } from "react-redux";
-import { addRemoteTrack, participantLeft, removeRemoteTrack, remoteTrackMutedChanged } from "../../store/actions/track";
+import { addRemoteTrack, participantLeft, removeRemoteTrack, updateLocalTrack , remoteTrackMutedChanged } from "../../store/actions/track";
 import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
 import PresentationLayout from "../../components/meeting/PresentationLayout";
@@ -63,21 +63,24 @@ const Meeting = () => {
     }
 
     const deviceListChanged = async (devices) => {
-        // const [audioTrack, videoTrack] = localTracks;
-        // const options = {
-        //     devices: ["audio", "video"],
-        //     resolution
-        // };
-        // const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
-        // await conference.replaceTrack(audioTrack, newAudioTrack);
-        // await conference.replaceTrack(videoTrack, newVideoTrack);
-        // dispatch(updateLocalTrack(audioTrack, newAudioTrack));
-        // dispatch(updateLocalTrack(videoTrack, newVideoTrack));
+        const audioTrack = localTracks.find(track=>track.getType()==="audio");
+        const videoTrack = localTracks.find(track=>track.getType()==="video");
+        const options = {
+            devices: ["audio", "video"],
+            resolution
+        };
+        audioTrack.stopStream();
+        videoTrack.stopStream();
+        const [newAudioTrack, newVideoTrack] = await SariskaMediaTransport.createLocalTracks(options);
+        await conference.replaceTrack(audioTrack, newAudioTrack);
+        await conference.replaceTrack(videoTrack, newVideoTrack);
+        dispatch(updateLocalTrack(audioTrack, newAudioTrack));
+        dispatch(updateLocalTrack(videoTrack, newVideoTrack));
     }
     
     const audioOutputDeviceChanged = (deviceId)=> {
-        //  console.log("audio output deviceId", deviceId);
-        //  SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
+         console.log("audio output deviceId", deviceId);
+         SariskaMediaTransport.mediaDevices.setAudioOutputDevice(deviceId);
     }
 
     const destroy = async () => {
@@ -143,8 +146,11 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
-            console.log("dominant speaker", conference.participants[id]?._identity?.user?.name, id);
             setDominantSpeakerId(id);
+        });
+        
+        conference.addEventListener(SariskaMediaTransport.events.conference.LAST_N_ENDPOINTS_CHANGED, (enterIds, exitingIds) => {
+            console.log("LAST_N_ENDPOINTS_CHANGED", enterIds, exitingIds);
         });
         
         conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
@@ -179,7 +185,7 @@ const Meeting = () => {
                 setDominantSpeakerId(null);
             }
 
-            if (id === layout.pinnedParticipantId) {
+            if (id === layout.pinnedParticipant.participantId) {
                 dispatch(setPinParticipant(null))
             }
 
@@ -266,7 +272,7 @@ const Meeting = () => {
         })
  
         preloadIframes(conference);
-        // SariskaMediaTransport.effects.createRnnoiseProcessor();
+        SariskaMediaTransport.effects.createRnnoiseProcessor();
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED, deviceListChanged);
         SariskaMediaTransport.mediaDevices.addEventListener(SariskaMediaTransport.events.mediaDevices.AUDIO_OUTPUT_DEVICE_CHANGED, audioOutputDeviceChanged);
 

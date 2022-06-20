@@ -12,6 +12,18 @@ import { color } from "../../../assets/styles/_color";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import classnames from "classnames";
+import CallEndIcon from '@material-ui/icons/CallEnd';
+import MicIcon from '@material-ui/icons/Mic';
+import MicOffIcon from '@material-ui/icons/MicOff';
+import VideocamIcon from '@material-ui/icons/Videocam';
+import VideocamOffIcon from '@material-ui/icons/VideocamOff';
+import ScreenShareIcon from '@material-ui/icons/ScreenShare';
+import PanToolIcon from '@material-ui/icons/PanTool';
+import GroupIcon from '@material-ui/icons/Group';
+import ChatIcon from '@material-ui/icons/Chat';
+import ViewListIcon from '@material-ui/icons/ViewList';
+import ViewComfyIcon from '@material-ui/icons/ViewComfy';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {
   addLocalTrack,
   localTrackMutedChanged,
@@ -41,6 +53,7 @@ import MoreAction from "../../shared/MoreAction";
 import DrawerBox from "../../shared/DrawerBox";
 import { addSubtitle } from "../../../store/actions/subtitle";
 import { showSnackbar } from "../../../store/actions/snackbar";
+import StyledTooltip from "../../shared/StyledTooltip";
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -60,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     position: "fixed",
     color: color.white,
-    "& span.material-icons": {
+    "& svg": {
       padding: "8px",
       borderRadius: "8px",
       marginRight: "2px",
@@ -89,6 +102,11 @@ const useStyles = makeStyles((theme) => ({
   separator: {
     marginLeft: "10px",
     marginRight: "10px",
+  },
+  screenShare: {
+    padding: "8px",
+    marginRight: "2px",
+    borderRadius: "8px"
   },
   permissions: {
     display: "flex",
@@ -216,38 +234,34 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   };
 
   const shareScreen = async () => {
-    const videoTrack = localTracks.find(
-      (track) => track.videoType === "camera"
-    );
-    const [desktopTrack] = await SariskaMediaTransport.createLocalTracks({
-      resolution: 720,
-      devices: ["desktop"],
-    });
-
-    await conference.replaceTrack(videoTrack, desktopTrack);
+    let desktopTrack;
+    try {
+      const tracks = await SariskaMediaTransport.createLocalTracks({
+        resolution: 720,
+        devices: ["desktop"],
+      });
+      desktopTrack = tracks.find(track=>track.videoType === "desktop");
+    } catch(e) {
+      dispatch(showSnackbar({autoHide: true, message: "Oops, Something wrong with screen sharing permissions. Try reload"}));
+      return;
+    }
+    await conference.addTrack(desktopTrack);
     desktopTrack.addEventListener(
       SariskaMediaTransport.events.track.LOCAL_TRACK_STOPPED,
       async () => {
         stopPresenting();
       }
     );
-    setPresenting(true);
     conference.setLocalParticipantProperty("presenting", "start");
     dispatch(addLocalTrack(desktopTrack));
     dispatch(setPresenter({ participantId: conference.myUserId(), presenter: true }));
+    setPresenting(true);
   };
 
   const stopPresenting = async () => {
-    const videoTrack = localTracks.find(
-      (track) => track.videoType === "camera"
-    );
-    const desktopTrack = localTracks.find(
-      (track) => track.videoType === "desktop"
-    );
-    await conference.replaceTrack(desktopTrack, videoTrack);
-    dispatch(
-      setPresenter({ participantId: conference.myUserId(), presenter: false })
-    );
+    const desktopTrack = localTracks.find(track => track.videoType === "desktop");        
+    await conference.removeTrack(desktopTrack);
+    dispatch(setPresenter({ participantId: conference.myUserId(), presenter: false }));
     dispatch(removeLocalTrack(desktopTrack));
     conference.setLocalParticipantProperty("presenting", "stop");
     setPresenting(false);
@@ -378,7 +392,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   }
 
   useEffect(() => {
-    let doit;
+    // let doit;
     // document.documentElement.addEventListener('mouseleave', () => skipResize = false);
     // document.documentElement.addEventListener('mouseenter', () => skipResize = true)
 
@@ -544,159 +558,88 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         <Box className={classes.separator}>|</Box>
         <Box>{profile.meetingTitle}</Box>
       </Box>
-      <Tooltip title="Leave Call">
-        <span
-          className={classNames(
-            "material-icons material-icons-outlined",
-            classes.end
-          )}
-          onClick={leaveConference}
-        >
-          call_end
-        </span>
-      </Tooltip>
+      <StyledTooltip title="Leave Call">
+        <CallEndIcon  onClick={leaveConference} className={classes.end} />
+      </StyledTooltip>
       <Box className={classes.permissions}>
-        <Tooltip title={audioTrack ? audioTrack?.isMuted() ? "Unmute Audio" : "Mute Audio" : "Check the mic or Speaker"}>
+        <StyledTooltip title={audioTrack ? audioTrack?.isMuted() ? "Unmute Audio" : "Mute Audio" : "Check the mic or Speaker"}>
           {audioTrack ? audioTrack?.isMuted() ? (
-            <span
-              className={classnames("material-icons material-icons-outlined", classes.active)}
-              onClick={unmuteAudio}
-            >
-              mic_off
-            </span>
+            <MicOffIcon  onClick={unmuteAudio} className={classes.active} />
           ) : (
-            <span
-              className="material-icons material-icons-outlined"
-              onClick={muteAudio}
-            >
-              mic_none
-            </span>
-          ) : <span
-            className="material-icons material-icons-outlined"
-            style={{ cursor: 'unset' }}
-          >
-            mic_none
-          </span>
+            <MicIcon onClick={muteAudio} />
+          ) : 
+          <MicIcon onClick={muteAudio} style={{ cursor: 'unset' }} />
           }
-        </Tooltip>
-        <Tooltip title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}>
+        </StyledTooltip>
+        <StyledTooltip title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}>
           {videoTrack?.isMuted() ? (
-            <span
-              className={classnames("material-icons material-icons-outlined", classes.active)}
-              onClick={unmuteVideo}
-            >
-              videocam_off
-            </span>
+            <VideocamOffIcon onClick={unmuteVideo} className={classes.active} />
           ) : (
-            <span
-              className="material-icons material-icons-outlined"
-              onClick={muteVideo}
-            >
-              videocam
-            </span>
+            <VideocamIcon onClick={muteVideo} />
           )}
-        </Tooltip>
+        </StyledTooltip>
         <Tooltip title={presenting ? "Stop Presenting" : "Share Screen"}>
           {presenting ? (
             <span
-              className={classnames("material-icons material-icons-outlined", classes.active)}
+              className={classnames("material-icons material-icons-outlined", classes.active, classes.screenShare)}
               onClick={stopPresenting}
             >
               stop_screen_share
             </span>
           ) : (
             <span
-              className="material-icons material-icons-outlined"
+              className={classnames("material-icons material-icons-outlined", classes.screenShare)}
               onClick={shareScreen}
             >
               screen_share
             </span>
           )}
         </Tooltip>
-        <Tooltip title={raiseHand ? "Hand Down" : "Raise Hand"}>
+        <StyledTooltip title={raiseHand ? "Hand Down" : "Raise Hand"}>
           {raiseHand ? (
-            <span
-              className={classnames("material-icons material-icons-outlined", classes.active, classes.panTool)}
-              onClick={stopRaiseHand}
-            >
-              pan_tool
-            </span>
+            <PanToolIcon onClick={stopRaiseHand} className={classnames(classes.active, classes.panTool)} />
           ) : (
-            <span
-              className={classnames("material-icons material-icons-outlined", classes.panTool)}
-              onClick={startRaiseHand}
-            >
-              pan_tool
-            </span>
+            <PanToolIcon onClick={startRaiseHand} className={classes.panTool} />
           )}
-        </Tooltip>
-        <Tooltip title="Participants Details">
-          <span
-            className="material-icons material-icons-outlined"
-            onClick={toggleParticipantDrawer("right", true)}
-          >
-            group
-          </span>
-        </Tooltip>
+        </StyledTooltip>
+        <StyledTooltip title="Participants Details">
+          <GroupIcon onClick={toggleParticipantDrawer("right", true)} />
+        </StyledTooltip>
         <DrawerBox
           open={participantState["right"]}
           onClose={toggleParticipantDrawer("right", false)}
         >
           {participantList("right")}
         </DrawerBox>
-        <Tooltip title="Chat Box">
+        <StyledTooltip title="Chat Box">
           <StyledBadge badgeContent={unread}>
-            <span
-              className={classnames("material-icons material-icons-outlined", classes.chat)}
-              onClick={toggleChatDrawer("right", true)}
-            >
-              chat
-            </span>
+            <ChatIcon onClick={toggleChatDrawer("right", true)} className={classes.chat} />
           </StyledBadge>
-        </Tooltip>
+        </StyledTooltip>
         <DrawerBox
           open={chatState["right"]}
           onClose={toggleChatDrawer("right", false)}
         >
           {chatList("right")}
         </DrawerBox>
-        <Tooltip
+        <StyledTooltip
           title={
             layout.type === SPEAKER || layout.type === PRESENTATION
               ? "Grid View" : "Speaker View"
           }
         >
           {layout.type === SPEAKER || layout.type === PRESENTATION ? (
-            <span
-              className={classnames(
-                "material-icons material-icons-outlined",
-                classes.subIcon,
-              )}
-              onClick={toggleView}
-            >
-              view_sidebar
-            </span>
+            <ViewListIcon onClick={toggleView} className={classes.subIcon} />
           ) : (
-            <span
-              className={classnames(
-                "material-icons material-icons-outlined",
-                classes.subIcon,
-                classes.active
-              )}
-              onClick={toggleView}
-            >
-              view_comfy
-            </span>
+            <ViewComfyIcon onClick={toggleView} className={classnames(
+              classes.subIcon,
+              classes.active
+            )}/>
           )}
-        </Tooltip>
-        <Tooltip title="More Actions">
-          <span
-            className={classnames("material-icons material-icons-outlined", classes.more)}
-            onClick={toggleMoreActionDrawer("right", true)}
-          >
-            more_vert
-          </span>
-        </Tooltip>
+        </StyledTooltip>
+        <StyledTooltip title="More Actions">
+          <MoreVertIcon onClick={toggleMoreActionDrawer("right", true)} className={classes.more}/>
+        </StyledTooltip>
         <DrawerBox
           open={moreActionState["right"]}
           onClose={toggleMoreActionDrawer("right", false)}

@@ -40,7 +40,7 @@ const Meeting = () => {
     const resolution = useSelector(state=>state.media?.resolution);
     const [dominantSpeakerId, setDominantSpeakerId] = useState(null);
     const [lobbyUser, setLobbyUser] = useState([]);
-    let oldDevices;
+    let oldDevices = useSelector(state=>state?.media?.devices);
 
     const useStyles = makeStyles((theme) => ({
         root: {
@@ -176,6 +176,7 @@ const Meeting = () => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.DOMINANT_SPEAKER_CHANGED, (id) => {
+            console.log("DOMINANT_SPEAKER_CHANGED", id);
             setDominantSpeakerId(id);
         });
         
@@ -208,26 +209,6 @@ const Meeting = () => {
             if (key === "resolution") {
                 dispatch(setUserResolution({ participantId: participant._id, resolution: newValue }));
             }
-        });
-
-        conference.addEventListener(SariskaMediaTransport.events.conference.USER_LEFT, (id) => {
-            if (id === dominantSpeakerId) {
-                setDominantSpeakerId(null);
-            }
-
-            if (id === layout.pinnedParticipant.participantId) {
-                dispatch(setPinParticipant(null))
-            }
-
-            if (layout.presenterParticipantIds.find(item => item === id)) {
-                dispatch(setPresenter({ participantId: id, presenter: null }));
-            }
-
-            if (layout.raisedHandParticipantIds[id]) {
-                dispatch(setRaiseHand({ participantId: id, raiseHand: null }));
-            }
-                
-            dispatch(participantLeft(id));
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.LOBBY_USER_JOINED, (id, displayName) => {
@@ -312,6 +293,33 @@ const Meeting = () => {
             destroy();
         };
     }, [conference]);
+
+    useEffect(()=>{
+        if (!conference) {
+            return;
+        }
+        const userLeft = (id) => {
+            if (id === dominantSpeakerId) {
+                setDominantSpeakerId(null);
+            }
+            if (id === layout.pinnedParticipant.participantId) {
+                dispatch(setPinParticipant(null))
+            }
+
+            if (layout.presenterParticipantIds.find(item => item === id)) {
+                dispatch(setPresenter({ participantId: id, presenter: null }));
+            }
+
+            if (layout.raisedHandParticipantIds[id]) {
+                dispatch(setRaiseHand({ participantId: id, raiseHand: null }));
+            }
+            dispatch(participantLeft(id));
+        };
+        conference.addEventListener(SariskaMediaTransport.events.conference.USER_LEFT, userLeft);
+        return()=> {
+            conference.removeEventListener(SariskaMediaTransport.events.conference.USER_LEFT, userLeft);
+        }
+    },[ conference, layout]);
 
     useEffect(()=>{
         SariskaMediaTransport.setNetworkInfo({ isOnline });

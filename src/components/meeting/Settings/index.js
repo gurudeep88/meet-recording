@@ -217,7 +217,7 @@ const useStyles = makeStyles((theme) => ({
 const SettingsBox = ({ tracks }) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
-  const [devices, setDevices] = useState([]);
+  const devices = useSelector(state=>state?.media?.devices);
   const [microphoneOpen, setMicrophoneOpen] = React.useState(false);
   const [speakerOpen, setSpeakerOpen] = React.useState(false);
   const [cameraOpen, setCameraOpen] = React.useState(false);
@@ -230,14 +230,6 @@ const SettingsBox = ({ tracks }) => {
   const dispatch = useDispatch();
   const audioTrack = localTracks.find((track) => track.isAudioTrack());
   const videoTrack = localTracks.find((track) => track.isVideoTrack());
-
-
-  useEffect(() => {
-    SariskaMediaTransport.mediaDevices.enumerateDevices((allDevices) => {
-      dispatch(setDevices(allDevices));
-      return setDevices(allDevices);
-    });
-  }, []);
 
   useEffect(() => {
     if (!audioTrack) {

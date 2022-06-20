@@ -54,6 +54,7 @@ export const layout = (state = initialState, action) => {
             return {...state};
         case SET_PIN_PARTICIPANT:
             state.pinnedParticipant = action.payload.participantId ? {isPresenter: action.payload.type, participantId: action.payload.participantId} : {} ;
+            console.log("state.pinnedParticipant", state.pinnedParticipant);
             return {...state};
         case SET_PRESENTATION_TYPE:
             state.presentationType = action.payload.presentationType;

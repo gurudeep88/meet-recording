@@ -4,17 +4,13 @@ import {makeStyles, Box, Card, Grid, Typography, Tooltip} from "@material-ui/cor
 import {color} from "../../assets/styles/_color";
 import LobbyRoom from "../../components/home/LobbyRoom";
 import SariskaMediaTransport from "sariska-media-transport";
-import {addLocalTrack,remoteAllLocalTracks} from "../../store/actions/track";
+import {addLocalTrack} from "../../store/actions/track";
 import {useDispatch, useSelector} from "react-redux";
 import googleApi from "../../utils/google-apis";
 import {setProfile} from "../../store/actions/profile";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import AddIcon from '@material-ui/icons/Add';
-import {formatAMPM, getMeetingId} from "../../utils";
-import microsoftLogo from '../../assets/images/shared/microsoftLogo.svg'; // Tell Webpack this JS file uses this image
-import slack from '../../assets/images/shared/slack.png'; // Tell Webpack this JS file uses this image
+import {getMeetingId} from "../../utils";
 import { microsoftCalendarApi } from "../../utils/microsoft-apis";
-import { conference } from "../../store/reducers/conference";
+import { setDevices } from "../../store/actions/media";
 
 const useStyles = makeStyles((theme) => ({
     googleBtn: {
@@ -221,6 +217,12 @@ const Home = () => {
     const Join = async (meetingUrl) => {
         window.location.href = meetingUrl;
     }
+
+    useEffect(() => {
+        SariskaMediaTransport.mediaDevices.enumerateDevices((allDevices) => {
+          dispatch(setDevices(allDevices));
+        });
+      }, []);
 
     useEffect(()=>{
         if (iAmRecorder) {

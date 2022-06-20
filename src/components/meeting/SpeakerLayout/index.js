@@ -75,7 +75,6 @@ const SpeakerLayout = ({dominantSpeakerId}) => {
         viewportWidth = viewportWidth - 48; 
         justifyContent = "space-evenly";
     }
-
     return (
         <Box style={{justifyContent}}  className={activeClasses} >
             <VideoBox

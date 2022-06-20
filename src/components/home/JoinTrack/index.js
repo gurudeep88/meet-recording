@@ -44,6 +44,9 @@ const JoinTrack = ({ tracks, name }) => {
       width: '200px',
       "& span": {
           fontSize: '150px'
+      },
+      "& svg": {
+          fontSize: "150px"
       }
     },
     videoWrapper: {

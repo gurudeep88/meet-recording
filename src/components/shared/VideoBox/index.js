@@ -5,8 +5,8 @@ import Video from "../Video";
 import Audio from "../Audio";
 import PanTool from "@material-ui/icons/PanTool";
 import {useDispatch, useSelector} from "react-redux";
-import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
-import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
+import MicIcon from '@material-ui/icons/Mic';
+import MicOffIcon from '@material-ui/icons/MicOff';
 import {setPinParticipant} from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
@@ -180,7 +180,7 @@ const VideoBox = ({
              >
             { conference?.getParticipantCount()>1 && isActiveSpeaker && !isPresenter && <div className={classes.videoBorder}></div>}    
             <Box className={classnames(classes.audioBox, {audioBox: true})}>
-                { audioTrack?.isMuted() ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon />
+                { audioTrack?.isMuted() ? <MicOffIcon /> : <MicIcon />
             }
                 { !audioTrack?.isLocal() && <Audio track={audioTrack}/> }
             </Box>

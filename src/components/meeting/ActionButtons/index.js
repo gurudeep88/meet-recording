@@ -18,6 +18,7 @@ import MicOffIcon from '@material-ui/icons/MicOff';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import ScreenShareIcon from '@material-ui/icons/ScreenShare';
+import StopScreenShareIcon from '@material-ui/icons/StopScreenShare';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import GroupIcon from '@material-ui/icons/Group';
 import ChatIcon from '@material-ui/icons/Chat';
@@ -580,19 +581,11 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         </StyledTooltip>
         <StyledTooltip title={presenting ? "Stop Presenting" : "Share Screen"}>
           {presenting ? (
-            <span
-              className={classnames("material-icons material-icons-outlined", classes.active, classes.screenShare)}
-              onClick={stopPresenting}
-            >
-              stop_screen_share
-            </span>
+            <StopScreenShareIcon className={classnames(classes.active, classes.screenShare)}
+            onClick={stopPresenting} />
           ) : (
-            <span
-              className={classnames("material-icons material-icons-outlined", classes.screenShare)}
-              onClick={shareScreen}
-            >
-              screen_share
-            </span>
+            <ScreenShareIcon className={ classes.screenShare}
+            onClick={shareScreen} />
           )}
         </StyledTooltip>
         <StyledTooltip title={raiseHand ? "Hand Down" : "Raise Hand"}>

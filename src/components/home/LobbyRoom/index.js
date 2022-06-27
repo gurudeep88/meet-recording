@@ -22,10 +22,10 @@ import { addThumbnailColor } from "../../../store/actions/color";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
-import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
-import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
-import VideocamOffOutlinedIcon from '@material-ui/icons/VideocamOffOutlined';
+import MicIcon from '@material-ui/icons/Mic';
+import MicOffIcon from '@material-ui/icons/MicOff';
+import VideocamIcon from '@material-ui/icons/Videocam';
+import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import SettingsIcon from '@material-ui/icons/Settings';
 import TextInput from "../../shared/TextInput";
 import { setProfile, setMeeting , updateProfile} from "../../../store/actions/profile";
@@ -424,20 +424,20 @@ const LobbyRoom = ({ tracks }) => {
         <Box className={!queryParams.meetingId ? classes.permissions : classes.joinPermissions}>
           {audioTrack?.isMuted() ? (
             <StyledTooltip title="Unmute Audio">
-              <MicOffOutlinedIcon onClick={unmuteAudioLocalTrack} />
+              <MicOffIcon onClick={unmuteAudioLocalTrack} />
             </StyledTooltip>
           ) : (
             <StyledTooltip title="Mute Audio">
-              <MicNoneOutlinedIcon onClick={muteAudioLocalTrack} />
+              <MicIcon onClick={muteAudioLocalTrack} />
             </StyledTooltip>
           )}
           {videoTrack?.isMuted() ? (
             <StyledTooltip title="Unmute Video">
-              <VideocamOffOutlinedIcon onClick={unmuteVideoLocalTrack} />
+              <VideocamOffIcon onClick={unmuteVideoLocalTrack} />
             </StyledTooltip>
           ) : (
             <StyledTooltip title="Mute Video">
-              <VideocamOutlinedIcon onClick={muteVideoLocalTrack} />
+              <VideocamIcon onClick={muteVideoLocalTrack} />
             </StyledTooltip>
           )}
           <StyledTooltip title="Settings">

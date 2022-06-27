@@ -22,19 +22,23 @@ const useStyles = makeStyles((theme) => ({
       background: color.mainGradient,
       width: width || "178.69px",
       color: color.white,
+      border: `1px solid transparent`,
     },
     "&:active": {
       background: color.mainGradient,
       width: width || "178.69px",
       color: color.white,
+      border: `1px solid transparent`,
     },
     "&:focus": {
       background: color.mainGradient,
       width: width || "178.69px",
       color: color.white,
+      border: `1px solid transparent`,
     },
     "&.MuiButton-root.Mui-disabled": {
       color: color.white,
+      border: `1px solid transparent`,
     }
   },
 }));

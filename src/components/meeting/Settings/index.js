@@ -5,14 +5,14 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import SpeakerOutlinedIcon from "@material-ui/icons/SpeakerOutlined";
-import VideocamOutlinedIcon from "@material-ui/icons/VideocamOutlined";
+import SpeakerIcon from "@material-ui/icons/Speaker";
+import VideocamIcon from "@material-ui/icons/Videocam";
 import { color } from "../../../assets/styles/_color";
 import SelectField from "../../shared/SelectField";
 import SariskaMediaTransport from "sariska-media-transport";
 import { useDispatch, useSelector } from "react-redux";
-import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
-import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
+import MicIcon from '@material-ui/icons/Mic';
+import MicOffIcon from '@material-ui/icons/MicOff';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import {
   setCamera,
@@ -417,13 +417,13 @@ const SettingsBox = ({ tracks }) => {
 
   const audioLabel = (
     <Box className={classes.label}>
-      <SpeakerOutlinedIcon className={classes.audioIcon} />
+      <SpeakerIcon className={classes.audioIcon} />
       <Typography className={classes.audioText}>Audio</Typography>
     </Box>
   );
   const videoLabel = (
     <Box className={classes.label}>
-      <VideocamOutlinedIcon className={classes.videoIcon} />
+      <VideocamIcon className={classes.videoIcon} />
       <Typography className={classes.videoText}>Video</Typography>
     </Box>
   );
@@ -433,7 +433,7 @@ const SettingsBox = ({ tracks }) => {
         <Box style={{ display: "flex" }} className={classes.marginBottom}>
           <SelectField data={microphoneData} minWidth={"200px"} width={"200px"} />
           <Box className={classes.microphone}>
-            {audioTrack ? audioTrack?.isMuted() ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon /> : null}
+            {audioTrack ? audioTrack?.isMuted() ? <MicOffIcon /> : <MicIcon /> : null}
             {!audioTrack && (
               <span className={classes.offButton}>
                 Check your mic
@@ -452,7 +452,7 @@ const SettingsBox = ({ tracks }) => {
           <Box>
             <Button
               className={classes.volume}
-              variant="outlined"
+              variant=""
               onClick={handleAudioTest}
             >
               <VolumeUpIcon />

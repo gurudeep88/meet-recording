@@ -31,17 +31,17 @@ const useStyles = makeStyles((theme) => ({
       background: color.mainGradient,
       width: width || "178.69px",
       color: color.white,
-      border: `1px solid transparent`,
+      border: `1px solid ${color.primaryLight}`,
     },
     "&:focus": {
       background: color.mainGradient,
       width: width || "178.69px",
       color: color.white,
-      border: `1px solid transparent`,
+      border: `1px solid ${color.primaryLight}`,
     },
     "&.MuiButton-root.Mui-disabled": {
       color: color.white,
-      border: `1px solid transparent`,
+      border: `1px solid ${color.primaryLight}`,
     }
   },
 }));

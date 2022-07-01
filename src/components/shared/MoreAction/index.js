@@ -6,15 +6,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Typography from "@material-ui/core/Typography";
 import { color } from "../../../assets/styles/_color";
-import { Box, Drawer } from "@material-ui/core";
+import { Box, Drawer, Hidden } from "@material-ui/core";
 import CopyLink from "../CopyLink";
 import { useDispatch, useSelector } from "react-redux";
-import AlbumIcon from '@material-ui/icons/Album';
-import PublicIcon from '@material-ui/icons/Public';
-import FlipToFrontIcon from '@material-ui/icons/FlipToFront';
-import DescriptionIcon from '@material-ui/icons/Description';
-import SettingsIcon from '@material-ui/icons/Settings';
-import CreateIcon from '@material-ui/icons/Create';
+import AlbumIcon from "@material-ui/icons/Album";
+import PublicIcon from "@material-ui/icons/Public";
+import FlipToFrontIcon from "@material-ui/icons/FlipToFront";
+import DescriptionIcon from "@material-ui/icons/Description";
+import SettingsIcon from "@material-ui/icons/Settings";
+import CreateIcon from "@material-ui/icons/Create";
+import CloseIcon from "@material-ui/icons/Close";
+import GroupIcon from "@material-ui/icons/Group";
+import ChatIcon from "@material-ui/icons/Chat";
+import ViewListIcon from "@material-ui/icons/ViewList";
+import ViewComfyIcon from "@material-ui/icons/ViewComfy";
 import {
   DROPBOX_APP_KEY,
   PRESENTATION,
@@ -35,12 +40,12 @@ import DrawerBox from "../DrawerBox";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
+    width: "100%",
     backgroundColor: color.secondary,
-    boxShadow: 'none',
+    boxShadow: "none",
     color: color.white,
     "& .MuiList-padding": {
-      paddingTop: '0px',      
+      paddingTop: "0px",
     },
     "& ul>li:first-child": {
       marginTop: 0,
@@ -49,18 +54,18 @@ const useStyles = makeStyles((theme) => ({
       height: "40px",
       marginTop: "10px",
       marginBottom: "20px",
-      paddingLeft: '6px',
-      borderRadius: '7.5px',
+      paddingLeft: "6px",
+      borderRadius: "7.5px",
       "&:hover": {
         backgroundColor: color.secondaryLight,
-        borderRadius: '7.5px',
+        borderRadius: "7.5px",
       },
     },
     "& span.material-icons": {
       color: color.white,
     },
     "& svg": {
-      color: color.white
+      color: color.white,
     },
   },
   drawer: {
@@ -83,13 +88,25 @@ const useStyles = makeStyles((theme) => ({
     color: color.secondary,
     fontWeight: "900",
   },
+  header: {
+    marginBottom: "24px", 
+    [theme.breakpoints.down("sm")]: {
+      //padding: theme.spacing(0,0,3,0),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    }
+  },
   cardTitle: {
     color: color.white,
     fontWeight: "400",
-    marginLeft: '8px',
-    fontSize: '28px',
-    lineHeight: '1',
-    marginBottom: '24px',
+    marginLeft: "8px",
+    fontSize: "28px",
+    lineHeight: "1",
+    //marginBottom: '24px',
+        [theme.breakpoints.down("sm")]: {
+          fontSize: '24px'
+      }
   },
   urlBox: {
     padding: "24px 10px",
@@ -107,14 +124,23 @@ const useStyles = makeStyles((theme) => ({
   },
   virtualList: {
     overflowY: "scroll",
-    height: '95%',
+    height: "95%",
   },
-  settingsList: {
-
-},
+  settingsList: {},
 }));
 
-export default function MoreAction({dominantSpeakerId, featureStates, setLayoutAndFeature, action }) {
+export default function MoreAction({
+  dominantSpeakerId,
+  featureStates,
+  setLayoutAndFeature,
+  action,
+  onClick,
+  participantOnClick,
+  participantTitle,
+  chatOnClick,
+  chatTitle,
+  layoutOnClick
+}) {
   const classes = useStyles();
   const conference = useSelector((state) => state.conference);
   const layout = useSelector((state) => state.layout);
@@ -239,7 +265,7 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
     );
     const session = await conference.startRecording({
       mode: SariskaMediaTransport.constants.recording.mode.STREAM,
-      streamId: `rtmp://a.rtmp.youtube.com/live2/${streamName}`
+      streamId: `rtmp://a.rtmp.youtube.com/live2/${streamName}`,
     });
     streamingSession.current = session;
     setOpenLivestreamDialog(false);
@@ -267,11 +293,12 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
         autoHide: false,
       })
     );
-    const streamName =  selectedStream.result.items[0]?.cdn?.ingestionInfo?.streamName;
-    setOpenLivestreamDialog(false);  
+    const streamName =
+      selectedStream.result.items[0]?.cdn?.ingestionInfo?.streamName;
+    setOpenLivestreamDialog(false);
     const session = await conference.startRecording({
       mode: SariskaMediaTransport.constants.recording.mode.STREAM,
-      streamId: `rtmp://a.rtmp.youtube.com/live2/${streamName}`
+      streamId: `rtmp://a.rtmp.youtube.com/live2/${streamName}`,
     });
     streamingSession.current = session;
   };
@@ -379,23 +406,29 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
 
   const startWhiteboard = () => {
     stopSharedDocument();
-    setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard",  value: true});
+    setLayoutAndFeature(PRESENTATION, WHITEBOARD, {
+      key: "whiteboard",
+      value: true,
+    });
     conference.setLocalParticipantProperty("whiteboard", "start");
   };
 
   const stopWhiteboard = () => {
-    setLayoutAndFeature(SPEAKER, null, { key: "whiteboard", value:  false});
+    setLayoutAndFeature(SPEAKER, null, { key: "whiteboard", value: false });
     conference.setLocalParticipantProperty("whiteboard", "stop");
   };
 
   const startSharedDocument = () => {
     stopWhiteboard();
-    setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument", value: true});
+    setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, {
+      key: "sharedDocument",
+      value: true,
+    });
     conference.setLocalParticipantProperty("sharedDocument", "start");
   };
 
   const stopSharedDocument = () => {
-    setLayoutAndFeature(SPEAKER, null, { key: "sharedDocument", value: false});
+    setLayoutAndFeature(SPEAKER, null, { key: "sharedDocument", value: false });
     conference.setLocalParticipantProperty("sharedDocument", "stop");
   };
 
@@ -405,17 +438,15 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
       role="presentation"
       onKeyDown={toggleBackgroundDrawer(anchor, false)}
     >
-      <VirtualBackground dominantSpeakerId={dominantSpeakerId} />
+      <VirtualBackground dominantSpeakerId={dominantSpeakerId} VirtualOnClick={toggleBackgroundDrawer(anchor, false)} />
     </Box>
   );
   const settingsList = (anchor) => (
-    <Box
-      onKeyDown={toggleSettingsDrawer(anchor, false)}
-    >
-      <SettingsBox />
+    <Box onKeyDown={toggleSettingsDrawer(anchor, false)}>
+      <SettingsBox onClick={toggleSettingsDrawer("right", false)} />
     </Box>
   );
-  
+
   const closeLiveStreamDialog = () => {
     setOpenLivestreamDialog(false);
   };
@@ -423,10 +454,11 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
   const menuData = [
     {
       icon: (
-        <AlbumIcon className={
-          featureStates.recording
-            ? classes.stopRecording
-            : classes.startRecording
+        <AlbumIcon
+          className={
+            featureStates.recording
+              ? classes.stopRecording
+              : classes.startRecording
           }
         />
       ),
@@ -435,14 +467,16 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
     },
     {
       icon: (
-        <PublicIcon className={
-          featureStates.streaming
-            ? classes.stopRecording
-            : classes.startRecording
-        }/>
+        <PublicIcon
+          className={
+            featureStates.streaming
+              ? classes.stopRecording
+              : classes.startRecording
+          }
+        />
       ),
       title: featureStates.streaming ? "Stop Streaming" : "Start Streaming",
-      onClick: featureStates.streaming ? stopStreaming: startStreaming,
+      onClick: featureStates.streaming ? stopStreaming : startStreaming,
     },
     // {
     //   icon: (
@@ -466,30 +500,70 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
     //   onClick: caption ? stopCaption : startCaption,
     // },
     {
-      icon: (
-        <FlipToFrontIcon />
-      ),
+      icon: <FlipToFrontIcon />,
       title: "Virtual Background",
       onClick: toggleBackgroundDrawer("right", true),
     },
     {
       icon: (
-        <CreateIcon className={featureStates.whiteboard ? classes.stopRecording : classes.startRecording} />
+        <CreateIcon
+          className={
+            featureStates.whiteboard
+              ? classes.stopRecording
+              : classes.startRecording
+          }
+        />
       ),
       title: featureStates.whiteboard ? "Stop Whiteboard" : "Start Whiteboard",
-      onClick: featureStates.whiteboard ? stopWhiteboard: startWhiteboard,
+      onClick: featureStates.whiteboard ? stopWhiteboard : startWhiteboard,
     },
     {
       icon: (
-        <DescriptionIcon className={featureStates.sharedDocument ? classes.stopRecording : classes.startRecording}/>
+        <DescriptionIcon
+          className={
+            featureStates.sharedDocument
+              ? classes.stopRecording
+              : classes.startRecording
+          }
+        />
       ),
-      title: featureStates.sharedDocument ? "Stop Shared Documents" : "Start Shared Documents",
-      onClick: featureStates.sharedDocument ? stopSharedDocument: startSharedDocument,
+      title: featureStates.sharedDocument
+        ? "Stop Shared Documents"
+        : "Start Shared Documents",
+      onClick: featureStates.sharedDocument
+        ? stopSharedDocument
+        : startSharedDocument,
     },
     {
       icon: (
-        <SettingsIcon style={{ color: color.white }}/>
+        <GroupIcon />
       ),
+      title: participantTitle,
+      onClick: participantOnClick,
+    },
+    {
+      icon: (
+        <ChatIcon />
+      ),
+      title: chatTitle,
+      onClick: chatOnClick,
+    },
+    // {
+    //   icon: 
+    //     layout.type === SPEAKER || layout.type === PRESENTATION ? (
+    //       <ViewListIcon className={classes.subIcon} />
+    //     ) : (
+    //       <ViewComfyIcon
+    //         className={classnames(classes.subIcon, classes.active)}
+    //       />
+    //     ),
+    //   title: layout.type === SPEAKER || layout.type === PRESENTATION
+    //           ? "Grid View"
+    //           : "Speaker View",
+    //   onClick: layoutOnClick,
+    // },
+    {
+      icon: <SettingsIcon style={{ color: color.white }} />,
       title: "Settings",
       onClick: toggleSettingsDrawer("right", true),
     },
@@ -516,20 +590,43 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
   return (
     <>
       <Paper className={classes.root}>
-      <Typography variant="h6" className={classes.cardTitle}>Activities</Typography>
+        <Box className={classes.header}>
+          <Typography variant="h6" className={classes.cardTitle}>
+            Activities
+          </Typography>
+          <Hidden mdUp>
+            <CloseIcon onClick={onClick} />
+          </Hidden>
+        </Box>
         <MenuList>
           {menuData.map((menu, index) => (
-            <MenuItem onClick={menu.onClick} key={index}>
-              <ListItemIcon>{menu.icon}</ListItemIcon>
-              <Typography variant="inherit">{menu.title}</Typography>
-            </MenuItem>
+            <>
+              {(index === 3 || index === 4) ? (
+                <Hidden mdDown>
+                  <MenuItem onClick={menu.onClick} key={index}>
+                    <ListItemIcon>{menu.icon}</ListItemIcon>
+                    <Typography variant="inherit">{menu.title}</Typography>
+                  </MenuItem>
+                </Hidden>
+              ) : (index === 5 || index === 6 || index === 7) ? (
+                <Hidden mdUp>
+                  <MenuItem onClick={menu.onClick} key={index}>
+                    <ListItemIcon>{menu.icon}</ListItemIcon>
+                    <Typography variant="inherit">{menu.title}</Typography>
+                  </MenuItem>
+                </Hidden>
+              )
+              : (
+                <MenuItem onClick={menu.onClick} key={index}>
+                  <ListItemIcon>{menu.icon}</ListItemIcon>
+                  <Typography variant="inherit">{menu.title}</Typography>
+                </MenuItem>
+              )}
+            </>
           ))}
         </MenuList>
       </Paper>
-      <DrawerBox
-        open={state["right"]}
-        onClose={toggleDrawer("right", false)}
-      >
+      <DrawerBox open={state["right"]} onClose={toggleDrawer("right", false)}>
         {detailedList("right")}
       </DrawerBox>
       <DrawerBox
@@ -544,8 +641,13 @@ export default function MoreAction({dominantSpeakerId, featureStates, setLayoutA
       >
         {settingsList("right")}
       </DrawerBox>
-      <LiveStreamDialog close={closeLiveStreamDialog} createLiveStream={createLiveStream} open={openLivestreamDialog} broadcasts={broadcasts}
-                              selectedBroadcast={selectedBroadcast}/>
+      <LiveStreamDialog
+        close={closeLiveStreamDialog}
+        createLiveStream={createLiveStream}
+        open={openLivestreamDialog}
+        broadcasts={broadcasts}
+        selectedBroadcast={selectedBroadcast}
+      />
     </>
   );
 }

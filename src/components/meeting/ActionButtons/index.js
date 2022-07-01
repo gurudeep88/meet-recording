@@ -2,6 +2,7 @@ import {
   Badge,
   Box,
   Drawer,
+  Hidden,
   makeStyles,
   Tooltip,
   Typography,
@@ -12,18 +13,19 @@ import { color } from "../../../assets/styles/_color";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import classnames from "classnames";
-import CallEndIcon from '@material-ui/icons/CallEnd';
-import MicIcon from '@material-ui/icons/Mic';
-import MicOffIcon from '@material-ui/icons/MicOff';
-import VideocamIcon from '@material-ui/icons/Videocam';
-import VideocamOffIcon from '@material-ui/icons/VideocamOff';
-import ScreenShareIcon from '@material-ui/icons/ScreenShare';
-import PanToolIcon from '@material-ui/icons/PanTool';
-import GroupIcon from '@material-ui/icons/Group';
-import ChatIcon from '@material-ui/icons/Chat';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewComfyIcon from '@material-ui/icons/ViewComfy';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import CallEndIcon from "@material-ui/icons/CallEnd";
+import MicIcon from "@material-ui/icons/Mic";
+import MicOffIcon from "@material-ui/icons/MicOff";
+import VideocamIcon from "@material-ui/icons/Videocam";
+import VideocamOffIcon from "@material-ui/icons/VideocamOff";
+import ScreenShareIcon from "@material-ui/icons/ScreenShare";
+import PanToolIcon from "@material-ui/icons/PanTool";
+import GroupIcon from "@material-ui/icons/Group";
+import ChatIcon from "@material-ui/icons/Chat";
+import ViewListIcon from "@material-ui/icons/ViewList";
+import ViewComfyIcon from "@material-ui/icons/ViewComfy";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import CloseIcon from '@material-ui/icons/Close';
 import {
   addLocalTrack,
   localTrackMutedChanged,
@@ -39,11 +41,21 @@ import {
   RECORDING_ERROR_CONSTANTS,
   WHITEBOARD,
   GET_PRESENTATION_STATUS,
-  RECEIVED_PRESENTATION_STATUS
+  RECEIVED_PRESENTATION_STATUS,
 } from "../../../constants";
-import { setFullScreen, setLayout, setPresenter, setPresentationtType } from "../../../store/actions/layout";
+import {
+  setFullScreen,
+  setLayout,
+  setPresenter,
+  setPresentationtType,
+} from "../../../store/actions/layout";
 import { clearAllReducers } from "../../../store/actions/conference";
-import { exitFullscreen, formatAMPM, isFullscreen, requestFullscreen } from "../../../utils";
+import {
+  exitFullscreen,
+  formatAMPM,
+  isFullscreen,
+  requestFullscreen,
+} from "../../../utils";
 import classNames from "classnames";
 import ParticipantDetails from "../../shared/ParticipantDetails";
 import { unreadMessage } from "../../../store/actions/chat";
@@ -59,7 +71,7 @@ const StyledBadge = withStyles((theme) => ({
   badge: {
     background: color.primary,
     top: 6,
-    right: 10
+    right: 10,
   },
 }))(Badge);
 
@@ -77,6 +89,11 @@ const useStyles = makeStyles((theme) => ({
       padding: "8px",
       borderRadius: "8px",
       marginRight: "2px",
+      [theme.breakpoints.down("sm")]: {
+        background: color.secondary,
+        borderRadius: '50%',
+        marginRight: "12px",
+      },
       "&:hover": {
         opacity: "0.8",
         cursor: "pointer",
@@ -90,8 +107,8 @@ const useStyles = makeStyles((theme) => ({
     color: color.red,
   },
   panTool: {
-    fontSize: '18px',
-    padding: '12px !important',
+    fontSize: "18px",
+    padding: "12px !important",
     marginRight: "12px",
   },
   infoContainer: {
@@ -106,7 +123,12 @@ const useStyles = makeStyles((theme) => ({
   screenShare: {
     padding: "8px",
     marginRight: "2px",
-    borderRadius: "8px"
+    borderRadius: "8px",
+    [theme.breakpoints.down("sm")]: {
+      background: color.secondary,
+      borderRadius: '50%',
+      marginRight: "12px",
+    },
   },
   permissions: {
     display: "flex",
@@ -115,6 +137,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: color.secondary,
     borderRadius: "7.5px",
     marginRight: "24px",
+    [theme.breakpoints.down("sm")]: {
+      backgroundColor: "transparent",
+      margin: 'auto'
+    },
   },
   end: {
     background: `${color.red} !important`,
@@ -131,6 +157,11 @@ const useStyles = makeStyles((theme) => ({
       cursor: "pointer",
       color: `${color.white} !important`,
     },
+    [theme.breakpoints.down("sm")]: {
+      padding: "8px !important",
+      width: "40px",
+      fontSize: "24px",
+    },
   },
   subIcon: {
     border: "none !important",
@@ -144,38 +175,50 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiDrawer-paper": {
       overflowX: "hidden",
       top: "16px",
-      bottom: '80px',
+      bottom: "80px",
       right: "16px",
       borderRadius: "10px",
-      height: '85%',
-      width: '360px',
+      height: "85%",
+      width: "360px",
       backgroundColor: color.secondary,
-      overflowY: 'auto'
+      overflowY: "auto",
     },
   },
   list: {
     padding: theme.spacing(3, 3, 0, 3),
-    height: '100%'
+    height: "100%",
   },
   title: {
     color: color.white,
     fontWeight: "400",
-    marginLeft: '8px',
-    fontSize: '28px',
-    lineHeight: '1'
+    marginLeft: "8px",
+    fontSize: "28px",
+    lineHeight: "1",
+    [theme.breakpoints.down("sm")]: {
+      marginLeft: 0,
+      fontSize: '24px'
+    }
+  },
+  participantHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    "& svg": {
+      color: color.white
+    }
   },
   chatList: {
     height: "100%",
     padding: theme.spacing(3, 3, 0, 3),
   },
   chat: {
-    marginRight: '0px !important',
-    fontSize: '20px',
-    padding: '10px !important'
+    marginRight: "0px !important",
+    fontSize: "20px",
+    padding: "10px !important",
   },
   moreActionList: {
     height: "100%",
-    width: '260px',
+    width: "260px",
     padding: theme.spacing(1, 0, 0, 0),
     backgroundColor: color.secondary,
   },
@@ -183,8 +226,12 @@ const useStyles = makeStyles((theme) => ({
 
 const ActionButtons = ({ dominantSpeakerId }) => {
   const history = useHistory();
-  const audioTrack = useSelector((state) => state.localTrack).find(track => track.isAudioTrack());
-  const videoTrack = useSelector((state) => state.localTrack).find(track => track.isVideoTrack());
+  const audioTrack = useSelector((state) => state.localTrack).find((track) =>
+    track.isAudioTrack()
+  );
+  const videoTrack = useSelector((state) => state.localTrack).find((track) =>
+    track.isVideoTrack()
+  );
   const classes = useStyles();
   const dispatch = useDispatch();
   const conference = useSelector((state) => state.conference);
@@ -211,7 +258,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   const action = (actionData) => {
     featureStates[actionData.key] = actionData.value;
     setFeatureStates({ ...featureStates });
-  }
+  };
 
   const muteAudio = async () => {
     await audioTrack?.mute();
@@ -240,9 +287,15 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         resolution: 720,
         devices: ["desktop"],
       });
-      desktopTrack = tracks.find(track=>track.videoType === "desktop");
-    } catch(e) {
-      dispatch(showSnackbar({autoHide: true, message: "Oops, Something wrong with screen sharing permissions. Try reload"}));
+      desktopTrack = tracks.find((track) => track.videoType === "desktop");
+    } catch (e) {
+      dispatch(
+        showSnackbar({
+          autoHide: true,
+          message:
+            "Oops, Something wrong with screen sharing permissions. Try reload",
+        })
+      );
       return;
     }
     await conference.addTrack(desktopTrack);
@@ -254,14 +307,20 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     );
     conference.setLocalParticipantProperty("presenting", "start");
     dispatch(addLocalTrack(desktopTrack));
-    dispatch(setPresenter({ participantId: conference.myUserId(), presenter: true }));
+    dispatch(
+      setPresenter({ participantId: conference.myUserId(), presenter: true })
+    );
     setPresenting(true);
   };
 
   const stopPresenting = async () => {
-    const desktopTrack = localTracks.find(track => track.videoType === "desktop");        
+    const desktopTrack = localTracks.find(
+      (track) => track.videoType === "desktop"
+    );
     await conference.removeTrack(desktopTrack);
-    dispatch(setPresenter({ participantId: conference.myUserId(), presenter: false }));
+    dispatch(
+      setPresenter({ participantId: conference.myUserId(), presenter: false })
+    );
     dispatch(removeLocalTrack(desktopTrack));
     conference.setLocalParticipantProperty("presenting", "stop");
     setPresenting(false);
@@ -270,7 +329,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   const startRaiseHand = () => {
     conference.setLocalParticipantProperty("handraise", "start");
     setRaiseHand(true);
-  }; 
+  };
 
   const stopRaiseHand = () => {
     conference.setLocalParticipantProperty("handraise", "stop");
@@ -289,12 +348,14 @@ const ActionButtons = ({ dominantSpeakerId }) => {
 
   const participantList = (anchor) => (
     <>
-      <Typography
-        variant="h6"
-        className={classes.title}
-      >
-        Participants
-      </Typography>
+      <Box className={classes.participantHeader}>
+        <Typography variant="h6" className={classes.title}>
+          Participants
+        </Typography>
+        <Hidden mdUp>
+          <CloseIcon onClick={toggleParticipantDrawer("right", false)}/>
+        </Hidden>
+      </Box>
       <ParticipantDetails />
     </>
   );
@@ -312,16 +373,23 @@ const ActionButtons = ({ dominantSpeakerId }) => {
 
   const chatList = (anchor) => (
     <>
-      <Typography variant="h6" className={classes.title}>Messages</Typography>
+      <Box className={classes.participantHeader}>
+        <Typography variant="h6" className={classes.title}>
+          Messages
+        </Typography>
+        <Hidden mdUp>
+          <CloseIcon onClick={toggleChatDrawer("right", false)}/>
+        </Hidden>
+      </Box>
       <ChatPanel />
     </>
   );
 
   const toggleFullscreen = () => {
     if (isFullscreen()) {
-        exitFullscreen();
+      exitFullscreen();
     } else {
-        requestFullscreen();
+      requestFullscreen();
     }
   };
 
@@ -347,17 +415,16 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     document.removeEventListener("MSFullscreenChange", AddFShandler);
   };
 
-
-  const resize = ()=>{
+  const resize = () => {
     if (skipResize) {
       return;
     }
-    if( window.innerHeight == window.screen.height) {
+    if (window.innerHeight == window.screen.height) {
       dispatch(setFullScreen(ENTER_FULL_SCREEN_MODE));
     } else {
       dispatch(setFullScreen(EXIT_FULL_SCREEN_MODE));
     }
-  }
+  };
 
   const toggleView = () => {
     if (layout.type === PRESENTATION || layout.type === SPEAKER) {
@@ -381,7 +448,18 @@ const ActionButtons = ({ dominantSpeakerId }) => {
 
   const moreActionList = (anchor) => (
     <>
-      <MoreAction dominantSpeakerId={dominantSpeakerId} action={action} featureStates={featureStates} setLayoutAndFeature={setLayoutAndFeature} />
+      <MoreAction
+        dominantSpeakerId={dominantSpeakerId}
+        action={action}
+        featureStates={featureStates}
+        setLayoutAndFeature={setLayoutAndFeature}
+        onClick={toggleMoreActionDrawer("right", false)}
+        participantOnClick = {toggleParticipantDrawer("right", true)}
+        participantTitle = "Participants Details"
+        chatOnClick = {toggleChatDrawer("right", true)}
+        chatTitle="Chat Box"
+        layoutOnClick = {toggleView}
+      />
     </>
   );
 
@@ -389,7 +467,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     dispatch(setLayout(layoutType));
     dispatch(setPresentationtType({ presentationType }));
     action(actionData);
-  }
+  };
 
   useEffect(() => {
     // let doit;
@@ -399,151 +477,217 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     const interval = setInterval(() => {
       setTime(formatAMPM(new Date()));
     }, 1000);
-    document.addEventListener("dblclick",  toggleFullscreen);
+    document.addEventListener("dblclick", toggleFullscreen);
     // window.addEventListener("resize", ()=> {
     //   clearTimeout(doit);
     //   doit = setTimeout(resize, 250);
     // });
     addFullscreenListeners();
     return () => {
-      document.removeEventListener("dblclick",  toggleFullscreen);
+      document.removeEventListener("dblclick", toggleFullscreen);
       clearInterval(interval);
       removeFullscreenListeners();
-       // window.removeEventListener("resize", resize);
+      // window.removeEventListener("resize", resize);
     };
   }, []);
 
   useEffect(() => {
     if (conference.getParticipantsWithoutHidden()[0]?._id) {
-      setTimeout(() => conference.sendEndpointMessage(conference.getParticipantsWithoutHidden()[0]._id, { action: GET_PRESENTATION_STATUS }), 1000);
+      setTimeout(
+        () =>
+          conference.sendEndpointMessage(
+            conference.getParticipantsWithoutHidden()[0]._id,
+            { action: GET_PRESENTATION_STATUS }
+          ),
+        1000
+      );
     }
     const checkPresentationStatus = (participant, payload) => {
       if (payload?.action === GET_PRESENTATION_STATUS) {
         conference.sendEndpointMessage(participant._id, {
           action: RECEIVED_PRESENTATION_STATUS,
-          status: featureStates.whiteboard ? "whiteboard" : (featureStates.sharedDocument ? "sharedDocument" : 'none')
-        })
+          status: featureStates.whiteboard
+            ? "whiteboard"
+            : featureStates.sharedDocument
+            ? "sharedDocument"
+            : "none",
+        });
       }
 
       if (payload?.action === RECEIVED_PRESENTATION_STATUS) {
         if (payload.status === "whiteboard") {
-          setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard", value: true })
-          action({ key: "sharedDocument", value: false })
+          setLayoutAndFeature(PRESENTATION, WHITEBOARD, {
+            key: "whiteboard",
+            value: true,
+          });
+          action({ key: "sharedDocument", value: false });
         }
 
         if (payload.status === "sharedDocument") {
-          setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument", value: true })
+          setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, {
+            key: "sharedDocument",
+            value: true,
+          });
           action({ key: "whiteboard", value: false });
         }
       }
-    }
-    conference.addEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
+    };
+    conference.addEventListener(
+      SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED,
+      checkPresentationStatus
+    );
     return () => {
-      conference.removeEventListener(SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED, checkPresentationStatus);
-    }
+      conference.removeEventListener(
+        SariskaMediaTransport.events.conference.ENDPOINT_MESSAGE_RECEIVED,
+        checkPresentationStatus
+      );
+    };
   }, [featureStates.whiteboard, featureStates.sharedDocument]);
 
   useEffect(() => {
     conference.getParticipantsWithoutHidden().forEach((item) => {
       if (item._properties?.transcribing) {
-        action({ key: "caption", value: true })
-      }
-
-      if (item._properties?.recording) {
-        action({ key: "recording", value: true })
-      }
-
-      if (item._properties?.streaming) {
-        action({ key: "streaming", value: true })
-      }
-
-      if (item._properties?.whiteboard === "start") {
-        setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard", value: true })
-      }
-
-      if (item._properties?.sharedDocument === "start") {
-        setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument", value: true })
-      }
-    });
-
-    conference.addEventListener(SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED, (participant, key, oldValue, newValue) => {
-      if (key === "whiteboard" && newValue === "start") {
-        setLayoutAndFeature(PRESENTATION, WHITEBOARD, { key: "whiteboard", value: true })
-      }
-
-      if (key === "whiteboard" && newValue === "stop") {
-        setLayoutAndFeature(SPEAKER, null, { key: "whiteboard", value: false })
-      }
-
-      if (key === "sharedDocument" && newValue === "stop") {
-        setLayoutAndFeature(SPEAKER, null, { key: "sharedDocument", value: false })
-      }
-
-      if (key === "sharedDocument" && newValue === "start") {
-        setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, { key: "sharedDocument", value: true })
-      }
-    });
-
-    conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED, (status) => {
-      if (status === "ON") {
-        conference.setLocalParticipantProperty("transcribing", true);
-        dispatch(showSnackbar({ autoHide: true, message: "Caption started" }));
         action({ key: "caption", value: true });
       }
 
-      if (status === "OFF") {
-        conference.removeLocalParticipantProperty("transcribing");
-        dispatch(showSnackbar({ autoHide: true, message: "Caption stopped" }));
-        dispatch(addSubtitle({}));
-        action({ key: "caption", value: false });
+      if (item._properties?.recording) {
+        action({ key: "recording", value: true });
+      }
+
+      if (item._properties?.streaming) {
+        action({ key: "streaming", value: true });
+      }
+
+      if (item._properties?.whiteboard === "start") {
+        setLayoutAndFeature(PRESENTATION, WHITEBOARD, {
+          key: "whiteboard",
+          value: true,
+        });
+      }
+
+      if (item._properties?.sharedDocument === "start") {
+        setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, {
+          key: "sharedDocument",
+          value: true,
+        });
       }
     });
 
-    conference.addEventListener(SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED, (data) => {
-      if (data._status === "on" && data._mode === "stream") {
-        conference.setLocalParticipantProperty("streaming", true);
-        dispatch(showSnackbar({ autoHide: true, message: "Live streaming started" }));
-        action({ key: "streaming", value: true });
-        localStorage.setItem("streaming_session_id", data?._sessionID);
-      }
+    conference.addEventListener(
+      SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED,
+      (participant, key, oldValue, newValue) => {
+        if (key === "whiteboard" && newValue === "start") {
+          setLayoutAndFeature(PRESENTATION, WHITEBOARD, {
+            key: "whiteboard",
+            value: true,
+          });
+        }
 
-      if (data._status === "off" && data._mode === "stream") {
-        conference.removeLocalParticipantProperty("streaming");
-        dispatch(showSnackbar({ autoHide: true, message: "Live streaming stopped" }));
-        action({ key: "streaming", value: false });
-      }
+        if (key === "whiteboard" && newValue === "stop") {
+          setLayoutAndFeature(SPEAKER, null, {
+            key: "whiteboard",
+            value: false,
+          });
+        }
 
-      if (data._status === "on" && data._mode === "file") {
-        conference.setLocalParticipantProperty("recording", true);
-        dispatch(showSnackbar({ autoHide: true, message: "Recording started" }));
-        action({ key: "recording", value: true });
-        localStorage.setItem("recording_session_id", data?._sessionID);
-      }
+        if (key === "sharedDocument" && newValue === "stop") {
+          setLayoutAndFeature(SPEAKER, null, {
+            key: "sharedDocument",
+            value: false,
+          });
+        }
 
-      if (data._status === "off" && data._mode === "file") {
-        conference.removeLocalParticipantProperty("recording");
-        dispatch(showSnackbar({ autoHide: true, message: "Recording stopped" }));
-        action({ key: "recording", value: false });
+        if (key === "sharedDocument" && newValue === "start") {
+          setLayoutAndFeature(PRESENTATION, SHARED_DOCUMENT, {
+            key: "sharedDocument",
+            value: true,
+          });
+        }
       }
+    );
 
-      if (data._mode === "stream" && data._error) {
-        conference.removeLocalParticipantProperty("streaming");
-        dispatch(showSnackbar({
-          autoHide: true,
-          message: RECORDING_ERROR_CONSTANTS[data._error],
-        }));
-        action({ key: "streaming", value: false });
-      }
+    conference.addEventListener(
+      SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED,
+      (status) => {
+        if (status === "ON") {
+          conference.setLocalParticipantProperty("transcribing", true);
+          dispatch(
+            showSnackbar({ autoHide: true, message: "Caption started" })
+          );
+          action({ key: "caption", value: true });
+        }
 
-      if (data._mode === "file" && data._error) {
-        conference.removeLocalParticipantProperty("recording");
-        dispatch(showSnackbar({
-          autoHide: true,
-          message: RECORDING_ERROR_CONSTANTS[data._error],
-        }));
-        action({ key: "recording", value: false });
+        if (status === "OFF") {
+          conference.removeLocalParticipantProperty("transcribing");
+          dispatch(
+            showSnackbar({ autoHide: true, message: "Caption stopped" })
+          );
+          dispatch(addSubtitle({}));
+          action({ key: "caption", value: false });
+        }
       }
-    })
+    );
+
+    conference.addEventListener(
+      SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED,
+      (data) => {
+        if (data._status === "on" && data._mode === "stream") {
+          conference.setLocalParticipantProperty("streaming", true);
+          dispatch(
+            showSnackbar({ autoHide: true, message: "Live streaming started" })
+          );
+          action({ key: "streaming", value: true });
+          localStorage.setItem("streaming_session_id", data?._sessionID);
+        }
+
+        if (data._status === "off" && data._mode === "stream") {
+          conference.removeLocalParticipantProperty("streaming");
+          dispatch(
+            showSnackbar({ autoHide: true, message: "Live streaming stopped" })
+          );
+          action({ key: "streaming", value: false });
+        }
+
+        if (data._status === "on" && data._mode === "file") {
+          conference.setLocalParticipantProperty("recording", true);
+          dispatch(
+            showSnackbar({ autoHide: true, message: "Recording started" })
+          );
+          action({ key: "recording", value: true });
+          localStorage.setItem("recording_session_id", data?._sessionID);
+        }
+
+        if (data._status === "off" && data._mode === "file") {
+          conference.removeLocalParticipantProperty("recording");
+          dispatch(
+            showSnackbar({ autoHide: true, message: "Recording stopped" })
+          );
+          action({ key: "recording", value: false });
+        }
+
+        if (data._mode === "stream" && data._error) {
+          conference.removeLocalParticipantProperty("streaming");
+          dispatch(
+            showSnackbar({
+              autoHide: true,
+              message: RECORDING_ERROR_CONSTANTS[data._error],
+            })
+          );
+          action({ key: "streaming", value: false });
+        }
+
+        if (data._mode === "file" && data._error) {
+          conference.removeLocalParticipantProperty("recording");
+          dispatch(
+            showSnackbar({
+              autoHide: true,
+              message: RECORDING_ERROR_CONSTANTS[data._error],
+            })
+          );
+          action({ key: "recording", value: false });
+        }
+      }
+    );
   }, []);
 
   const leaveConference = () => {
@@ -553,25 +697,41 @@ const ActionButtons = ({ dominantSpeakerId }) => {
 
   return (
     <Box id="footer" className={classes.root}>
-      <Box className={classes.infoContainer}>
-        <Box>{time}</Box>
-        <Box className={classes.separator}>|</Box>
-        <Box>{profile.meetingTitle}</Box>
-      </Box>
-      <StyledTooltip title="Leave Call">
-        <CallEndIcon  onClick={leaveConference} className={classes.end} />
-      </StyledTooltip>
-      <Box className={classes.permissions}>
-        <StyledTooltip title={audioTrack ? audioTrack?.isMuted() ? "Unmute Audio" : "Mute Audio" : "Check the mic or Speaker"}>
-          {audioTrack ? audioTrack?.isMuted() ? (
-            <MicOffIcon  onClick={unmuteAudio} className={classes.active} />
-          ) : (
-            <MicIcon onClick={muteAudio} />
-          ) : 
-          <MicIcon onClick={muteAudio} style={{ cursor: 'unset' }} />
-          }
+      <Hidden mdDown>
+        <Box className={classes.infoContainer}>
+          <Box>{time}</Box>
+          <Box className={classes.separator}>|</Box>
+          <Box>{profile.meetingTitle}</Box>
+        </Box>
+      </Hidden>
+      <Hidden mdDown>
+        <StyledTooltip title="Leave Call">
+          <CallEndIcon onClick={leaveConference} className={classes.end} />
         </StyledTooltip>
-        <StyledTooltip title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}>
+      </Hidden>
+      <Box className={classes.permissions}>
+        <StyledTooltip
+          title={
+            audioTrack
+              ? audioTrack?.isMuted()
+                ? "Unmute Audio"
+                : "Mute Audio"
+              : "Check the mic or Speaker"
+          }
+        >
+          {audioTrack ? (
+            audioTrack?.isMuted() ? (
+              <MicOffIcon onClick={unmuteAudio} className={classes.active} />
+            ) : (
+              <MicIcon onClick={muteAudio} />
+            )
+          ) : (
+            <MicIcon onClick={muteAudio} style={{ cursor: "unset" }} />
+          )}
+        </StyledTooltip>
+        <StyledTooltip
+          title={videoTrack?.isMuted() ? "Unmute Video" : "Mute Video"}
+        >
           {videoTrack?.isMuted() ? (
             <VideocamOffIcon onClick={unmuteVideo} className={classes.active} />
           ) : (
@@ -581,14 +741,21 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         <StyledTooltip title={presenting ? "Stop Presenting" : "Share Screen"}>
           {presenting ? (
             <span
-              className={classnames("material-icons material-icons-outlined", classes.active, classes.screenShare)}
+              className={classnames(
+                "material-icons material-icons-outlined",
+                classes.active,
+                classes.screenShare
+              )}
               onClick={stopPresenting}
             >
               stop_screen_share
             </span>
           ) : (
             <span
-              className={classnames("material-icons material-icons-outlined", classes.screenShare)}
+              className={classnames(
+                "material-icons material-icons-outlined",
+                classes.screenShare
+              )}
               onClick={shareScreen}
             >
               screen_share
@@ -597,48 +764,69 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         </StyledTooltip>
         <StyledTooltip title={raiseHand ? "Hand Down" : "Raise Hand"}>
           {raiseHand ? (
-            <PanToolIcon onClick={stopRaiseHand} className={classnames(classes.active, classes.panTool)} />
+            <PanToolIcon
+              onClick={stopRaiseHand}
+              className={classnames(classes.active, classes.panTool)}
+            />
           ) : (
             <PanToolIcon onClick={startRaiseHand} className={classes.panTool} />
           )}
         </StyledTooltip>
+        <Hidden mdDown>
         <StyledTooltip title="Participants Details">
           <GroupIcon onClick={toggleParticipantDrawer("right", true)} />
         </StyledTooltip>
+        </Hidden>
         <DrawerBox
           open={participantState["right"]}
           onClose={toggleParticipantDrawer("right", false)}
         >
           {participantList("right")}
         </DrawerBox>
+        <Hidden mdDown>
         <StyledTooltip title="Chat Box">
           <StyledBadge badgeContent={unread}>
-            <ChatIcon onClick={toggleChatDrawer("right", true)} className={classes.chat} />
+            <ChatIcon
+              onClick={toggleChatDrawer("right", true)}
+              className={classes.chat}
+            />
           </StyledBadge>
         </StyledTooltip>
+        </Hidden>
         <DrawerBox
           open={chatState["right"]}
           onClose={toggleChatDrawer("right", false)}
         >
           {chatList("right")}
         </DrawerBox>
+        <Hidden mdDown>
         <StyledTooltip
           title={
             layout.type === SPEAKER || layout.type === PRESENTATION
-              ? "Grid View" : "Speaker View"
+              ? "Grid View"
+              : "Speaker View"
           }
         >
           {layout.type === SPEAKER || layout.type === PRESENTATION ? (
             <ViewListIcon onClick={toggleView} className={classes.subIcon} />
           ) : (
-            <ViewComfyIcon onClick={toggleView} className={classnames(
-              classes.subIcon,
-              classes.active
-            )}/>
+            <ViewComfyIcon
+              onClick={toggleView}
+              className={classnames(classes.subIcon, classes.active)}
+            />
           )}
         </StyledTooltip>
+        </Hidden>
+        <Hidden mdUp>
+        <StyledTooltip title="Leave Call">
+          <CallEndIcon onClick={leaveConference} className={classes.end} />
+        </StyledTooltip>
+      </Hidden>
         <StyledTooltip title="More Actions">
-          <MoreVertIcon onClick={toggleMoreActionDrawer("right", true)} className={classes.more}/>
+          <MoreVertIcon
+            onClick={toggleMoreActionDrawer("right", true)}
+            className={classes.more}
+          />
         </StyledTooltip>
         <DrawerBox
           open={moreActionState["right"]}

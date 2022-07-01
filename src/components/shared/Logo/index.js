@@ -1,13 +1,14 @@
-import { Box, makeStyles, Typography } from '@material-ui/core'
+import { Box, Hidden, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { color } from '../../../assets/styles/_color';
 import { profile } from "../../../store/actions/profile";
 import { useSelector } from 'react-redux';
-import logo from '../../../assets/images/shared/Logo.svg';
+import logo from '../../../assets/images/shared/Logo_Empty.svg';
 
 const Logo = ({width, height}) => {
     const profile = useSelector(state => state.profile);
+    const videoTrack =  useSelector((state) => state.localTrack).find(track=>track?.isVideoTrack());
 
 const useStyles = makeStyles(()=>({
   logo: {
@@ -40,8 +41,13 @@ const useStyles = makeStyles(()=>({
     
     return (
         <Box className={classes.logo}>
-            <img src={process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/>
+          <Hidden mdUp>
+            <img src={videoTrack?.isMuted() ? logo : process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/>
             {/* <Typography className={classes.logoText}>SARISKA</Typography> */}
+            </Hidden>
+            <Hidden mdDown>
+              <img src={process.env.REACT_APP_LOGO} alt="logo" className={classes.logoImage}/>
+            </Hidden>
         </Box>
     )
 }

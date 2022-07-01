@@ -15,11 +15,14 @@ const useStyles = makeStyles((theme) => ({
         background: color.secondaryDark,
         "& h3":{
             fontSize: '2rem',
-            marginBottom: theme.spacing(4)
+            marginBottom: theme.spacing(4),
+            [theme.breakpoints.down("sm")]: {
+                fontSize: '1.5rem'
+            }
             }
         },
         title: {
-            color: color.white
+            color: color.white,
         },
     }))
 const Leave = () => {

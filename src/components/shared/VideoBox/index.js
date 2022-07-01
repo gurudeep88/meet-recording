@@ -5,8 +5,8 @@ import Video from "../Video";
 import Audio from "../Audio";
 import PanTool from "@material-ui/icons/PanTool";
 import {useDispatch, useSelector} from "react-redux";
-import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
-import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
+import MicIcon from '@material-ui/icons/Mic';
+import MicOffIcon from '@material-ui/icons/MicOff';
 import {setPinParticipant} from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
@@ -21,17 +21,17 @@ const useStyles = makeStyles((theme) => ({
         position: "relative",
         overflow: "hidden", 
         borderRadius: "8px",
-        background: "#272931",
-        position: "relative",
-        overflow: "hidden", 
+        background: color.secondary,
         display: 'flex',
         flexDirection: 'column',  
-        borderRadius: '8px',
         transform: 'translateZ(0)',
         "& .largeVideo": {
             height: theme.spacing(20),
             width: theme.spacing(20),
             fontSize: "40pt"
+        },
+        [theme.breakpoints.down("sm")]: {
+            background: "transparent",
         }
     },
     audioBox: {
@@ -46,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
             background: color.secondaryDark,
             borderRadius: '50%',
             padding: "5px"
+        },
+        [theme.breakpoints.down("sm")]: {
+            padding: theme.spacing(0.25, 1, 1, 0.25),
         }
     },
     controls: {
@@ -58,7 +61,8 @@ const useStyles = makeStyles((theme) => ({
         top: 0,
         left: 0,
         bottom: 0,
-        right: 0
+        right: 0,
+        padding: '8px'
     },
     videoBorder: {
         boxSizing: "border-box",
@@ -104,7 +108,7 @@ const useStyles = makeStyles((theme) => ({
         position: "absolute",
         padding: theme.spacing(1),
         right: 0,
-        zIndex: "9999"
+        zIndex: "9999",
     },
     handRaise: {
         marginLeft: "8px",
@@ -180,7 +184,7 @@ const VideoBox = ({
              >
             { conference?.getParticipantCount()>1 && isActiveSpeaker && !isPresenter && <div className={classes.videoBorder}></div>}    
             <Box className={classnames(classes.audioBox, {audioBox: true})}>
-                { audioTrack?.isMuted() ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon />
+                { audioTrack?.isMuted() ? <MicOffIcon /> : <MicIcon />
             }
                 { !audioTrack?.isLocal() && <Audio track={audioTrack}/> }
             </Box>

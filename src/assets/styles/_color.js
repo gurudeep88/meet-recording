@@ -16,6 +16,7 @@ export const color = {
     search: '#7B8198',
     searchFocus: '#C1C3CB',
     blurEffect: `rgba(18,19,22,.8)`,
+    lightBlurEffect: `rgba(18,19,22,.01)`,
     lightgray: 'rgba(0,0,0,0.03)',
     lightgray1: 'rgba(0,0,0,0.5)',
     lightgray2: 'rgba(0,0,0,0.05)',

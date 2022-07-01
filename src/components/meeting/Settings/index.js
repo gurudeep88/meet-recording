@@ -1,4 +1,4 @@
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid, Hidden } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import CloseIcon from '@material-ui/icons/Close';
 import {
   setCamera,
   setMicrophone,
@@ -81,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
     border: `1px solid ${color.primaryLight}`,
     borderRadius: "10px",
     color: "#fff",
+    [theme.breakpoints.down("sm")]: {
+      padding: "6px 18px",
+    },
     "& .MuiTab-wrapper": {
       alignItems: "flex-start",
     },
@@ -94,17 +98,30 @@ const useStyles = makeStyles((theme) => ({
       "& p": {
         color: color.white,
       },
+      [theme.breakpoints.down("sm")]: {
+        padding: "7px 19px",
+      }
     },
     "&:hover": {
       fontWeight: "900",
       background: color.mainGradient,
       border: 'none',
       padding: "7px 21px",
+      [theme.breakpoints.down("sm")]: {
+        padding: "7px 19px",
+      }
     },
   },
   setting: {
-    padding: theme.spacing(0, 3, 3, 0),
-    color: color.secondary,
+    padding: theme.spacing(0, 0, 3, 0),
+    color: color.white,
+    marginBottom: '16px',
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(0,0,3,0),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    }
   },
   title: {
     color: color.white,
@@ -112,7 +129,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "28px",
     lineHeight: "1",
     marginLeft: theme.spacing(1),
-    marginBottom: theme.spacing(2),
+    //marginBottom: theme.spacing(2),
+        [theme.breakpoints.down("sm")]: {
+          fontSize: '24px'
+      }
   },
   marginBottom: {
     marginBottom: theme.spacing(2),
@@ -158,7 +178,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
     display: "flex",
     alignItems: "center",
-    paddingTop: "27px",
+    marginBottom: "5px",
     paddingRight: "3px",
     paddingLeft: "15px",
   },
@@ -214,7 +234,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SettingsBox = ({ tracks }) => {
+const SettingsBox = ({ tracks, onClick }) => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const devices = useSelector(state=>state?.media?.devices);
@@ -430,7 +450,7 @@ const SettingsBox = ({ tracks }) => {
   const audioPanel = (
     <Box className={classes.list}>
       <Box className={classes.display}>
-        <Box style={{ display: "flex" }} className={classes.marginBottom}>
+        <Box style={{ display: "flex", alignItems: 'flex-end' }} className={classes.marginBottom}>
           <SelectField data={microphoneData} minWidth={"200px"} width={"200px"} />
           <Box className={classes.microphone}>
             {audioTrack ? audioTrack?.isMuted() ? <MicOffIcon /> : <MicIcon /> : null}
@@ -502,8 +522,13 @@ const SettingsBox = ({ tracks }) => {
   );
   return (
     <Grid container className={classes.container}>
-      <Grid item md={12} className={classes.setting}>
+      <Grid item xs={12}>
+        <Box className={classes.setting}>
         <Typography className={classes.title}>Settings</Typography>
+        <Hidden mdUp>
+          <CloseIcon onClick={onClick}/>
+        </Hidden>
+        </Box>
       </Grid>
       <Grid item md={12} className={classes.root}>
         <Tabs

@@ -65,6 +65,9 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "center",
         alignItems: "center",
         color: "white",
+        [theme.breakpoints.down("sm")]: {
+            alignItems: "flex-end",
+        }
     },
 
     cardContainer: {
@@ -134,6 +137,11 @@ const useStyles = makeStyles((theme) => ({
     },
     gridContainer: {
         justifyContent: "space-around"
+    },
+    gridChild: {
+        [theme.breakpoints.down("sm")]: {
+            width: '100%'
+        }
     },
     logo: {
         width: "20px",
@@ -286,7 +294,7 @@ const Home = () => {
     return (
         <Box className={classes.root}>
             <Grid className={classes.gridContainer} container>
-                <Grid item md={12}>
+                <Grid item md={12} className={classes.gridChild}>
                     <Box >
                         <LobbyRoom tracks={localTracks}/>
                     </Box>

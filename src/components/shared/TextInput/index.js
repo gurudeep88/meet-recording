@@ -10,17 +10,26 @@ const useStyles = makeStyles((theme) => ({
       width: props => props.width || '25ch',
       "& input": {
         color: color.white,
-        fontSize: '1.145vw'
+        fontSize: '1.145vw',
+      [theme.breakpoints.down("sm")]: {
+        fontSize: '0.9rem',
+      }
       },
       "&:hover": {
         "& .MuiInput-underline:before": {
           borderBottom: `2px solid ${color.secondaryLight}`
         },
+      },
+      [theme.breakpoints.down("sm")]: {
+        width: '285px !important',
       }
     },
     "& .MuiFormLabel-root": {
       color: color.white,
-      fontSize: '1.15vw'
+      fontSize: '1.15vw',
+      [theme.breakpoints.down("sm")]: {
+        fontSize: '1rem',
+      }
     },
     '& .MuiFormLabel-root.Mui-focused': {
         color: color.white,

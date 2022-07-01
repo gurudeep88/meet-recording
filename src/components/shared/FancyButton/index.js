@@ -18,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
     transition: `0.1s all ease`,
     fontSize: fontSize || '0.875rem',
     minWidth: homeButton && '175px',
+    [theme.breakpoints.down("sm")]: {
+      width: width || "160.69px",
+    },
     "&:hover": {
       background: color.mainGradient,
       width: width || "178.69px",

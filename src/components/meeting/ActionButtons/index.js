@@ -85,6 +85,11 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     position: "fixed",
     color: color.white,
+    [theme.breakpoints.down("sm")]: {
+      bottom: "0px",
+      background: color.secondaryDark,
+      height: '60px'
+    },
     "& svg": {
       padding: "8px",
       borderRadius: "8px",
@@ -139,7 +144,9 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "24px",
     [theme.breakpoints.down("sm")]: {
       backgroundColor: "transparent",
-      margin: 'auto'
+      margin: 'auto',
+      position: 'relative',
+      bottom: '0px'
     },
   },
   end: {

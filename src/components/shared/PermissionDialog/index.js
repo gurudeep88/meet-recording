@@ -16,15 +16,22 @@ const useStyles = makeStyles((theme) => ({
         padding: "50px",
         "& > div" : {
            padding: "20px"
+        },
+        [theme.breakpoints.down("sm")]: {
+            width: '100%',
+            padding: "0px",
         }
     },
     card: {
         background: color.secondaryDark,
-        color: color.white
+        color: color.white,
+        [theme.breakpoints.down("sm")]: {
+            background: color.secondary,
+        }
     },
     controls: {
         textAlign: "right",
-        marginTop: "20px"
+        marginTop: "20px",
     }
 }));
 

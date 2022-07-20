@@ -5,6 +5,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
+import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import React, { useEffect, useState } from "react";
 import { color } from "../../../assets/styles/_color";
 import Video from "../Video";
@@ -16,14 +17,13 @@ import MicOffIcon from "@material-ui/icons/MicOff";
 import { setPinParticipant } from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
-import { videoShadow, calculateSteamHeightAndExtraDiff, isPortrait } from "../../../utils";
+import { videoShadow, calculateSteamHeightAndExtraDiff } from "../../../utils";
 import AudioLevelIndicator from "../AudioIndicator";
 import SubTitle from "../SubTitle";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
 import { profile } from "../../../store/reducers/profile";
-import { useWindowResize } from "../../../hooks/useWindowResize";
 
-const VideoBox = ({
+const VideoMoreBox = ({
   participantTracks,
   participantDetails,
   localUserId,
@@ -34,7 +34,9 @@ const VideoBox = ({
   isFilmstrip,
   isLargeVideo,
   isTranscription,
-  numParticipants
+  numParticipants,
+  others,
+  participantsArray
 }) => {
     
   const useStyles = makeStyles((theme) => ({
@@ -52,11 +54,11 @@ const VideoBox = ({
         fontSize: "40pt",
       },
       [theme.breakpoints.down("sm")]: {
-          background: numParticipants>1 ? color.secondary : "transparent",
+          background: numParticipants ? color.secondary : "transparent",
       },
     },
     audioBox: {
-      background: numParticipants>1 ? color.secondary : "transparent",
+      background: numParticipants ? color.secondary : "transparent",
       position: "absolute",
       top: 0,
       display: "flex",
@@ -67,9 +69,6 @@ const VideoBox = ({
         background: color.secondaryDark,
         borderRadius: "50%",
         padding: "5px",
-        [theme.breakpoints.down("sm")]: {
-          background: numParticipants>1 ? color.secondary : "transparent",
-        },
       },
       [theme.breakpoints.down("sm")]: {
         padding: theme.spacing(0.25, 1, 1, 0.25),
@@ -98,13 +97,10 @@ const VideoBox = ({
       zIndex: "999",
     },
     textBox: {
-      bottom: 0,
-      display: "flex",
-      justifyContent: "flex-start",
+      //bottom: 0,
       padding: theme.spacing(1),
       color: color.white,
       background: "transparent",
-      position: "absolute",
       "& p": {
         padding: "2px 4px",
       },
@@ -117,13 +113,14 @@ const VideoBox = ({
       alignItems: "center",
       justifyContent: "center",
       flexGrow: 1,
+      flexDirection: 'column',
     },
     avatar: {
-      borderRadius: "50%",
-      position: "absolute",
+      //borderRadius: "50%",
+      //position: "absolute",
       transition: "box-shadow 0.3s ease",
-      height: theme.spacing(10),
-      width: theme.spacing(10),
+      height: theme.spacing(5),
+      width: theme.spacing(5),
     },
     rightControls: {
       display: "flex",
@@ -200,85 +197,40 @@ const VideoBox = ({
       isActiveSpeaker
     );
   let avatarColor = participantDetails?.avatar || profile?.color;
+  let remainingParticipantsArray = participantsArray?.length>3 && participantsArray?.slice(3);
+  
+
   return (
     <Box
       style={{ width: `${width}px`, height: `${height}px` }}
-      onMouseEnter={() => setVisiblePinPartcipant(true)}
-      onMouseLeave={() => setVisiblePinPartcipant(false)}
       className={classes.root}
-    >
-      {conference?.getParticipantCount() > 1 &&
-        isActiveSpeaker &&
-        !isPresenter && <div className={classes.videoBorder}></div>}
-      <Box className={classnames(classes.audioBox, { audioBox: true })}>
-        {audioTrack?.isMuted() ? <MicOffIcon /> : <MicIcon />}
-        {!audioTrack?.isLocal() && <Audio track={audioTrack} />}
-      </Box>
-      {videoTrack?.isMuted() ? (
+    > 
         <Box className={avatarActiveClasses}>
+        <AvatarGroup max={4}>
+          {remainingParticipantsArray.map((avatar,index) => (
           <Avatar
-            src={null}
-            style={
-              isFilmstrip
-                ? {
-                    boxShadow: videoShadow(audioLevel),
-                    background: avatarColor,
-                  }
-                : { background: avatarColor }
-            }
-            className={audioIndicatorActiveClasses}
-          >
-            {participantDetails?.name?.slice(0, 1)?.toUpperCase()}
-          </Avatar>
-        </Box>
-      ) : (
-        <Box
-          style={{
-            width: `${(videoStreamHeight * 16) / 9}px`,
-            height: `${videoStreamHeight}px`,
-            left: `-${videoStreamDiff / 2}px`,
-            position: "absolute",
-          }}
-          className={classes.videoWrapper}
+          src={avatar?.name?.slice(0, 1)?.toUpperCase()}
+          style={
+            isFilmstrip
+              ? {
+                  // boxShadow: videoShadow(audioLevel),
+                  background: avatarColor,
+                }
+              : { background: avatarColor }
+          }
+          className={audioIndicatorActiveClasses}
+          key={index}
         >
-          <Video isPresenter={isPresenter} track={videoTrack} />
-        </Box>
-      )}
-      <Box
-        className={classnames(classes.rightControls, { rightControls: true })}
-      >
-        {visiblePinParticipant && (
-          <PinParticipant
-            participantId={participantDetails?.id}
-            pinnedParticipantId={pinnedParticipant.participantId}
-            togglePinParticipant={togglePinParticipant}
-          />
-        )}
-        {raisedHandParticipantIds[participantDetails?.id] && (
-          <Typography className={classes.handRaise}>
-            <PanTool />
-          </Typography>
-        )}
-      </Box>
-      <Box className={classnames(classes.textBox, { userDetails: true })}>
-        <Typography>
-          {localUserId === participantDetails?.id
-            ? "You"
-            : participantDetails?.name}
+          {avatar?.name?.slice(0, 1)?.toUpperCase()}
+        </Avatar>
+          ))}
+          </AvatarGroup>
+          <Typography style={{marginTop: '16px', color: color.white}}>
+          {others}{"+ "}{" others"}
         </Typography>
-      </Box>
-      {!isFilmstrip && (
-        <Box>
-          <AudioLevelIndicator passedAudioLevel={audioLevel} />
         </Box>
-      )}
-      {isTranscription && subtitle.text && (
-        <Box className={classes.subtitle}>
-          <SubTitle subtitle={subtitle} />
-        </Box>
-      )}
     </Box>
   );
 };
 
-export default VideoBox;
+export default VideoMoreBox;

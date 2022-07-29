@@ -64,7 +64,7 @@ const VideoBox = ({
       padding: theme.spacing(1),
       color: color.white,
       "& svg": {
-        background: color.secondaryDark,
+        background: color.secondary,
         borderRadius: "50%",
         padding: "5px",
         [theme.breakpoints.down("sm")]: {

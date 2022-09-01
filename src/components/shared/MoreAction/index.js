@@ -495,6 +495,27 @@ export default function MoreAction({
             featureStates.caption
               ? classnames(
                   "material-icons material-icons-outlined",
+                  classes.stopCaption
+                )
+              : classnames(
+                  "material-icons material-icons-outlined",
+                  classes.startCaption
+                )
+          }
+        >
+          closed_caption
+        </span>
+      ),
+      title: featureStates.caption ? "Turn off Captions" : "Turn on Captions",
+      onClick: featureStates.caption ? stopCaption : startCaption,
+    },
+    {
+      icon: (
+        <span
+          className={
+            featureStates.caption
+              ? classnames(
+                  "material-icons material-icons-outlined",
                   classes.stoptCaption
                 )
               : classnames(

@@ -119,6 +119,12 @@ const useStyles = makeStyles((theme) => ({
   stopRecording: {
     color: `${color.primaryLight} !important`,
   },
+  stopCaption: {
+    color: `${color.primaryLight} !important`,
+  },
+  startCaption: {
+    color: 'white'
+  },
   startRecording: {
     color: color.white,
   },
@@ -398,10 +404,14 @@ export default function MoreAction({
       })
     );
     conference.setLocalParticipantProperty("requestingTranscription", true);
+    setLayoutAndFeature(SPEAKER, null, { key: "caption", value:  true});
+     conference.setLocalParticipantProperty("whiteboard", "stop");
   };
 
   const stopCaption = () => {
     conference.setLocalParticipantProperty("requestingTranscription", false);
+    setLayoutAndFeature(SPEAKER, null, { key: "caption", value:  false});
+     conference.setLocalParticipantProperty("whiteboard", "stop");
   };
 
   const startWhiteboard = () => {
@@ -478,27 +488,27 @@ export default function MoreAction({
       title: featureStates.streaming ? "Stop Streaming" : "Start Streaming",
       onClick: featureStates.streaming ? stopStreaming : startStreaming,
     },
-    // {
-    //   icon: (
-    //     <span
-    //       className={
-    //         caption
-    //           ? classnames(
-    //               "material-icons material-icons-outlined",
-    //               classes.stopRecording
-    //             )
-    //           : classnames(
-    //               "material-icons material-icons-outlined",
-    //               classes.startRecording
-    //             )
-    //       }
-    //     >
-    //       closed_caption
-    //     </span>
-    //   ),
-    //   title: caption ? "Turn off Captions" : "Turn on Captions",
-    //   onClick: caption ? stopCaption : startCaption,
-    // },
+    {
+      icon: (
+        <span
+          className={
+            featureStates.caption
+              ? classnames(
+                  "material-icons material-icons-outlined",
+                  classes.stoptCaption
+                )
+              : classnames(
+                  "material-icons material-icons-outlined",
+                  classes.startCaption
+                )
+          }
+        >
+          closed_caption
+        </span>
+      ),
+      title: featureStates.caption ? "Turn off Captions" : "Turn on Captions",
+      onClick: featureStates.caption ? stopCaption : startCaption,
+    },
     {
       icon: <FlipToFrontIcon />,
       title: "Virtual Background",

@@ -122,8 +122,9 @@ const VideoBox = ({
       borderRadius: "50%",
       position: "absolute",
       transition: "box-shadow 0.3s ease",
-      height: theme.spacing(10),
-      width: theme.spacing(10),
+      height: numParticipants === 1 ? theme.spacing(20) : theme.spacing(10),
+      width: numParticipants === 1 ? theme.spacing(20) :theme.spacing(10),
+      fontSize: numParticipants ===1 && '40pt'
     },
     rightControls: {
       display: "flex",

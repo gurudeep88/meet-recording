@@ -495,7 +495,7 @@ export default function MoreAction({
             featureStates.caption
               ? classnames(
                   "material-icons material-icons-outlined",
-                  classes.stoptCaption
+                  classes.stopCaption
                 )
               : classnames(
                   "material-icons material-icons-outlined",

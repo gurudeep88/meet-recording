@@ -12,4 +12,4 @@ export const store = createStore(
 
 window.addEventListener("beforeunload", ()=>{
   localStorage.setItem('SariskaReduxState', JSON.stringify(store.getState().profile));  
-})
+});

@@ -187,7 +187,7 @@ const useStyles = makeStyles((theme) => ({
       bottom: "80px",
       right: "16px",
       borderRadius: "10px",
-      height: "85%",
+      height: "89%",
       width: "360px",
       backgroundColor: color.secondary,
       overflowY: "auto",

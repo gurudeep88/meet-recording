@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
   tab: {
     height: "36px",
     minHeight: "36px",
-    padding: "6px 20px",
+    padding: "0px 20px",
     minWidth: "56px",
     border: `1px solid ${color.primaryLight}`,
     borderRadius: "10px",
@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     "&.Mui-selected": {
       background: color.mainGradient,
       border: `none`,
-      padding: "7px 21px",
+      padding: "0px 21px",
       "& svg": {
         color: color.white,
       },
@@ -106,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "900",
       background: color.mainGradient,
       border: 'none',
-      padding: "7px 21px",
+      padding: "0px 21px",
       [theme.breakpoints.down("sm")]: {
         padding: "7px 19px",
       }
@@ -140,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
   label: {
     display: "flex",
     alignItems: "center",
-    padding: "4px 14px",
+    padding: "2px 14px",
     textTransform: "capitalize",
   },
   audioIcon: {

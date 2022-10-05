@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import {images} from "../../../constants";
-import {Tooltip, Typography, Avatar} from "@material-ui/core";
+import {Tooltip, Typography, Avatar, Hidden} from "@material-ui/core";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Video from "../Video";
 import {useSelector} from "react-redux";
@@ -12,6 +12,7 @@ import PowerSettingsNewOutlinedIcon from '@material-ui/icons/PowerSettingsNewOut
 import BlurOnOutlinedIcon from '@material-ui/icons/BlurOnOutlined';
 import BlurLinearOutlinedIcon from '@material-ui/icons/BlurLinearOutlined';
 import ScreenShareOutlinedIcon from '@material-ui/icons/ScreenShareOutlined';
+import CloseIcon from '@material-ui/icons/Close';
 import { color } from '../../../assets/styles/_color';
 import {useDispatch} from "react-redux";
 import {showNotification} from "../../../store/actions/notification";
@@ -36,13 +37,24 @@ const useStyles = makeStyles((theme) => ({
             flexFlow: 0
         }
     },
+  participantHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing(2),
+    "& svg": {
+      color: color.white
+    }
+  },
     backgroundTitle: {
         color: color.white,
         fontWeight: "400",
         fontSize: '28px',
         lineHeight: '1',
-        marginLeft: theme.spacing(1),
-        marginBottom: theme.spacing(2),
+        //marginLeft: theme.spacing(1),
+        [theme.breakpoints.down("sm")]: {
+            fontSize: '24px'
+        }
     },
     item: {
         cursor: "pointer",
@@ -154,7 +166,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function VirtualBackground() {
+export default function VirtualBackground({VirtualOnClick}) {
     const classes = useStyles();
     const totalRow = parseInt(images.length / 4);
     const extraRow = images.length % 4;
@@ -254,7 +266,14 @@ export default function VirtualBackground() {
 
     return (
         <Box className={classes.root}>
-            <Typography variant="h6" className={classes.backgroundTitle}>Change Background</Typography>
+             <Box className={classes.participantHeader}>
+        <Typography variant="h6" className={classes.backgroundTitle }>
+        Change Background
+        </Typography>
+        <Hidden mdUp>
+          <CloseIcon onClick={VirtualOnClick} />
+        </Hidden>
+      </Box>
             <div className={classes.localVideo}>
             {
                 videoTrack?.isMuted() || !videoTrack ? 
@@ -271,7 +290,7 @@ export default function VirtualBackground() {
                  loading ? <CircularProgress className={classes.buttonProgress} /> : <Video track={videoTrack} position="relative" /> }
             </div>
             <Grid container className={classes.container}>
-                <Grid item md={6}>
+                <Grid item xs={6}>
                     <Box onClick={removeBackground} className={classes.item}>
                         <Box className={classes.turn}>
                         <PowerSettingsNewOutlinedIcon />
@@ -279,7 +298,7 @@ export default function VirtualBackground() {
                         </Box>
                     </Box>
                 </Grid>
-                <Grid item md={6}>
+                <Grid item xs={6}>
                     <Box onClick={lightBlurBackground} className={classes.item}>
                         <Box className={classes.light}>
                         <BlurOnOutlinedIcon />
@@ -287,7 +306,7 @@ export default function VirtualBackground() {
                         </Box>
                     </Box>
                 </Grid>
-                <Grid item md={6}>
+                <Grid item xs={6}>
                     <Box onClick={blurBackground} className={classes.item}>
                         <Box className={classes.background}>
                         <BlurLinearOutlinedIcon />
@@ -295,7 +314,7 @@ export default function VirtualBackground() {
                         </Box>
                     </Box>
                 </Grid>
-                <Grid item md={6}>
+                <Grid item xs={6}>
                     <Box onClick={screenSharingBackground} className={classes.item}>
                         <Box className={classes.screen}>
                         <ScreenShareOutlinedIcon />
@@ -307,7 +326,7 @@ export default function VirtualBackground() {
             {[...Array(totalRow)].map((x, i) =>
                 <Grid container className={classes.mainImagesContainer}>
                     {[...Array(4)].map((y, j) =>
-                        <Grid item md={6}><Box className={classes.imageItem} onClick={() => imageBackground(images[i * 4 + j].url)}>
+                        <Grid item xs={6}><Box className={classes.imageItem} onClick={() => imageBackground(images[i * 4 + j].url)}>
                             <Tooltip title={images[i * 4 + j].name}>
                                 <Box className={classes.paper}><img src={images[i * 4 + j].thumbnail} alt={images[i * 4 + j].name}/></Box></Tooltip>
                                 </Box>
@@ -318,7 +337,7 @@ export default function VirtualBackground() {
             { extraRow &&
                 <Grid container className={classes.extraImagesContainer}>
                     {[...Array(extraRow)].map((x, i) =>
-                        <Grid item md={6}> <Box className={classes.imageItem} onClick={() => imageBackground(images[(totalRow * 4) + i].url)}>
+                        <Grid item xs={6}> <Box className={classes.imageItem} onClick={() => imageBackground(images[(totalRow * 4) + i].url)}>
                             <Tooltip title={images[(totalRow * 4) + i].name}><Box className={classes.paper}><img
                                 src={images[(totalRow * 4) + i].thumbnail}
                                 alt={images[(totalRow * 4) + i].name}/></Box></Tooltip>

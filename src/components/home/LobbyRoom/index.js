@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Hidden,
   makeStyles,
   Snackbar,
   Tooltip,
@@ -22,10 +23,10 @@ import { addThumbnailColor } from "../../../store/actions/color";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import MicNoneOutlinedIcon from '@material-ui/icons/MicNoneOutlined';
-import MicOffOutlinedIcon from '@material-ui/icons/MicOffOutlined';
-import VideocamOutlinedIcon from '@material-ui/icons/VideocamOutlined';
-import VideocamOffOutlinedIcon from '@material-ui/icons/VideocamOffOutlined';
+import MicIcon from '@material-ui/icons/Mic';
+import MicOffIcon from '@material-ui/icons/MicOff';
+import VideocamIcon from '@material-ui/icons/Videocam';
+import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import SettingsIcon from '@material-ui/icons/Settings';
 import TextInput from "../../shared/TextInput";
 import { setProfile, setMeeting , updateProfile} from "../../../store/actions/profile";
@@ -41,151 +42,8 @@ import FancyButton from "../../shared/FancyButton";
 import StyledTooltip from "../../shared/StyledTooltip";
 import Icons from "../../shared/iconList";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: 'flex-start'
-  },
-  permissions: {
-    display: "flex",
-    justifyContent: "space-around",
-    paddingLeft: "0",
-    paddingRight: "0",
-    marginTop: "3.73vh",
-    "& svg": {
-      //border: `1px solid ${color.white}`,
-      padding: "12px 0px",
-      borderRadius: "7.5px",
-      color: color.white,
-      fontSize: "1.87vw",
-      "&:hover": {
-        color: color.primaryLight,
-        cursor: "pointer",
-      },
-    },
-  },
-
-  joinPermissions: {
-    display: "flex",
-    justifyContent: "space-around",
-    paddingLeft: "0",
-    paddingRight: "0",
-    marginTop: "3.73vh",
-    //marginBottom: theme.spacing(3),
-    "& svg": {
-      //border: `1px solid ${color.white}`,
-      padding: "12px 0px",
-      borderRadius: "7.5px",
-      color: color.white,
-      fontSize: "1.87vw",
-      "&:hover": {
-        color: color.primaryLight,
-        cursor: "pointer",
-      },
-    },
-  },
-  disable: {
-    background: color.red,
-    "&:hover": {
-      opacity: "0.8",
-      background: `${color.red} !important`,
-    },
-  },
-  textBox: {
-    width: "100%",
-    //marginBottom: "60px"
-  },
-  moderatorBox: {
-    display: "flex",
-    justifyContent: "space-between",
-    color: color.lightgray1,
-    alignItems: "center",
-    padding: "0px 8px 8px",
-  },
-  action: {
-    opacity: .9
-  },
-  anchor: {
-    color: color.white,
-    textDecoration: "none",
-    border: `1px solid ${color.primaryLight}`,
-    padding: theme.spacing(0.5, 5),
-    borderRadius: "10px",
-    textTransform: "capitalize",
-    marginTop: '5.4vh',
-    width: '178.69px',
-    "&:hover": {
-      fontWeight: "900",
-      background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
-    }
-  },
-  videoContainer: {
-    [theme.breakpoints.down("xs")]: {
-      minWidth: "300px",
-    },
-    borderRadius: "4px",
-    backgroundColor: color.blurEffect,
-    backdropFilter: `blur(48px)`,	
-    '-webkit-backdrop-filter': 'blur(48px)',
-    transition: `background-color .2s ease`,
-    display: "flex",
-    justifyContent: "space-between",
-    flexDirection: "column",
-    zIndex: 1,
-    padding: "1.74vw 1.74vw",
-    border: `1px solid ${color.whitePointOne}`,
-    marginLeft: '15%',
-    marginRight: 'auto',
-    minHeight: '60vh',
-  },
-  logoContainer: {},
-  header: {
-    color: color.white,
-    textAlign: "center",
-    fontSize: "2.385vw",
-    fontWeight: 300,
-    marginTop: '5.5vh',
-  },
-  headerJoin: {
-    color: color.white,
-    textAlign: "center",
-    fontSize: "2.385vw",
-    fontWeight: 300,
-    marginTop: theme.spacing(11),
-  },
-  wrapper: {
-    margin: "2.3vh 0px 0.5vh 0px",
-    position: "relative",
-    textAlign: "center",
-  },
-  buttonSuccess: {
-    backgroundColor: color.primary,
-    "&:hover": {
-      backgroundColor: color.primary,
-    },
-  },
-  buttonProgress: {
-    color: color.primary,
-    position: "absolute",
-    bottom: "4.5vh",
-    top: "30px",
-    left: "50%",
-    marginLeft: -12,
-  },
-  buttonProgressJoin: {
-    color: color.primary,
-    top: "30px",
-    position: "absolute",
-    bottom: '4.5vh',
-    left: "50%",
-    marginLeft: -12,
-  },
-}));
 
 const LobbyRoom = ({ tracks }) => {
-  const classes = useStyles();
   const history = useHistory();
   const audioTrack =  useSelector((state) => state.localTrack).find(track=>track?.isAudioTrack());  
   const videoTrack =  useSelector((state) => state.localTrack).find(track=>track?.isVideoTrack());  
@@ -204,6 +62,196 @@ const LobbyRoom = ({ tracks }) => {
     right: false,
   });
   const moderator = useRef(true);
+
+  const useStyles = makeStyles((theme) => ({
+    root: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: 'flex-start'
+    },
+    permissions: {
+      display: "flex",
+      justifyContent: "space-around",
+      paddingLeft: "0",
+      paddingRight: "0",
+      marginTop: "3.73vh",
+      "& svg": {
+        //border: `1px solid ${color.white}`,
+        padding: "12px 0px",
+        borderRadius: "7.5px",
+        color: color.white,
+        fontSize: "1.87vw",
+        "&:hover": {
+          color: color.primaryLight,
+          cursor: "pointer",
+        },
+        [theme.breakpoints.down("sm")]: {
+          fontSize: "1.6rem",
+        }
+      },
+      [theme.breakpoints.down("sm")]: {
+        marginTop: "10px !important",
+        padding: '0 50px',
+        width: '250px',
+        margin: 'auto'
+      }
+    },
+  
+    joinPermissions: {
+      display: "flex",
+      justifyContent: "space-around",
+      paddingLeft: "0",
+      paddingRight: "0",
+      marginTop: "3.73vh",
+      //marginBottom: theme.spacing(3),
+      "& svg": {
+        //border: `1px solid ${color.white}`,
+        padding: "12px 0px",
+        borderRadius: "7.5px",
+        color: color.white,
+        fontSize: "1.87vw",
+        "&:hover": {
+          color: color.primaryLight,
+          cursor: "pointer",
+        },
+        [theme.breakpoints.down("sm")]: {
+          fontSize: "1.6rem",
+        }
+      },
+      [theme.breakpoints.down("sm")]: {
+        marginTop: "10px !important",
+        padding: '0 50px',
+        width: '250px',
+        margin: 'auto'
+      }
+    },
+    disable: {
+      background: color.red,
+      "&:hover": {
+        opacity: "0.8",
+        background: `${color.red} !important`,
+      },
+    },
+    textBox: {
+      width: "100%",
+      //marginBottom: "60px"
+    },
+    userBox: {
+      marginTop: '1vh',
+      marginBottom: '1vh',
+      [theme.breakpoints.down("sm")]: {
+        marginTop: '10px',
+        marginBottom: '10px'
+      }
+    },
+    moderatorBox: {
+      display: "flex",
+      justifyContent: "space-between",
+      color: color.lightgray1,
+      alignItems: "center",
+      padding: "0px 8px 8px",
+    },
+    action: {
+      opacity: .9
+    },
+    anchor: {
+      color: color.white,
+      textDecoration: "none",
+      border: `1px solid ${color.primaryLight}`,
+      padding: theme.spacing(0.5, 5),
+      borderRadius: "10px",
+      textTransform: "capitalize",
+      marginTop: '5.4vh',
+      width: '178.69px',
+      "&:hover": {
+        fontWeight: "900",
+        background: `linear-gradient(to right, ${color.primaryLight}, ${color.buttonGradient}, ${color.primary})`,
+      }
+    },
+    videoContainer: {
+      borderRadius: "4px",
+      backgroundColor: color.blurEffect,
+      backdropFilter: `blur(48px)`,	
+      '-webkit-backdrop-filter': 'blur(48px)',
+      transition: `background-color .2s ease`,
+      display: "flex",
+      justifyContent: "space-between",
+      flexDirection: "column",
+      zIndex: 1,
+      padding: "1.74vw",
+      border: `1px solid ${color.whitePointOne}`,
+      marginLeft: '15%',
+      marginRight: 'auto',
+      minHeight: '60vh',
+      [theme.breakpoints.down("sm")]: {
+        padding: "24px 0",
+        backgroundColor: videoTrack?.isMuted() ? color.blurEffect : color.lightBlurEffect,
+        border: `none`,
+        minHeight: 'fit-content',
+        borderRadius: "20px 20px 0px 0px",
+        marginLeft: 0,
+        marginRight: 0,
+        width: '100%'
+      }
+    },
+    logoContainer: {},
+    header: {
+      color: color.white,
+      textAlign: "center",
+      fontSize: "2.385vw",
+      fontWeight: 300,
+      marginTop: '5.5vh',
+      [theme.breakpoints.down("sm")]: {
+        fontSize: "1.7rem",
+        marginTop: '0',
+      }
+    },
+    headerJoin: {
+      color: color.white,
+      textAlign: "center",
+      fontSize: "2.385vw",
+      fontWeight: 300,
+      marginTop: theme.spacing(11),
+      [theme.breakpoints.down("sm")]: {
+        fontSize: "1.7rem",
+        marginTop: '0',
+      }
+    },
+    wrapper: {
+      margin: "2.3vh 0px 0.5vh 0px",
+      position: "relative",
+      textAlign: "center",
+      [theme.breakpoints.down("sm")]: {
+        marginTop: 0,
+        marginBottom: 0,
+      }
+    },
+    buttonSuccess: {
+      backgroundColor: color.primary,
+      "&:hover": {
+        backgroundColor: color.primary,
+      },
+    },
+    buttonProgress: {
+      color: color.primary,
+      position: "absolute",
+      bottom: "4.5vh",
+      top: "30px",
+      left: "50%",
+      marginLeft: -12,
+    },
+    buttonProgressJoin: {
+      color: color.primary,
+      top: "30px",
+      position: "absolute",
+      bottom: '4.5vh',
+      left: "50%",
+      marginLeft: -12,
+    },
+  }));
+
+  const classes = useStyles();
 
   const handleTitleChange = (e) => {
     setMeetingTitle(trimSpace(e.target.value.toLowerCase()));
@@ -403,7 +451,7 @@ const LobbyRoom = ({ tracks }) => {
     <Box
       onKeyDown={toggleSettingsDrawer(anchor, false)}
     >
-      <SettingsBox />
+      <SettingsBox onClick={toggleSettingsDrawer("right", false)}/>
     </Box>
   );
 
@@ -411,9 +459,11 @@ const LobbyRoom = ({ tracks }) => {
     <Box className={classes.root}>
       <JoinTrack tracks={tracks} name={name} />
       <Box className={classes.videoContainer}>
+        <Hidden smDown>
         <Box className={classes.logoContainer}>
-          <Logo height={"5.7vw"} />
+          <Logo height={"80px"} />
         </Box>
+        </Hidden>
         <Box>
         {queryParams.meetingId ? 
           <Typography className={classes.headerJoin}>Join {queryParams.meetingId}</Typography>
@@ -424,20 +474,20 @@ const LobbyRoom = ({ tracks }) => {
         <Box className={!queryParams.meetingId ? classes.permissions : classes.joinPermissions}>
           {audioTrack?.isMuted() ? (
             <StyledTooltip title="Unmute Audio">
-              <MicOffOutlinedIcon onClick={unmuteAudioLocalTrack} />
+              <MicOffIcon onClick={unmuteAudioLocalTrack} />
             </StyledTooltip>
           ) : (
             <StyledTooltip title="Mute Audio">
-              <MicNoneOutlinedIcon onClick={muteAudioLocalTrack} />
+              <MicIcon onClick={muteAudioLocalTrack} />
             </StyledTooltip>
           )}
           {videoTrack?.isMuted() ? (
             <StyledTooltip title="Unmute Video">
-              <VideocamOffOutlinedIcon onClick={unmuteVideoLocalTrack} />
+              <VideocamOffIcon onClick={unmuteVideoLocalTrack} />
             </StyledTooltip>
           ) : (
             <StyledTooltip title="Mute Video">
-              <VideocamOutlinedIcon onClick={muteVideoLocalTrack} />
+              <VideocamIcon onClick={muteVideoLocalTrack} />
             </StyledTooltip>
           )}
           <StyledTooltip title="Settings">
@@ -479,7 +529,7 @@ const LobbyRoom = ({ tracks }) => {
               />
               </> : 
               null}
-              <Box style={{marginTop: '1vh', marginBottom: '1vh'}}>
+              <Box className={classes.userBox}>
                 <TextInput
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {

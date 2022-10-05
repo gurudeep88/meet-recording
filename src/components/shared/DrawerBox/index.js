@@ -16,14 +16,21 @@ export default function DrawerBox({ children, open, onClose, top }) {
         bottom: "0px",
         right: "16px",
         borderRadius: "10px",
-        height: layout.mode === ENTER_FULL_SCREEN_MODE ? "89%" : "87%",
+        height: (layout.mode === ENTER_FULL_SCREEN_MODE) || (window.innerHeight === 823 && window.innerWidth===1524) ? "89%" : "87%",
         width: "360px",
         backgroundColor: color.secondary,
+        [theme.breakpoints.down("sm")]: {
+          top: '50px',
+          //left: 0,
+          right: '8px',
+          margin: 'auto',
+          width: '351px'
+        }
       },
     },
     list: {
       padding: theme.spacing(3, 3, 3, 3),
-      height: "92%",
+      height: "93%",
     },
   }));
   const classes = useStyles();

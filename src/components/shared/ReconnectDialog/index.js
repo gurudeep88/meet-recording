@@ -14,13 +14,20 @@ import FancyButton from '../FancyButton';
 const useStyles = makeStyles((theme) => ({
     dialog: {
         "& .MuiPaper-root": {
-            background: color.secondaryDark,
+            background: color.secondary,
             borderRadius: '7.5px',
             color: color.white,
-            boxShadow: `0px 0px 1px 0px rgb(255 255 255 / 20%), 0px 1px 1px 1px rgb(255 255 255 / 14%), 0px 2px 4px 5px rgb(255 255 255 / 12%)`
+            boxShadow: `0px 0px 1px 0px rgb(255 255 255 / 20%), 0px 1px 1px 1px rgb(255 255 255 / 14%), 0px 2px 4px 5px rgb(255 255 255 / 12%)`,
+            [theme.breakpoints.down("sm")]: {
+                boxShadow: 'none'
+            }
         },
         "& p": {
             color: color.white
+        },
+        [theme.breakpoints.down("sm")]: {
+            height: '200px',
+            boxShadow: 'none'
         }
     },
     anchor: {

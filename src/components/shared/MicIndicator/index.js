@@ -8,7 +8,11 @@ const CENTER_DOT_INDEX = Math.floor(AUDIO_LEVEL_DOTS / 2);
 const useStyles = makeStyles((theme) => ({
     root: {
         width: "100%",
-        marginLeft: "10px"
+        marginLeft: "10px",
+        [theme.breakpoints.down("sm")]: {
+            display: 'flex',
+            alignItems: 'center'
+        }
     },
     activeBg: {
         height: "8px",

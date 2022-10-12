@@ -545,38 +545,10 @@ export default function MoreAction({
         : startSharedDocument,
     },
     {
-      icon: (
-        <GroupIcon />
-      ),
-      title: participantTitle,
-      onClick: participantOnClick,
-    },
-    {
-      icon: (
-        <ChatIcon />
-      ),
-      title: chatTitle,
-      onClick: chatOnClick,
-    },
-    // {
-    //   icon: 
-    //     layout.type === SPEAKER || layout.type === PRESENTATION ? (
-    //       <ViewListIcon className={classes.subIcon} />
-    //     ) : (
-    //       <ViewComfyIcon
-    //         className={classnames(classes.subIcon, classes.active)}
-    //       />
-    //     ),
-    //   title: layout.type === SPEAKER || layout.type === PRESENTATION
-    //           ? "Grid View"
-    //           : "Speaker View",
-    //   onClick: layoutOnClick,
-    // },
-    {
       icon: <SettingsIcon style={{ color: color.white }} />,
       title: "Settings",
       onClick: toggleSettingsDrawer("right", true),
-    },
+    }
   ];
 
   const detailedList = (anchor) => (
@@ -611,22 +583,7 @@ export default function MoreAction({
         <MenuList>
           {menuData.map((menu, index) => (
             <>
-              {(index === 3 || index === 4) ? (
-                <Hidden mdDown>
-                  <MenuItem onClick={menu.onClick} key={index}>
-                    <ListItemIcon>{menu.icon}</ListItemIcon>
-                    <Typography variant="inherit">{menu.title}</Typography>
-                  </MenuItem>
-                </Hidden>
-              ) : (index === 5 || index === 6 || index === 7) ? (
-                <Hidden mdUp>
-                  <MenuItem onClick={menu.onClick} key={index}>
-                    <ListItemIcon>{menu.icon}</ListItemIcon>
-                    <Typography variant="inherit">{menu.title}</Typography>
-                  </MenuItem>
-                </Hidden>
-              )
-              : (
+              {(
                 <MenuItem onClick={menu.onClick} key={index}>
                   <ListItemIcon>{menu.icon}</ListItemIcon>
                   <Typography variant="inherit">{menu.title}</Typography>

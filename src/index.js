@@ -12,7 +12,7 @@ import { Integrations } from "@sentry/tracing";
 
 if (process.env.REACT_APP_ENV == "production") {
     Sentry.init({
-      dsn: "https://baaa535f9f69421b93100c9f32a337a9@debug.sariska.io/23",
+      dsn: "https://10fe6811a7254d68b65bf65e09d5f602@debug.sariska.io/2",
       integrations: [new Integrations.BrowserTracing()],
 
       // Set tracesSampleRate to 1.0 to capture 100%

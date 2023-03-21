@@ -166,14 +166,14 @@ const VideoBox = ({
     (state) => state.layout
   );
   let videoTrack = isPresenter
-    ? participantTracks?.find((track) => track.getVideoType() === "desktop")
-    : participantTracks?.find((track) => track.getType() === "video");
+    ? participantTracks?.find((track) => track?.getVideoType() === "desktop")
+    : participantTracks?.find((track) => track?.getType() === "video");
   if (isLargeVideo && pinnedParticipant.isPresenter === false) {
     videoTrack = participantTracks?.find(
       (track) => track.getType() === "video"
     );
   }
-  const audioTrack = participantTracks?.find((track) => track.isAudioTrack());
+  const audioTrack = participantTracks?.find((track) => track?.isAudioTrack());
   const audioIndicator = useSelector((state) => state.audioIndicator);
   const dispatch = useDispatch();
   const [visiblePinParticipant, setVisiblePinPartcipant] = useState(true);

@@ -190,6 +190,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home = () => {
+    console.log("reached. ehere")
     const dispatch = useDispatch();
     const resolution = useSelector(state => state.media?.resolution);
     const localTracksRedux = useSelector(state => state.localTrack);
@@ -296,7 +297,7 @@ const Home = () => {
             <Grid className={classes.gridContainer} container>
                 <Grid item md={12} className={classes.gridChild}>
                     <Box >
-                        { localTracks.length > 0 && <LobbyRoom tracks={localTracks}/>} 
+                        <LobbyRoom tracks={localTracks}/>
                     </Box>
                 </Grid>
             </Grid>

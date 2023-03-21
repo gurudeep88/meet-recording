@@ -55,6 +55,7 @@ const LobbyRoom = ({ tracks }) => {
   const [accessDenied, setAccessDenied] = useState(false);
   const profile = useSelector((state) => state.profile);
   const queryParams = useParams();
+  console.log("queryParams", queryParams);
   const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
   const testMode = window.location.hash.indexOf("testMode") >= 0;
   const notification = useSelector((state) => state.notification);
@@ -283,6 +284,7 @@ const LobbyRoom = ({ tracks }) => {
     let avatarColor = profile?.color ?  profile?.color : getRandomColor();
     dispatch(updateProfile({key: "color", value: avatarColor}));
 
+    console.log("profile, name, avatarColor)", profile, name, avatarColor);
     const token = await getToken(profile, name, avatarColor);
     const connection = new SariskaMediaTransport.JitsiConnection(
       token,

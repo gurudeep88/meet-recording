@@ -431,6 +431,15 @@ const LobbyRoom = ({ tracks }) => {
   }, [meetingTitle]);
 
   useEffect(() => {
+    if ((!audioTrack || !videoTrack) && !iAmRecorder ) {
+        setLoading(true);
+    } else {
+        setLoading(false);
+    }
+  }, [audioTrack, videoTrack]);
+
+
+  useEffect(() => {
     if (queryParams.meetingId) {
       setButtonText("Join Meeting");
       setMeetingTitle(queryParams.meetingId);

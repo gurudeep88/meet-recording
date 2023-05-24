@@ -640,7 +640,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     conference.addEventListener(
       SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED,
       (data) => {
-        if (data._status === "on" && data._mode === "stream") {
+        if (data._statusFromJicofo === "on" && data._mode === "stream") {
           conference.setLocalParticipantProperty("streaming", true);
           dispatch(
             showSnackbar({ autoHide: true, message: "Live streaming started" })
@@ -649,7 +649,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
           localStorage.setItem("streaming_session_id", data?._sessionID);
         }
 
-        if (data._status === "off" && data._mode === "stream") {
+        if (data._statusFromJicofo === "off" && data._mode === "stream") {
           conference.removeLocalParticipantProperty("streaming");
           dispatch(
             showSnackbar({ autoHide: true, message: "Live streaming stopped" })
@@ -657,7 +657,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
           action({ key: "streaming", value: false });
         }
 
-        if (data._status === "on" && data._mode === "file") {
+        if (data._statusFromJicofo === "on" && data._mode === "file") {
           conference.setLocalParticipantProperty("recording", true);
           dispatch(
             showSnackbar({ autoHide: true, message: "Recording started" })
@@ -666,7 +666,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
           localStorage.setItem("recording_session_id", data?._sessionID);
         }
 
-        if (data._status === "off" && data._mode === "file") {
+        if (data._statusFromJicofo === "off" && data._mode === "file") {
           conference.removeLocalParticipantProperty("recording");
           dispatch(
             showSnackbar({ autoHide: true, message: "Recording stopped" })

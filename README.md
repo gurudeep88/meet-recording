@@ -4,6 +4,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Demo:  https://meet.sariska.io
 
+## How to generate API Key :
+
+To generate your own API key, visit [Sariska Dashboard](https://console.sariska.io) and sign up. Create a new project, which will generate an API Key. You can use the the API Key in your meet app to generate token.
 
 ## Available Scripts
 

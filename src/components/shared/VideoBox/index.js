@@ -16,7 +16,7 @@ import MicOffIcon from "@material-ui/icons/MicOff";
 import { setPinParticipant } from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
-import { videoShadow, calculateSteamHeightAndExtraDiff, isPortrait } from "../../../utils";
+import { videoShadow, calculateSteamHeightAndExtraDiff } from "../../../utils";
 import AudioLevelIndicator from "../AudioIndicator";
 import SubTitle from "../SubTitle";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
@@ -59,6 +59,7 @@ const VideoBox = ({
       background: numParticipants>1 ? color.secondary : "transparent",
       position: "absolute",
       top: 0,
+      zIndex: 1,
       display: "flex",
       justifyContent: "flex-end",
       padding: theme.spacing(1),

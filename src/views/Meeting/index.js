@@ -23,7 +23,7 @@ import {
   ENTER_FULL_SCREEN_MODE,
 } from "../../constants";
 import { addMessage } from "../../store/actions/message";
-import { getUserById, preloadIframes, getDefaultDeviceId, isMobile, isPortrait } from "../../utils";
+import { getUserById, preloadIframes, getDefaultDeviceId, isPortrait, isMobileOrTab } from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
 import SnackbarBox from "../../components/shared/Snackbar";
 import { unreadMessage } from "../../store/actions/chat";
@@ -531,7 +531,7 @@ const Meeting = () => {
   }, [isOnline]);
 
   useEffect(()=> {
-    if(isPortrait()) {
+    if(isMobileOrTab()) {
       if(layout.type === SPEAKER)
       dispatch(setLayout(GRID));
     }
@@ -540,14 +540,13 @@ const Meeting = () => {
   if (!conference || !conference.isJoined()) {
     return <Home />;
   }
-
   let justifyContent = "space-between";
   let paddingTop = 16;
   if (layout.mode === ENTER_FULL_SCREEN_MODE) {
     justifyContent = "space-around";
     paddingTop = 0;
   }
-console.log('typel', layout?.type)
+  
   return (
     <Box
       style={{ justifyContent, paddingTop: paddingTop }}

@@ -55,7 +55,6 @@ import {
   exitFullscreen,
   formatAMPM,
   isFullscreen,
-  isPortrait,
   requestFullscreen,
 } from "../../../utils";
 import classNames from "classnames";
@@ -99,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
       [theme.breakpoints.down("sm")]: {
         background: color.secondary,
         borderRadius: '50%',
-        marginRight: "12px",
+        marginRight: "6px !important",
       },
       "&:hover": {
         opacity: "0.8",
@@ -117,6 +116,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "18px",
     padding: "12px !important",
     marginRight: "12px",
+    [theme.breakpoints.down("sm")]: {
+      marginRight: "6px !important",
+    },
   },
   infoContainer: {
     marginLeft: "20px",
@@ -134,7 +136,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       background: color.secondary,
       borderRadius: '50%',
-      marginRight: "12px",
+      marginRight: "6px",
     },
   },
   permissions: {
@@ -224,6 +226,9 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "0px !important",
     fontSize: "20px",
     padding: "10px !important",
+    [theme.breakpoints.down("md")]: {
+      marginRight: '6px !important'
+    }
   },
   moreActionList: {
     height: "100%",
@@ -706,14 +711,14 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   
   return (
     <Box id="footer" className={classes.root}>
-      <Hidden mdDown>
+      <Hidden smDown>
         <Box className={classes.infoContainer}>
           <Box>{time}</Box>
           <Box className={classes.separator}>|</Box>
           <Box>{profile.meetingTitle}</Box>
         </Box>
       </Hidden>
-      <Hidden mdDown>
+      <Hidden smDown>
         <StyledTooltip title="Leave Call">
           <CallEndIcon onClick={leaveConference} className={classes.end} />
         </StyledTooltip>
@@ -777,7 +782,6 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         >
           {participantList("right")}
         </DrawerBox>
-        <Hidden mdDown>
         <StyledTooltip title="Chat Box">
           <StyledBadge badgeContent={unread}>
             <ChatIcon
@@ -786,14 +790,13 @@ const ActionButtons = ({ dominantSpeakerId }) => {
             />
           </StyledBadge>
         </StyledTooltip>
-        </Hidden>
         <DrawerBox
           open={chatState["right"]}
           onClose={toggleChatDrawer("right", false)}
         >
           {chatList("right")}
         </DrawerBox>
-        <Hidden mdDown>
+        <Hidden smDown>
         <StyledTooltip
           title={
             layout.type === SPEAKER || layout.type === PRESENTATION

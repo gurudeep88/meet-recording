@@ -1,42 +1,26 @@
 import {
   Avatar,
   Box,
+  Button,
   makeStyles,
-  Tooltip,
   Typography,
 } from "@material-ui/core";
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { color } from "../../../assets/styles/_color";
-import Video from "../Video";
-import Audio from "../Audio";
-import PanTool from "@material-ui/icons/PanTool";
-import { useDispatch, useSelector } from "react-redux";
-import MicIcon from "@material-ui/icons/Mic";
-import MicOffIcon from "@material-ui/icons/MicOff";
-import { setPinParticipant } from "../../../store/actions/layout";
-import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
-import { videoShadow, calculateSteamHeightAndExtraDiff } from "../../../utils";
-import AudioLevelIndicator from "../AudioIndicator";
-import SubTitle from "../SubTitle";
-import { useDocumentSize } from "../../../hooks/useDocumentSize";
 import { profile } from "../../../store/reducers/profile";
 
 const VideoMoreBox = ({
-  participantTracks,
   participantDetails,
-  localUserId,
   width,
   height,
-  isPresenter,
-  isActiveSpeaker,
   isFilmstrip,
   isLargeVideo,
-  isTranscription,
   numParticipants,
+  participantsArray,
   others,
-  participantsArray
+  toggleParticipantDrawer
 }) => {
     
   const useStyles = makeStyles((theme) => ({
@@ -158,48 +142,17 @@ const VideoMoreBox = ({
     },
   }));
   const classes = useStyles();
-  const { pinnedParticipant, raisedHandParticipantIds } = useSelector(
-    (state) => state.layout
-  );
-  let videoTrack = isPresenter
-    ? participantTracks?.find((track) => track.getVideoType() === "desktop")
-    : participantTracks?.find((track) => track.getType() === "video");
-  if (isLargeVideo && pinnedParticipant.isPresenter === false) {
-    videoTrack = participantTracks?.find(
-      (track) => track.getType() === "video"
-    );
-  }
-  const audioTrack = participantTracks?.find((track) => track.isAudioTrack());
-  const audioIndicator = useSelector((state) => state.audioIndicator);
-  const dispatch = useDispatch();
-  const [visiblePinParticipant, setVisiblePinPartcipant] = useState(true);
-  let audioLevel = audioIndicator[participantDetails?.id];
-  const subtitle = useSelector((state) => state.subtitle);
-  const conference = useSelector((state) => state.conference);
-  const { documentWidth, documentHeight } = useDocumentSize();
 
-  const togglePinParticipant = (id) => {
-    dispatch(setPinParticipant(id, isPresenter));
-  };
 
   const audioIndicatorActiveClasses = classnames(classes.avatar, {
     largeVideo: isLargeVideo,
   });
 
   const avatarActiveClasses = classnames(classes.avatarBox);
-  const { videoStreamHeight, videoStreamDiff } =
-    calculateSteamHeightAndExtraDiff(
-      width,
-      height,
-      documentWidth,
-      documentHeight,
-      isPresenter,
-      isActiveSpeaker
-    );
   let avatarColor = participantDetails?.avatar || profile?.color;
-  let remainingParticipantsArray = participantsArray?.length>3 && participantsArray?.slice(3);
   
-
+  let remainingParticipantsArray = participantsArray?.length>3 ? participantsArray?.slice(3) : [];
+  
   return (
     <Box
       style={{ width: `${width}px`, height: `${height}px` }}
@@ -207,7 +160,7 @@ const VideoMoreBox = ({
     > 
         <Box className={avatarActiveClasses}>
         <AvatarGroup max={4}>
-          {remainingParticipantsArray.map((avatar,index) => (
+          {remainingParticipantsArray?.map((avatar,index) => (
           <Avatar
           src={avatar?.name?.slice(0, 1)?.toUpperCase()}
           style={
@@ -225,9 +178,9 @@ const VideoMoreBox = ({
         </Avatar>
           ))}
           </AvatarGroup>
-          <Typography style={{marginTop: '16px', color: color.white}}>
-          {others}{"+ "}{" others"}
-        </Typography>
+          <Button style={{marginTop: '16px', color: color.white, textTransform: 'initial'}} onClick={toggleParticipantDrawer("right", true)}>
+          {"+"}{others}{" More"}
+        </Button>
         </Box>
     </Box>
   );

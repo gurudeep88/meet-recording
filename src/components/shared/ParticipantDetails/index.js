@@ -26,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
     height: "95%",
+    [theme.breakpoints.down('md')]: {
+      height: '82%'
+    }
   },
   title: {
     color: color.secondary,
@@ -178,9 +181,10 @@ const ParticipantDetails = () => {
       );
 
 const togglePinParticipant = (id) => {
+  console.log('pinned', id)
   dispatch(setPinParticipant(id));
 }
-
+console.log('pinnedpairt', pinnedParticipant);
 const getAvatarColor =  (id)=> {
     return conference.participants[id]?._identity?.user?.avatar || profile?.color;
 }
@@ -208,7 +212,7 @@ const getOptions = (participantId, role) => {
 }
   return (
     <Box className={classes.root}>
-      <Box>
+      <Box sx={{height: '100%'}} >
         <SearchBox
           placeholder={"Search Participants"}
           value={participantName}
@@ -216,75 +220,33 @@ const getOptions = (participantId, role) => {
           name="participantName"
           handleChange={handleParticipantNameChange}
         />
-        {filteredParticipants.map((participant) =>
-          participant?.name ? (
-            <Box className={classes.localBox}>
-              <Box className={classes.userBox}>
-                <Avatar style={{ backgroundColor: getAvatarColor(participant?.id)}}>
-                  {participant?.name?.slice(0, 1).toUpperCase()}
-                </Avatar>
-                <Box className={classes.userBoxContainer}>
-                  <Box className={classes.hostDetails}>
-                    <Box className={classes.hostBox}></Box>
-                    <Typography>{participant?.name} (You) </Typography>
-                  </Box>
-                  <Typography variant="caption">
-                    {conference.getRole() === "moderator" && (
-                      <b style={{fontWeight: '300'}}>Meeting Host</b>
-                    )}
-                  </Typography>
-                </Box>
-              </Box>
-              <Box className={classes.iconBox}>
-                {localTracks
-                  .find((track) => track.isAudioTrack())
-                  ?.isMuted() ? (
-                  <MicOffOutlinedIcon />
-                ) : (
-                  <MicNoneOutlinedIcon />
-                )}
-                <Tooltip title="More Actions">
-                  <MoreVertOutlinedIcon className={classes.more} onClick={handleMenuClick}/>
-                </Tooltip>
-                {anchorEl && <MenuBox
-                  anchorEl={anchorEl}
-                  selectedIndex={selectedIndex}
-                  options={getOptions(participant?.id, conference.getRole())}
-                  handleMenuClick={handleMenuClick}
-                  handleMenuItemClick={handleMenuItemClick}
-                  handleClose={handleClose}
-                />}
-              </Box>
-            </Box>
-          ) : (
-            <Box>
+        <Box sx={{
+            maxHeight: `calc(100% - 70px)`,
+            overflow: 'auto',
+            height: '100%'
+          }}>
+          {filteredParticipants.map((participant) =>
+            participant?.name ? (
               <Box className={classes.localBox}>
                 <Box className={classes.userBox}>
-                  <Avatar
-                    style={{ backgroundColor: getAvatarColor(participant?._id)}}
-                  >
-                    {participant?._identity?.user?.name
-                      .toUpperCase()
-                      .slice(0, 1)}
+                  <Avatar style={{ backgroundColor: getAvatarColor(participant?.id)}}>
+                    {participant?.name?.slice(0, 1).toUpperCase()}
                   </Avatar>
                   <Box className={classes.userBoxContainer}>
                     <Box className={classes.hostDetails}>
-                      <Box className={classes.hostBox}>
-                        <Typography>
-                          {participant?._identity?.user?.name}
-                        </Typography>
-                      </Box>
+                      <Box className={classes.hostBox}></Box>
+                      <Typography>{participant?.name} (You) </Typography>
                     </Box>
                     <Typography variant="caption">
-                      {participant?._role === "moderator" && (
-                        <b style={{fontWeight: '300'}}>Meeting Host </b>
+                      {conference.getRole() === "moderator" && (
+                        <b style={{fontWeight: '300'}}>Meeting Host</b>
                       )}
                     </Typography>
                   </Box>
                 </Box>
                 <Box className={classes.iconBox}>
-                  {remoteTracks[participant._id]
-                    ?.find((track) => track.isAudioTrack())
+                  {localTracks
+                    .find((track) => track.isAudioTrack())
                     ?.isMuted() ? (
                     <MicOffOutlinedIcon />
                   ) : (
@@ -296,16 +258,64 @@ const getOptions = (participantId, role) => {
                   {anchorEl && <MenuBox
                     anchorEl={anchorEl}
                     selectedIndex={selectedIndex}
-                    options={getOptions(participant._id, participant?._role)}
+                    options={getOptions(participant?.id, conference.getRole())}
                     handleMenuClick={handleMenuClick}
                     handleMenuItemClick={handleMenuItemClick}
                     handleClose={handleClose}
                   />}
                 </Box>
               </Box>
-            </Box>
-          )
-        )} 
+            ) : (
+              <Box>
+                <Box className={classes.localBox}>
+                  <Box className={classes.userBox}>
+                    <Avatar
+                      style={{ backgroundColor: getAvatarColor(participant?._id)}}
+                    >
+                      {participant?._identity?.user?.name
+                        .toUpperCase()
+                        .slice(0, 1)}
+                    </Avatar>
+                    <Box className={classes.userBoxContainer}>
+                      <Box className={classes.hostDetails}>
+                        <Box className={classes.hostBox}>
+                          <Typography>
+                            {participant?._identity?.user?.name}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Typography variant="caption">
+                        {participant?._role === "moderator" && (
+                          <b style={{fontWeight: '300'}}>Meeting Host </b>
+                        )}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box className={classes.iconBox}>
+                    {remoteTracks[participant._id]
+                      ?.find((track) => track.isAudioTrack())
+                      ?.isMuted() ? (
+                      <MicOffOutlinedIcon />
+                    ) : (
+                      <MicNoneOutlinedIcon />
+                    )}
+                    <Tooltip title="More Actions">
+                      <MoreVertOutlinedIcon className={classes.more} onClick={handleMenuClick}/>
+                    </Tooltip>
+                    {anchorEl && <MenuBox
+                      anchorEl={anchorEl}
+                      selectedIndex={selectedIndex}
+                      options={getOptions(participant._id, participant?._role)}
+                      handleMenuClick={handleMenuClick}
+                      handleMenuItemClick={handleMenuItemClick}
+                      handleClose={handleClose}
+                    />}
+                  </Box>
+                </Box>
+              </Box>
+            )
+          )} 
+        </Box>
       </Box>
       <Box>
         <Divider className={classes.divider} />

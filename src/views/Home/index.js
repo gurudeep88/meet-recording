@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 
-import {makeStyles, Box, Card, Grid, Typography, Tooltip} from "@material-ui/core";
+import {makeStyles, Box, Grid} from "@material-ui/core";
 import {color} from "../../assets/styles/_color";
 import LobbyRoom from "../../components/home/LobbyRoom";
 import SariskaMediaTransport from "sariska-media-transport";
@@ -190,7 +190,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home = () => {
-    console.log("reached. ehere")
     const dispatch = useDispatch();
     const resolution = useSelector(state => state.media?.resolution);
     const localTracksRedux = useSelector(state => state.localTrack);
@@ -266,7 +265,6 @@ const Home = () => {
         };
         createNewLocalTracks();
     },[])
-
     useEffect(() => {
         const googleLogin = async () => {
             try {

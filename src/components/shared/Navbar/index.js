@@ -576,7 +576,6 @@ const Navbar = ({dominantSpeakerId}) => {
         });
 
         conference.addEventListener(SariskaMediaTransport.events.conference.TRANSCRIPTION_STATUS_CHANGED, (status) => {
-            console.log("status", status);
             if (status === "ON") {
                 conference.setLocalParticipantProperty("transcribing", true);
                 dispatch(showSnackbar({autoHide: true, message: "Caption started"}));

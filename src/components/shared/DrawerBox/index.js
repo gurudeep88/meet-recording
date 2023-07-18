@@ -20,10 +20,9 @@ export default function DrawerBox({ children, open, onClose, top }) {
         width: "360px",
         backgroundColor: color.secondary,
         [theme.breakpoints.down("sm")]: {
-          top: '50px',
+          top: '15px',
           //left: 0,
           right: '8px',
-          margin: 'auto',
           width: '351px'
         }
       },

@@ -41,7 +41,7 @@ const PartcipantPane = ({remoteTracks, localTracks, dominantSpeakerId, panelHeig
     if (participants.length <= 0)  {
         return null;
     }
-console.log('participants', participants)
+    
     return (
         <Box style={{height: `${panelHeight}px`}} className={activeClasses}>
             { participants.map(participant =>               

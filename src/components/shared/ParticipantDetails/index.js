@@ -13,12 +13,12 @@ import MicNoneOutlinedIcon from "@material-ui/icons/MicNoneOutlined";
 import MicOffOutlinedIcon from "@material-ui/icons/MicOffOutlined";
 import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
 import { useDispatch, useSelector } from "react-redux";
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import SearchBox from "../SearchBox";
 import classnames from "classnames";
 import CopyMeetingLink from "../CopyMeetingLink";
 import {MenuBox} from "../MenuBox";
 import {setPinParticipant} from "../../../store/actions/layout";
+import { getParticipants } from "../../../utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -133,83 +133,49 @@ const ParticipantDetails = () => {
   const layout = useSelector((state) => state.layout);
   const localUser = conference.getLocalUser();
   const [participantName, setParticipantName] = useState("");
+  const [selectedOption, setSelectedOption] = useState({});
 
-  const [participants, setParticipants] = useState([
-    localUser?.name?.toLowerCase(),
-    ...conference
-      .getParticipantsWithoutHidden()
-      .map((participant) => participant?._identity?.user?.name?.toLowerCase()),
-  ]);
+  const handleMenuOpen = (event, item) => {
+    setSelectedOption({ ...selectedOption, [item]: event.currentTarget });
+  };
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const handleMenuClose = (item) => {
+    setSelectedOption({ ...selectedOption, [item]: null });
+  };
+
+  const handleOptionClick = (option, item) => {
+    handleMenuClose(item);
+  };
+
+  const [participants, setParticipants] = useState(getParticipants(conference, localUser));
+
   
-  const { pinnedParticipant, raisedHandParticipantIds } = useSelector(state => state.layout);  
   const dispatch = useDispatch();
-  
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuItemClick = (event, index) => {
-    setSelectedIndex(index);
-    setAnchorEl(null);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleParticipantNameChange = (e) => {
     setParticipantName(e.target.value);
   };
-
+  
   useEffect(() => {
-    setParticipants([localUser, ...conference.getParticipantsWithoutHidden()]);
+    setParticipants(getParticipants(conference, localUser));
   }, [conference.getParticipantsWithoutHidden()?.length]);
 
   const filteredParticipants = !participantName
     ? participants
-    : participants.filter((participant) =>
-        participant?.name
-          ? participant?.name
+    : participants.filter((participant) => 
+              participant?._identity?.user?.name
               ?.toLowerCase()
               .includes(participantName.toLowerCase())
-          : participant?._identity?.user?.name
-              ?.toLowerCase()
-              .includes(participantName.toLowerCase())
-      );
+  );
 
 const togglePinParticipant = (id) => {
-  console.log('pinned', id)
   dispatch(setPinParticipant(id));
 }
-console.log('pinnedpairt', pinnedParticipant);
+
 const getAvatarColor =  (id)=> {
     return conference.participants[id]?._identity?.user?.avatar || profile?.color;
 }
- 
-const getOptions = (participantId, role) => { 
-  return [
-  {
-    icon: <span className={pinnedParticipant.participantId ===participantId ? classnames("material-icons material-icons-outlined", classes.pin): "material-icons material-icons-outlined"}>push_pin</span>,
-    text:  pinnedParticipant.participantId ===participantId ? "Unpin from screen" : "Pin to screen",
-    onClick: ()=>pinnedParticipant.participantId ===participantId ? togglePinParticipant(null) : togglePinParticipant(participantId) 
-  },
-  {
-    icon: (
-     <RemoveCircleOutlineIcon />
-    ),
-    text: "Remove from the call",
-    onClick: (event, index)=>{ 
-      conference.kickParticipant(participantId); 
-      setSelectedIndex(index);
-      setAnchorEl(null);
-      },
-    disabled: conference.getRole() === "moderator" && selectedIndex !==1 ? false : true,
-  },
-];
-}
+
   return (
     <Box className={classes.root}>
       <Box sx={{height: '100%'}} >
@@ -225,52 +191,52 @@ const getOptions = (participantId, role) => {
             overflow: 'auto',
             height: '100%'
           }}>
-          {filteredParticipants.map((participant) =>
-            participant?.name ? (
-              <Box className={classes.localBox}>
-                <Box className={classes.userBox}>
-                  <Avatar style={{ backgroundColor: getAvatarColor(participant?.id)}}>
-                    {participant?.name?.slice(0, 1).toUpperCase()}
-                  </Avatar>
-                  <Box className={classes.userBoxContainer}>
-                    <Box className={classes.hostDetails}>
-                      <Box className={classes.hostBox}></Box>
-                      <Typography>{participant?.name} (You) </Typography>
-                    </Box>
-                    <Typography variant="caption">
-                      {conference.getRole() === "moderator" && (
-                        <b style={{fontWeight: '300'}}>Meeting Host</b>
-                      )}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box className={classes.iconBox}>
-                  {localTracks
-                    .find((track) => track.isAudioTrack())
-                    ?.isMuted() ? (
-                    <MicOffOutlinedIcon />
-                  ) : (
-                    <MicNoneOutlinedIcon />
-                  )}
-                  <Tooltip title="More Actions">
-                    <MoreVertOutlinedIcon className={classes.more} onClick={handleMenuClick}/>
-                  </Tooltip>
-                  {anchorEl && <MenuBox
-                    anchorEl={anchorEl}
-                    selectedIndex={selectedIndex}
-                    options={getOptions(participant?.id, conference.getRole())}
-                    handleMenuClick={handleMenuClick}
-                    handleMenuItemClick={handleMenuItemClick}
-                    handleClose={handleClose}
-                  />}
-                </Box>
-              </Box>
-            ) : (
+          {filteredParticipants.map((participant, p) =>
+            // participant?.name ? (
+            //   <Box className={classes.localBox}>
+            //     <Box className={classes.userBox}>
+            //       <Avatar style={{ backgroundColor: getAvatarColor(participant?.id)}}>
+            //         {participant?.name?.slice(0, 1).toUpperCase()}
+            //       </Avatar>
+            //       <Box className={classes.userBoxContainer}>
+            //         <Box className={classes.hostDetails}>
+            //           <Box className={classes.hostBox}></Box>
+            //           <Typography>{participant?.name} (You) </Typography>
+            //         </Box>
+            //         <Typography variant="caption">
+            //           {conference.getRole() === "moderator" && (
+            //             <b style={{fontWeight: '300'}}>Meeting Host</b>
+            //           )}
+            //         </Typography>
+            //       </Box>
+            //     </Box>
+            //     <Box className={classes.iconBox}>
+            //       {localTracks
+            //         .find((track) => track.isAudioTrack())
+            //         ?.isMuted() ? (
+            //         <MicOffOutlinedIcon />
+            //       ) : (
+            //         <MicNoneOutlinedIcon />
+            //       )}
+            //       <Tooltip title="More Actions">
+            //         <MoreVertOutlinedIcon className={classes.more} onClick={handleMenuClick}/>
+            //       </Tooltip>
+            //       {anchorEl && <MenuBox
+            //         anchorEl={anchorEl}
+            //         selectedIndex={selectedIndex}
+            //         options={getOptions(participant?.id, conference.getRole())}
+            //         handleMenuClick={handleMenuClick}
+            //         handleMenuItemClick={handleMenuItemClick}
+            //         handleClose={handleClose}
+            //       />}
+            //     </Box>
+            //   </Box>
+            // ) : (
               <Box>
                 <Box className={classes.localBox}>
                   <Box className={classes.userBox}>
                     <Avatar
-                      style={{ backgroundColor: getAvatarColor(participant?._id)}}
+                      style={{ backgroundColor: getAvatarColor(participant?._id) }}
                     >
                       {participant?._identity?.user?.name
                         .toUpperCase()
@@ -280,7 +246,7 @@ const getOptions = (participantId, role) => {
                       <Box className={classes.hostDetails}>
                         <Box className={classes.hostBox}>
                           <Typography>
-                            {participant?._identity?.user?.name}
+                            {participant?._identity?.user?.name} {" "}{localUser.id === participant?._identity?.user?.id ? "(You)" : null}
                           </Typography>
                         </Box>
                       </Box>
@@ -292,28 +258,28 @@ const getOptions = (participantId, role) => {
                     </Box>
                   </Box>
                   <Box className={classes.iconBox}>
-                    {remoteTracks[participant._id]
-                      ?.find((track) => track.isAudioTrack())
-                      ?.isMuted() ? (
+                    {localTracks.find((track) => track.isAudioTrack())?.isMuted() || 
+                    remoteTracks[participant._id]?.find((track) => track.isAudioTrack())?.isMuted() ? (
                       <MicOffOutlinedIcon />
                     ) : (
                       <MicNoneOutlinedIcon />
                     )}
                     <Tooltip title="More Actions">
-                      <MoreVertOutlinedIcon className={classes.more} onClick={handleMenuClick}/>
+                      <MoreVertOutlinedIcon className={classes.more} onClick={(e)=>handleMenuOpen(e, participant._id)}/>
                     </Tooltip>
-                    {anchorEl && <MenuBox
-                      anchorEl={anchorEl}
-                      selectedIndex={selectedIndex}
-                      options={getOptions(participant._id, participant?._role)}
-                      handleMenuClick={handleMenuClick}
-                      handleMenuItemClick={handleMenuItemClick}
-                      handleClose={handleClose}
-                    />}
+                    <MenuBox
+                      anchorEl={selectedOption[participant._id]}
+                      selectedOption={selectedOption}
+                      open={Boolean(selectedOption[participant._id])}
+                      optionParams={{id: participant._id, role: participant?._role || conference.getRole()}}
+                      togglePinParticipant={togglePinParticipant}
+                      handleOptionClick={handleOptionClick}
+                      handleMenuClose={handleMenuClose}
+                    />
                   </Box>
                 </Box>
               </Box>
-            )
+           // )
           )} 
         </Box>
       </Box>

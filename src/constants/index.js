@@ -108,3 +108,5 @@ export const RECORDING_ERROR_CONSTANTS  = {
     unexpected_request: "Recording or live streaming is already enabled",
     service_unavailable: "Service unavailable"
 };
+
+export const PARTICIPANTS_VISIBLE_ON_MOBILE = 7;

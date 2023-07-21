@@ -553,7 +553,7 @@ export default function MoreAction({
   ];
   let menuListData = [...menuData]; 
   if(isMobileOrTab()){
-    menuListData.splice(4, 2);
+    menuListData.splice(2, 4);
   }
   const menuList =  isMobileOrTab ?  menuListData : menuData;
   const detailedList = (anchor) => (

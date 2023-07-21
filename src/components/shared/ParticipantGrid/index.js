@@ -12,6 +12,7 @@ import VideoMoreBox from '../VideoMoreBox';
 import DrawerBox from '../DrawerBox';
 import ParticipantDetails from '../ParticipantDetails';
 import { color } from '../../../assets/styles/_color';
+import { PARTICIPANTS_VISIBLE_ON_MOBILE } from '../../../constants';
 
 const ParticipantGrid = ({ dominantSpeakerId }) => {
     const [participantState, setParticipantState] = React.useState({
@@ -72,18 +73,20 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
         unorderedParticipants.push({...p, presenter: true});
         participants.push({...p, presenter: true});
     });
+    
     unorderedParticipants.forEach(p=>{
         if(p.presenter === true) return;
         if(p._id === pinnedParticipantId){
-            let pinnedParticipant = unorderedParticipants.splice(unorderedParticipants.indexOf(p._id), 1)[0];
-            console.log('pinnedParticipant first', pinnedParticipant)
-            participants.unshift(pinnedParticipant);
+            let pinnedParticipant = unorderedParticipants.filter(p => p._id === pinnedParticipantId)[0];
+            participants.unshift(pinnedParticipant);    
         }
-        participants.push({...p});
+        if(participants.some(participant=> participant._id === p._id)){
+            return;
+        }else{
+            participants.push({...p});
+        }
     });
 
-
-    console.log('layout sdd', layout, unorderedParticipants, participants)
     let { viewportWidth, viewportHeight } = useWindowResize(participants.length);
     let { documentWidth, documentHeight } = useDocumentSize();
     const {
@@ -135,7 +138,7 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
                                 }}>
                                     {
                                      isMobileOrTab() ?
-                                      i === 1 && j === 1 ?
+                                      i === 3 && j === 1 ?
                                         <VideoMoreBox
                                             height={gridItemHeight}
                                             width={(rows - 1) === i && lastRowWidth ? lastRowWidth : gridItemWidth}
@@ -143,7 +146,7 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
                                             isFilmstrip={true}
                                             numParticipants = {participants?.length} 
                                             participantsArray = {[...participants]}
-                                            others={participants?.length-3}
+                                            others={participants?.length-PARTICIPANTS_VISIBLE_ON_MOBILE}
                                             toggleParticipantDrawer={toggleParticipantDrawer}
                                         />
                                       :

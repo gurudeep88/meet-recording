@@ -10,6 +10,7 @@ import React from "react";
 import { color } from "../../../assets/styles/_color";
 import classnames from "classnames";
 import { profile } from "../../../store/reducers/profile";
+import { PARTICIPANTS_VISIBLE_ON_MOBILE } from "../../../constants";
 
 const VideoMoreBox = ({
   participantDetails,
@@ -151,7 +152,7 @@ const VideoMoreBox = ({
   const avatarActiveClasses = classnames(classes.avatarBox);
   let avatarColor = participantDetails?.avatar || profile?.color;
   
-  let remainingParticipantsArray = participantsArray?.length>3 ? participantsArray?.slice(3) : [];
+  let remainingParticipantsArray = participantsArray?.length> PARTICIPANTS_VISIBLE_ON_MOBILE ? participantsArray?.slice(PARTICIPANTS_VISIBLE_ON_MOBILE) : [];
   
   return (
     <Box

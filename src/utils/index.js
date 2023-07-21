@@ -129,7 +129,7 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
     if (isMobileOrTab()) {
         columns  = totalParticipant > 3 ? 2 : 1;
         rows  = totalParticipant > 8 ? 4 : Math.ceil(totalParticipant / columns);
-        isAsymmetricView = totalParticipant<=8 ? true : false;
+        isAsymmetricView = totalParticipant >0 ? true : false;
         if(totalParticipant > 8){
             gridItemHeight = (viewportHeight - 2*12) / 4;
             gridItemWidth  = viewportWidth - (columns +  1)*12;
@@ -195,78 +195,6 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
                 lastRowWidth: gridItemWidth
             }
         }
-        // } else if ( rows < columns ) {
-        //     viewportHeight  = viewportHeight - ( rows - 1 )*12;
-        //     viewportWidth  = viewportWidth - (columns +  1)*12;
-        //     gridItemWidth =  viewportWidth / (rows + 1);
-        //     gridItemHeight =  viewportHeight / (columns - 1);
-        //     lastRowWidth = gridItemHeight  *   16/9;
-        //     offset  =  (viewportWidth -  (columns * gridItemWidth))/2 || 12;
-        //     if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9  >  actualWidth) {
-        //         lastRowWidth = gridItemWidth;
-        //     }
-        //     const lastRowParticipantCount = totalParticipant % columns === 0 ? columns :  totalParticipant % columns;
-        //     lastRowOffset =  (actualWidth - (lastRowParticipantCount * lastRowWidth) - (lastRowParticipantCount - 1)*12 )/2 ;
-    
-        //     return { 
-        //         rows, 
-        //         columns, 
-        //         gridItemWidth, 
-        //         gridItemHeight, 
-        //         offset, 
-        //         lastRowOffset,
-        //         lastRowWidth
-        //     };
-        // }  else if ( rows === columns) {
-        //     rows = rows  - 1;
-        //     columns  = columns + 1;  
-        //     viewportHeight  = viewportHeight - ( rows - 1 ) * 12;
-        //     viewportWidth  = viewportWidth - ( columns +  1 ) * 12;
-            
-        //     gridItemHeight = viewportHeight / rows;
-        //     gridItemWidth = viewportWidth / columns;
-        //     offset  =  (viewportWidth -  (columns * gridItemWidth))/2 || 12;  
-        //     lastRowWidth = gridItemHeight  *   16/9;
-        //     if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9 >  actualWidth) {
-        //         lastRowWidth = gridItemWidth;
-        //     }
-        //     const lastRowParticipantCount = totalParticipant % columns === 0 ? columns :  totalParticipant % columns;
-        //     lastRowOffset =  (actualWidth - (lastRowParticipantCount * lastRowWidth) - (lastRowParticipantCount - 1)*12 )/2 ;
-    
-        //     return  { 
-        //         rows, 
-        //         columns, 
-        //         gridItemWidth, 
-        //         gridItemHeight, 
-        //         offset,
-        //         lastRowWidth,
-        //         lastRowOffset 
-        //     }
-        // } else {
-        //     viewportHeight  = viewportHeight - ( rows - 1 ) * 12;
-        //     viewportWidth  = viewportWidth - ( columns +  1 ) * 12;
-            
-        //     gridItemHeight = viewportHeight / rows;
-        //     gridItemWidth = viewportWidth / columns;
-    
-        //     offset  =  (viewportWidth -  (columns* gridItemWidth))/2 || 12;  
-        //     lastRowWidth = gridItemHeight  *   16/9;
-        //     if ( totalParticipant % columns === 0  || (totalParticipant % columns) * gridItemHeight * 16/9 >  actualWidth) {
-        //         lastRowWidth = gridItemWidth;
-        //     }
-        //     const lastRowParticipantCount = totalParticipant % columns === 0 ? columns :  totalParticipant % columns;
-        //     lastRowOffset =  (actualWidth - lastRowParticipantCount * lastRowWidth - (lastRowParticipantCount - 1)*12 )/2 ;
-    
-        //     return  { 
-        //         rows, 
-        //         columns, 
-        //         gridItemWidth, 
-        //         gridItemHeight, 
-        //         offset,
-        //         lastRowWidth,
-        //         lastRowOffset 
-        //     }
-        // }
         
         return  { 
             rows: rows , 
@@ -646,4 +574,8 @@ export function formatBytes(bytes) {
     else if (bytes < gigaBytes) return (bytes / megaBytes).toFixed(decimal) + " MB";
     // return GB if less than a TB
     else return (bytes / gigaBytes).toFixed(decimal) + " GB";
+}
+
+export const getParticipants = (conference, localUser) => {
+    return [...conference.getParticipantsWithoutHidden(), { _identity: { user: localUser }, _id: localUser.id }]
 }

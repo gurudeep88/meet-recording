@@ -86,10 +86,10 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     position: "fixed",
     color: color.white,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       bottom: "0px",
       background: color.secondaryDark,
-      height: '60px'
+      height: '72px'
     },
     "& svg": {
       padding: "8px",

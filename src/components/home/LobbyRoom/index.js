@@ -184,7 +184,7 @@ const LobbyRoom = ({ tracks }) => {
       marginLeft: '15%',
       marginRight: 'auto',
       minHeight: '60vh',
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         padding: "24px 0",
         backgroundColor: videoTrack?.isMuted() ? color.blurEffect : color.lightBlurEffect,
         border: `none`,
@@ -348,7 +348,7 @@ const LobbyRoom = ({ tracks }) => {
     conference.addEventListener(
       SariskaMediaTransport.events.conference.USER_ROLE_CHANGED,
       (id, role) => {
-        console.log('USER_ROLE_CHANGED', id, role, conference.isModerator())
+        console.log('USER_ROLE_CHANGED', id, role)
         if (conference.isModerator() && !testMode) {
           conference.enableLobby();
           history.push(`/${meetingTitle}`);

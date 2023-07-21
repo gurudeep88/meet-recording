@@ -30,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
       height: '82%'
     }
   },
+  underRoot: {
+    [theme.breakpoints.down('md')]: {
+      height: '100%'
+    }
+  },
   title: {
     color: color.secondary,
     fontSize: "0.85rem",
@@ -178,7 +183,7 @@ const getAvatarColor =  (id)=> {
 
   return (
     <Box className={classes.root}>
-      <Box sx={{height: '100%'}} >
+      <Box className={classes.underRoot}>
         <SearchBox
           placeholder={"Search Participants"}
           value={participantName}
@@ -192,46 +197,6 @@ const getAvatarColor =  (id)=> {
             height: '100%'
           }}>
           {filteredParticipants.map((participant, p) =>
-            // participant?.name ? (
-            //   <Box className={classes.localBox}>
-            //     <Box className={classes.userBox}>
-            //       <Avatar style={{ backgroundColor: getAvatarColor(participant?.id)}}>
-            //         {participant?.name?.slice(0, 1).toUpperCase()}
-            //       </Avatar>
-            //       <Box className={classes.userBoxContainer}>
-            //         <Box className={classes.hostDetails}>
-            //           <Box className={classes.hostBox}></Box>
-            //           <Typography>{participant?.name} (You) </Typography>
-            //         </Box>
-            //         <Typography variant="caption">
-            //           {conference.getRole() === "moderator" && (
-            //             <b style={{fontWeight: '300'}}>Meeting Host</b>
-            //           )}
-            //         </Typography>
-            //       </Box>
-            //     </Box>
-            //     <Box className={classes.iconBox}>
-            //       {localTracks
-            //         .find((track) => track.isAudioTrack())
-            //         ?.isMuted() ? (
-            //         <MicOffOutlinedIcon />
-            //       ) : (
-            //         <MicNoneOutlinedIcon />
-            //       )}
-            //       <Tooltip title="More Actions">
-            //         <MoreVertOutlinedIcon className={classes.more} onClick={handleMenuClick}/>
-            //       </Tooltip>
-            //       {anchorEl && <MenuBox
-            //         anchorEl={anchorEl}
-            //         selectedIndex={selectedIndex}
-            //         options={getOptions(participant?.id, conference.getRole())}
-            //         handleMenuClick={handleMenuClick}
-            //         handleMenuItemClick={handleMenuItemClick}
-            //         handleClose={handleClose}
-            //       />}
-            //     </Box>
-            //   </Box>
-            // ) : (
               <Box>
                 <Box className={classes.localBox}>
                   <Box className={classes.userBox}>

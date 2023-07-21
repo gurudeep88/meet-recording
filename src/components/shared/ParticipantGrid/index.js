@@ -1,6 +1,6 @@
 
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Box, makeStyles, Grid, Typography, Hidden } from '@material-ui/core'
 import { useSelector } from "react-redux";
 import CloseIcon from '@material-ui/icons/Close';
@@ -51,7 +51,7 @@ const ParticipantGrid = ({ dominantSpeakerId }) => {
             marginLeft: "8px",
             fontSize: "28px",
             lineHeight: "1",
-            [theme.breakpoints.down("sm")]: {
+            [theme.breakpoints.down("md")]: {
               marginLeft: 0,
               fontSize: '24px'
             }

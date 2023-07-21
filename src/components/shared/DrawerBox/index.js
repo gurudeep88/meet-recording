@@ -19,7 +19,7 @@ export default function DrawerBox({ children, open, onClose, top }) {
         height: (layout.mode === ENTER_FULL_SCREEN_MODE) || (window.innerHeight === 823 && window.innerWidth===1524) ? "89%" : "87%",
         width: "360px",
         backgroundColor: color.secondary,
-        [theme.breakpoints.down("sm")]: {
+        [theme.breakpoints.down("md")]: {
           top: '15px',
           //left: 0,
           right: '8px',

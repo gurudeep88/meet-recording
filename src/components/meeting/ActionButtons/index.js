@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
       padding: "8px",
       borderRadius: "8px",
       marginRight: "2px",
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         background: color.secondary,
         borderRadius: '50%',
         marginRight: "6px !important",
@@ -116,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "18px",
     padding: "12px !important",
     marginRight: "12px",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       marginRight: "6px !important",
     },
   },
@@ -133,7 +133,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "8px",
     marginRight: "2px",
     borderRadius: "8px",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       background: color.secondary,
       borderRadius: '50%',
       marginRight: "6px",
@@ -771,7 +771,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
             <PanToolIcon onClick={startRaiseHand} className={classes.panTool} />
           )}
         </StyledTooltip>
-        <Hidden mdDown>
+        <Hidden smDown>
         <StyledTooltip title="Participants Details">
           <GroupIcon onClick={toggleParticipantDrawer("right", true)} />
         </StyledTooltip>

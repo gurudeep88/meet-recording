@@ -555,7 +555,7 @@ export default function MoreAction({
   if(isMobileOrTab()){
     menuListData.splice(2, 4);
   }
-  const menuList =  isMobileOrTab ?  menuListData : menuData;
+  const menuList =  isMobileOrTab() ?  menuListData : menuData;
   const detailedList = (anchor) => (
     <Box
       className={classes.detailedList}

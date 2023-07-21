@@ -16,7 +16,7 @@ import MicOffIcon from "@material-ui/icons/MicOff";
 import { setPinParticipant } from "../../../store/actions/layout";
 import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
-import { videoShadow, calculateSteamHeightAndExtraDiff } from "../../../utils";
+import { videoShadow, calculateSteamHeightAndExtraDiff, isMobileOrTab } from "../../../utils";
 import AudioLevelIndicator from "../AudioIndicator";
 import SubTitle from "../SubTitle";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
@@ -202,6 +202,13 @@ const VideoBox = ({
       isActiveSpeaker
     );
   let avatarColor = participantDetails?.avatar || profile?.color;
+
+   const getVideoContainerWidth = (videoStreamHeight) => {
+      if(isMobileOrTab()) {
+        if( isPresenter ) return '100%'; 
+      }
+      return `${(videoStreamHeight * 16) / 9}px`
+    }
   return (
     <Box
       style={{ width: `${width}px`, height: `${height}px` }}
@@ -236,7 +243,7 @@ const VideoBox = ({
       ) : (
         <Box
           style={{
-            width: `${(videoStreamHeight * 16) / 9}px`,
+            width: getVideoContainerWidth(videoStreamHeight),
             height: `${videoStreamHeight}px`,
             left: `-${videoStreamDiff / 2}px`,
             position: "absolute",

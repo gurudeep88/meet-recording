@@ -1,7 +1,6 @@
 import { useLocation } from "react-router-dom";
 import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL, ENTER_FULL_SCREEN_MODE} from "../constants";
 import linkifyHtml from 'linkify-html';
-import { SARISKA_MEET_APP_API_KEY } from "../config";
 
 const Compressor = require('compressorjs');
 
@@ -56,7 +55,7 @@ export async function getToken(profile, name, avatarColor) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            apiKey: SARISKA_MEET_APP_API_KEY,
+            apiKey: process.env.REACT_APP_SARISKA_MEET_APP_API_KEY,
             user: {
                 id: profile.id,
                 avatar: avatarColor,
@@ -415,7 +414,6 @@ export function videoShadow(level) {
 
 export function getWhiteIframeUrl(conference) {
     return `https://whiteboard.sariska.io/boards/${conference.connection.name}?authorName=${conference.getLocalUser().name}`;     
-
 }
 
 export function isFullscreen(){

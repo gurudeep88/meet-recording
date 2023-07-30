@@ -103,7 +103,7 @@ const Meeting = () => {
         (item) => item.kind === "audiooutput"
       );
       videoInputDeviceOld = oldDevices.filter(
-        (item) => item.deviceId === "videoinput"
+        (item) => item.kind === "videoinput"
       );
     }
 

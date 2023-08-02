@@ -55,7 +55,6 @@ const LobbyRoom = ({ tracks }) => {
   const [accessDenied, setAccessDenied] = useState(false);
   const profile = useSelector((state) => state.profile);
   const queryParams = useParams();
-  console.log("queryParams", queryParams);
   const iAmRecorder = window.location.hash.indexOf("iAmRecorder") >= 0;
   const testMode = window.location.hash.indexOf("testMode") >= 0;
   const notification = useSelector((state) => state.notification);
@@ -185,7 +184,7 @@ const LobbyRoom = ({ tracks }) => {
       marginLeft: '15%',
       marginRight: 'auto',
       minHeight: '60vh',
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         padding: "24px 0",
         backgroundColor: videoTrack?.isMuted() ? color.blurEffect : color.lightBlurEffect,
         border: `none`,
@@ -193,7 +192,7 @@ const LobbyRoom = ({ tracks }) => {
         borderRadius: "20px 20px 0px 0px",
         marginLeft: 0,
         marginRight: 0,
-        width: '100%'
+        width: '350px'
       }
     },
     logoContainer: {},
@@ -284,7 +283,6 @@ const LobbyRoom = ({ tracks }) => {
     let avatarColor = profile?.color ?  profile?.color : getRandomColor();
     dispatch(updateProfile({key: "color", value: avatarColor}));
 
-    console.log("profile, name, avatarColor)", profile, name, avatarColor);
     const token = await getToken(profile, name, avatarColor);
     const connection = new SariskaMediaTransport.JitsiConnection(
       token,
@@ -349,7 +347,8 @@ const LobbyRoom = ({ tracks }) => {
 
     conference.addEventListener(
       SariskaMediaTransport.events.conference.USER_ROLE_CHANGED,
-      (id) => {
+      (id, role) => {
+        console.log('USER_ROLE_CHANGED', id, role)
         if (conference.isModerator() && !testMode) {
           conference.enableLobby();
           history.push(`/${meetingTitle}`);

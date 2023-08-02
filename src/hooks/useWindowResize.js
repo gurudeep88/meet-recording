@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useSelector} from "react-redux";
 import {ENTER_FULL_SCREEN_MODE, GRID, PRESENTATION, SPEAKER} from "../constants";
+import { isMobileOrTab } from '../utils';
 
 export function useWindowResize(participantCount) {
     const layout = useSelector(state => state.layout);
@@ -9,10 +10,10 @@ export function useWindowResize(participantCount) {
     const [windowSize, setWindowSize] = useState({viewportWidth: undefined, viewportHeight: undefined});
 
     function getDimensions(mode, type) {
+        
         let documentWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
         let documentHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
         let viewportHeight, viewportWidth;
-        
         if (mode === ENTER_FULL_SCREEN_MODE ) {
             viewportHeight = documentHeight - 108;
             viewportWidth = documentWidth;
@@ -20,7 +21,8 @@ export function useWindowResize(participantCount) {
         }
 
         if (participantCount === 1 &&  type !== PRESENTATION)  {
-            return {viewportWidth: (documentHeight - 92)*16/9 , viewportHeight: documentHeight - 92};
+            
+            return {viewportWidth: isMobileOrTab() ? documentWidth-12 : (documentHeight - 92)*16/9 , viewportHeight: documentHeight - 92};
         }
 
         if ( type === GRID ) {
@@ -54,6 +56,6 @@ export function useWindowResize(participantCount) {
         window.addEventListener("resize", handleResize)
         return () => window.removeEventListener("resize", handleResize);
     }, [layout.mode, layout.type]);
-
+    
     return windowSize;
 }

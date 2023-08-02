@@ -1,7 +1,6 @@
 import { useLocation } from "react-router-dom";
 import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL, ENTER_FULL_SCREEN_MODE} from "../constants";
 import linkifyHtml from 'linkify-html';
-import { SARISKA_MEET_APP_API_KEY } from "../config";
 
 const Compressor = require('compressorjs');
 
@@ -56,7 +55,7 @@ export async function getToken(profile, name, avatarColor) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            apiKey: SARISKA_MEET_APP_API_KEY,
+            apiKey: process.env.REACT_APP_SARISKA_MEET_APP_API_KEY,
             user: {
                 id: profile.id,
                 avatar: avatarColor,
@@ -126,11 +125,10 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
     let rows;
     let isAsymmetricView;
     let gridItemWidth, gridItemHeight, offset, lastRowOffset, lastRowWidth;
-    
-    if (isMobile()) {
-        columns  = totalParticipant > 4 ? 2 : 1;
-        rows  = Math.ceil(totalParticipant / columns);
-        isAsymmetricView = totalParticipant<=8 ? true : false;
+    if (isMobileOrTab()) {
+        columns  = totalParticipant > 3 ? 2 : 1;
+        rows  = totalParticipant > 8 ? 4 : Math.ceil(totalParticipant / columns);
+        isAsymmetricView = totalParticipant >0 ? true : false;
         if(totalParticipant > 8){
             gridItemHeight = (viewportHeight - 2*12) / 4;
             gridItemWidth  = viewportWidth - (columns +  1)*12;
@@ -147,11 +145,10 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
         columns = Math.ceil(Math.sqrt(numWindows));
         rows = Math.ceil(numWindows / columns);
     }
-
+    
     if (isAsymmetricView) {
-        viewportHeight  = viewportHeight - ( rows + 1 )*12;
-        viewportWidth  = viewportWidth - (columns +  1)*12;
-        console.log('vieprt', viewportWidth, lastRowWidth, gridItemWidth)
+         viewportHeight  = viewportHeight - ( rows + 1 )*12;
+         viewportWidth  = viewportWidth - (columns +  1)*12;
         
         gridItemHeight = viewportHeight / rows;
         gridItemWidth = viewportWidth / columns;
@@ -162,7 +159,42 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
         if ( totalParticipant % columns  === 0 ) {
             lastRowOffset = offset;
         }
+        if (totalParticipant === 2) {
+            viewportHeight  = viewportHeight - (columns - 1)*12;
+            viewportWidth = viewportWidth - (columns - 1)*12;
+            gridItemHeight  =  viewportHeight / rows;
+            gridItemWidth = viewportWidth;
+            return { 
+                rows, 
+                columns, 
+                gridItemWidth, 
+                gridItemHeight,   //viewportHeight / 2, 
+                offset: 12 , 
+                lastRowWidth: gridItemWidth,
+                lastRowOffset: 12
+            };
+        }
 
+        if (isSquare(totalParticipant) || totalParticipant <= 4) {
+            viewportHeight  = viewportHeight - (columns - 1)*12;
+            viewportWidth = viewportWidth - (columns - 1)*12;
+            gridItemHeight  =  viewportHeight / rows;
+            gridItemWidth = viewportWidth /columns;
+            offset  =  (viewportWidth -  (columns * gridItemWidth))/2;  
+            const lastRowParticipantCount = (totalParticipant % columns === 0 ? columns: totalParticipant % columns );
+            lastRowOffset =  (actualWidth  - (lastRowParticipantCount * gridItemWidth) - (lastRowParticipantCount - 1)*12 )/2;
+          
+            return { 
+                rows, 
+                columns, 
+                gridItemWidth, 
+                gridItemHeight, 
+                offset, 
+                lastRowOffset,
+                lastRowWidth: gridItemWidth
+            }
+        }
+        
         return  { 
             rows: rows , 
             columns: columns, 
@@ -198,7 +230,7 @@ export function calculateRowsAndColumns(totalParticipant, viewportWidth, viewpor
 
     if (isSquare(totalParticipant) || totalParticipant <= 4) {
         viewportHeight  = viewportHeight - (columns - 1)*12;
-        viewportWidth = viewportWidth - (columns - 1)*12;;
+        viewportWidth = viewportWidth - (columns - 1)*12;
         gridItemHeight  =  viewportHeight / rows;
         gridItemWidth = gridItemHeight * 16/9;
         offset  =  (viewportWidth -  (columns * gridItemWidth))/2;  
@@ -295,18 +327,49 @@ export function isMobile() {
 }
 
 export function isPortrait(){
-    return window.innerWidth <600 ? true : false;
+    return window.innerWidth <=620 ? true : false;
+}
+
+export function isTab(){
+    return (window.innerWidth >620 && window.innerWidth <960)  ? true : false;
+}
+
+export function isMobileOrTab(){
+    return window.innerWidth <960 ? true : false;
 }
 
 export function getLeftTop(i,  j,  gridItemWidth, gridItemHeight, offset, lastRowOffset, rows, participantCount, viewportHeight, lastRowWidth, documentHeight){
     let left, top; 
+    if(lastRowWidth === undefined){
+        lastRowWidth = 0;
+    }
     if ( (rows - 1 ) === i) {
-       left  = lastRowOffset + (j * lastRowWidth) + j*12;
+        if(isMobileOrTab()){
+            if(participantCount === 5){
+                left = lastRowOffset + (j * lastRowWidth) + (j+1)*12;
+                
+            }else if(participantCount < 5){
+                left = lastRowOffset + (j * lastRowWidth) + (j)*12;
+                
+            }
+            else{
+                left  = offset + (j * gridItemWidth) +  (j+1)*12;
+                
+            }
+        }else{
+            left = lastRowOffset + (j * lastRowWidth) + j*12;
+            
+        }
     } else {
-       left  = offset + (j * gridItemWidth) +  j*12
+       if(isMobileOrTab()){
+        left  = participantCount<=4 ? lastRowOffset + (j * lastRowWidth) + j*12 : offset + (j * gridItemWidth) +  (j+1)*12;
+       }else {
+        left  = offset + (j * gridItemWidth) +  j*12;
+        
+       }
     }
     top  =   (i *  gridItemHeight + i*12);
-    if ( participantCount === 2 ) {
+    if ( !isMobileOrTab() && participantCount === 2 ) {
         return { left, top: (documentHeight - gridItemHeight) / 2};
     }
     return { left, top };
@@ -351,7 +414,6 @@ export function videoShadow(level) {
 
 export function getWhiteIframeUrl(conference) {
     return `https://whiteboard.sariska.io/boards/${conference.connection.name}?authorName=${conference.getLocalUser().name}`;     
-
 }
 
 export function isFullscreen(){
@@ -510,4 +572,8 @@ export function formatBytes(bytes) {
     else if (bytes < gigaBytes) return (bytes / megaBytes).toFixed(decimal) + " MB";
     // return GB if less than a TB
     else return (bytes / gigaBytes).toFixed(decimal) + " GB";
+}
+
+export const getParticipants = (conference, localUser) => {
+    return [...conference.getParticipantsWithoutHidden(), { _identity: { user: localUser }, _id: localUser.id }]
 }

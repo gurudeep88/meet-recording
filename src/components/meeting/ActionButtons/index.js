@@ -55,7 +55,6 @@ import {
   exitFullscreen,
   formatAMPM,
   isFullscreen,
-  isPortrait,
   requestFullscreen,
 } from "../../../utils";
 import classNames from "classnames";
@@ -87,19 +86,19 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     position: "fixed",
     color: color.white,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       bottom: "0px",
       background: color.secondaryDark,
-      height: '60px'
+      height: '72px'
     },
     "& svg": {
       padding: "8px",
       borderRadius: "8px",
       marginRight: "2px",
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down("md")]: {
         background: color.secondary,
         borderRadius: '50%',
-        marginRight: "12px",
+        marginRight: "6px !important",
       },
       "&:hover": {
         opacity: "0.8",
@@ -117,6 +116,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "18px",
     padding: "12px !important",
     marginRight: "12px",
+    [theme.breakpoints.down("md")]: {
+      marginRight: "6px !important",
+    },
   },
   infoContainer: {
     marginLeft: "20px",
@@ -131,10 +133,10 @@ const useStyles = makeStyles((theme) => ({
     padding: "8px",
     marginRight: "2px",
     borderRadius: "8px",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       background: color.secondary,
       borderRadius: '50%',
-      marginRight: "12px",
+      marginRight: "6px",
     },
   },
   permissions: {
@@ -224,6 +226,9 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "0px !important",
     fontSize: "20px",
     padding: "10px !important",
+    [theme.breakpoints.down("md")]: {
+      marginRight: '6px !important'
+    }
   },
   moreActionList: {
     height: "100%",
@@ -706,14 +711,14 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   
   return (
     <Box id="footer" className={classes.root}>
-      <Hidden mdDown>
+      <Hidden smDown>
         <Box className={classes.infoContainer}>
           <Box>{time}</Box>
           <Box className={classes.separator}>|</Box>
           <Box>{profile.meetingTitle}</Box>
         </Box>
       </Hidden>
-      <Hidden mdDown>
+      <Hidden smDown>
         <StyledTooltip title="Leave Call">
           <CallEndIcon onClick={leaveConference} className={classes.end} />
         </StyledTooltip>
@@ -766,7 +771,7 @@ const ActionButtons = ({ dominantSpeakerId }) => {
             <PanToolIcon onClick={startRaiseHand} className={classes.panTool} />
           )}
         </StyledTooltip>
-        <Hidden mdDown>
+        <Hidden smDown>
         <StyledTooltip title="Participants Details">
           <GroupIcon onClick={toggleParticipantDrawer("right", true)} />
         </StyledTooltip>
@@ -777,7 +782,6 @@ const ActionButtons = ({ dominantSpeakerId }) => {
         >
           {participantList("right")}
         </DrawerBox>
-        <Hidden mdDown>
         <StyledTooltip title="Chat Box">
           <StyledBadge badgeContent={unread}>
             <ChatIcon
@@ -786,14 +790,13 @@ const ActionButtons = ({ dominantSpeakerId }) => {
             />
           </StyledBadge>
         </StyledTooltip>
-        </Hidden>
         <DrawerBox
           open={chatState["right"]}
           onClose={toggleChatDrawer("right", false)}
         >
           {chatList("right")}
         </DrawerBox>
-        <Hidden mdDown>
+        <Hidden smDown>
         <StyledTooltip
           title={
             layout.type === SPEAKER || layout.type === PRESENTATION

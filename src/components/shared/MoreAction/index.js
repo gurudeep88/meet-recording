@@ -37,6 +37,7 @@ import { authorizeDropbox } from "../../../utils/dropbox-apis";
 import SettingsBox from "../../meeting/Settings";
 import classnames from "classnames";
 import DrawerBox from "../DrawerBox";
+import { isMobileOrTab } from "../../../utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -550,7 +551,11 @@ export default function MoreAction({
       onClick: toggleSettingsDrawer("right", true),
     }
   ];
-
+  let menuListData = [...menuData]; 
+  if(isMobileOrTab()){
+    menuListData.splice(2, 4);
+  }
+  const menuList =  isMobileOrTab() ?  menuListData : menuData;
   const detailedList = (anchor) => (
     <Box
       className={classes.detailedList}
@@ -568,7 +573,7 @@ export default function MoreAction({
       </Box>
     </Box>
   );
-
+  
   return (
     <>
       <Paper className={classes.root}>
@@ -581,7 +586,7 @@ export default function MoreAction({
           </Hidden>
         </Box>
         <MenuList>
-          {menuData.map((menu, index) => (
+          {menuList.map((menu, index) => (
             <>
               {(
                 <MenuItem onClick={menu.onClick} key={index}>

@@ -1,10 +1,8 @@
 import {
   Box,
-  Button,
   Hidden,
   makeStyles,
   Snackbar,
-  Tooltip,
   Typography,
 } from "@material-ui/core";
 import React, { useEffect, useState, useRef } from "react";
@@ -16,7 +14,6 @@ import { addConference } from "../../../store/actions/conference";
 import {
   getToken,
   trimSpace,
-  detectUpperCaseChar,
   getRandomColor
 } from "../../../utils";
 import { addThumbnailColor } from "../../../store/actions/color";
@@ -27,7 +24,6 @@ import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
-import SettingsIcon from '@material-ui/icons/Settings';
 import TextInput from "../../shared/TextInput";
 import { setProfile, setMeeting , updateProfile} from "../../../store/actions/profile";
 import JoinTrack from "../JoinTrack";
@@ -36,12 +32,8 @@ import SnackbarBox from "../../shared/Snackbar";
 import { showNotification } from "../../../store/actions/notification";
 import { setDisconnected } from "../../../store/actions/layout";
 import Logo from "../../shared/Logo";
-import DrawerBox from "../../shared/DrawerBox";
-import SettingsBox from "../../meeting/Settings";
 import FancyButton from "../../shared/FancyButton";
 import StyledTooltip from "../../shared/StyledTooltip";
-import Icons from "../../shared/iconList";
-
 
 const LobbyRoom = ({ tracks }) => {
   const history = useHistory();
@@ -328,9 +320,6 @@ const LobbyRoom = ({ tracks }) => {
   };
 
   const createConference = async (connection) => {
-    // const conference = connection.initJitsiConference({
-    //   createVADProcessor: SariskaMediaTransport.effects.createRnnoiseProcessor,
-    // });
     const conference = connection.initJitsiConference();
     tracks.forEach(async track => await conference.addTrack(track));
 
@@ -419,12 +408,15 @@ const LobbyRoom = ({ tracks }) => {
   };
 
   if (iAmRecorder && !meetingTitle) {
+    console.log('first recorder', queryParams.meetingId)
     setName("recorder");
     setMeetingTitle(queryParams.meetingId);
   }
 
   useEffect(() => {
+    console.log('out state.meetingName && (testMode || iAmRecorder)', meetingTitle, testMode, iAmRecorder);
     if (meetingTitle && (testMode || iAmRecorder)) {
+      console.log('state.meetingName && (testMode || iAmRecorder)', meetingTitle, testMode, iAmRecorder);
       handleSubmit();
     }
   }, [meetingTitle]);
@@ -445,24 +437,6 @@ const LobbyRoom = ({ tracks }) => {
     }
     setName(profile.name);
   }, [profile?.name]);
-
-  const toggleSettingsDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setSettingsState({ ...settingsState, [anchor]: open });
-  };
-
-  const settingsList = (anchor) => (
-    <Box
-      onKeyDown={toggleSettingsDrawer(anchor, false)}
-    >
-      <SettingsBox onClick={toggleSettingsDrawer("right", false)}/>
-    </Box>
-  );
 
   return (
     <Box className={classes.root}>
@@ -499,9 +473,6 @@ const LobbyRoom = ({ tracks }) => {
               <VideocamIcon onClick={muteVideoLocalTrack} />
             </StyledTooltip>
           )}
-          <StyledTooltip title="Settings">
-            <SettingsIcon onClick={toggleSettingsDrawer("right", true)} />
-          </StyledTooltip>
         </Box>
         <Box className={classes.action}>
           <div className={classes.wrapper}>
@@ -513,23 +484,6 @@ const LobbyRoom = ({ tracks }) => {
                     e.preventDefault();
                     handleSubmit();
                   }
-                  // if (e.charCode === 32) {
-                  //   dispatch(
-                  //     showNotification({
-                  //       message: "Space is not allowed",
-                  //       severity: "warning",
-                  //       autoHide: true,
-                  //     })
-                  //   );
-                  // // } else if (detectUpperCaseChar(e.key)) {
-                  // //   dispatch(
-                  // //     showNotification({
-                  // //       message: "Capital Letter is not allowed",
-                  // //       severity: "warning",
-                  // //       autoHide: true,
-                  // //     })
-                  // //   );
-                  // }
                 }}
                 label="Meeting Title"
                 width="20vw"
@@ -568,13 +522,6 @@ const LobbyRoom = ({ tracks }) => {
             )}
             </Box>
       </Box>
-      <DrawerBox
-        open={settingsState["right"]}
-        onClose={toggleSettingsDrawer("right", false)}
-        top="50px"
-      >
-        {settingsList("right")}
-      </DrawerBox>
       <Snackbar
         anchorOrigin={{
           vertical: "top",

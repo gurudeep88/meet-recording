@@ -1,8 +1,5 @@
 import { useLocation } from "react-router-dom";
-import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL, ENTER_FULL_SCREEN_MODE} from "../constants";
-import linkifyHtml from 'linkify-html';
-
-const Compressor = require('compressorjs');
+import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL} from "../constants";
 
 export function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -412,10 +409,6 @@ export function videoShadow(level) {
     ].join(', ');
 }
 
-export function getWhiteIframeUrl(conference) {
-    return `https://whiteboard.sariska.io/boards/${conference.connection.name}?authorName=${conference.getLocalUser().name}`;     
-}
-
 export function isFullscreen(){
     let isInFullScreen =
     (document.fullscreenElement && document.fullscreenElement !== null) ||
@@ -450,18 +443,6 @@ export function exitFullscreen() {
     }
 }
 
-export function getSharedDocumentIframeUrl(conference) {
-    return `https://etherpad.sariska.io/p/${conference.connection.name}?userName=${conference.getLocalUser().name}&showChat=false&showControls=false&chatAndUsers=false`;     
-}
-
-export function appendLinkTags(type, conference) {
-    var preloadLink = document.createElement("link");
-    preloadLink.href = type === "whiteboard" ? getWhiteIframeUrl(conference) : getSharedDocumentIframeUrl(conference);
-    preloadLink.rel = "preload";
-    preloadLink.as = "document";
-    document.head.appendChild(preloadLink);
-}
-
 export function formatAMPM(date) {
     var hours = date.getHours();
     var minutes = date.getMinutes();
@@ -473,11 +454,6 @@ export function formatAMPM(date) {
     return strTime;
 }
 
-export function preloadIframes(conference) {
-    appendLinkTags("whiteboard", conference);
-    appendLinkTags("sharedDocument", conference);
-}
-
 export const trimSpace = (str) => {
     return str.replace(/\s/g,'');
 }
@@ -486,10 +462,6 @@ export const detectUpperCaseChar = (char) => {
     return char === char.toUpperCase() && char !== char.toLowerCase();
 }
 
-export const linkify=(inputText) =>{
-    const options = { defaultProtocol: 'https',   target: '_blank'};
-    return linkifyHtml(inputText, options);
-}
 
 export function encodeHTML(str){
     return str.replace(/([\u00A0-\u9999<>&])(.|$)/g, function(full, char, next) {
@@ -533,23 +505,6 @@ export function getPresignedUrl(params) {
     });
 }
 
-export function compressFile(file, type) {
-    return new Promise((resolve, reject) => {
-        if (type === "attachment") {
-            resolve(file);
-        } else {
-            new Compressor(file, {
-                quality: 0.6,
-                success(result) {
-                    resolve(result);
-                },
-                error(err) {
-                    reject(err.message);
-                }
-            });
-        }
-    });
-}
 
 export function getUniqueNumber() {
     return Math.floor(100000 + Math.random() * 900000);

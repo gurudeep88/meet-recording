@@ -1,4 +1,4 @@
-import { Box, Hidden, makeStyles } from "@material-ui/core";
+import { Box, makeStyles } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { color } from "../../assets/styles/_color";
 import ActionButtons from "../../components/meeting/ActionButtons";
@@ -9,40 +9,26 @@ import {
   addRemoteTrack,
   participantLeft,
   removeRemoteTrack,
-  updateLocalTrack,
   remoteTrackMutedChanged,
 } from "../../store/actions/track";
-import GridLayout from "../../components/meeting/GridLayout";
 import SpeakerLayout from "../../components/meeting/SpeakerLayout";
-import PresentationLayout from "../../components/meeting/PresentationLayout";
 import Notification from "../../components/shared/Notification";
 import {
   SPEAKER,
-  PRESENTATION,
   GRID,
-  ENTER_FULL_SCREEN_MODE,
+  ENTER_FULL_SCREEN_MODE
 } from "../../constants";
-import { addMessage } from "../../store/actions/message";
-import { getUserById, preloadIframes, getDefaultDeviceId, isPortrait, isMobileOrTab } from "../../utils";
+import { isMobileOrTab } from "../../utils";
 import PermissionDialog from "../../components/shared/PermissionDialog";
 import SnackbarBox from "../../components/shared/Snackbar";
-import { unreadMessage } from "../../store/actions/chat";
 import Home from "../Home";
 import {
-  setPresenter,
   setPinParticipant,
-  setRaiseHand,
-  setModerator,
-  setDisconnected,
-  setLayout,
+  setLayout
 } from "../../store/actions/layout";
 import { setAudioLevel } from "../../store/actions/audioIndicator";
 import { showNotification } from "../../store/actions/notification";
-import { addSubtitle } from "../../store/actions/subtitle";
-import { useHistory } from "react-router-dom";
-import { setUserResolution } from "../../store/actions/layout";
 import { useOnlineStatus } from "../../hooks/useOnlineStatus";
-import ReactGA from "react-ga4";
 import {
   setCamera,
   setDevices,
@@ -50,7 +36,6 @@ import {
 } from "../../store/actions/media";
 
 const Meeting = () => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const localTracks = useSelector((state) => state.localTrack);
   const conference = useSelector((state) => state.conference);
@@ -174,16 +159,6 @@ const Meeting = () => {
   };
 
   const destroy = async () => {
-    if (conference.getParticipantCount() - 1 === 0) {
-      fetch(
-        `https://whiteboard.sariska.io/boards/delete/${conference.connection.name}`,
-        { method: "DELETE", mode: "cors" }
-      );
-      fetch(
-        `https://etherpad.sariska.io/api/1/deletePad?apikey=a97b8845463ab348a91717f9887842edf0df15e395977c2dad12c56bca146d6e&padID=${conference.connection.name}`,
-        { method: "GET", mode: "cors" }
-      );
-    }
     if (conference?.isJoined()) {
       await conference?.leave();
     }
@@ -201,35 +176,6 @@ const Meeting = () => {
     if (!conference) {
       return;
     }
-
-    conference.getParticipantsWithoutHidden().forEach((item) => {
-      if (item._properties?.presenting === "start") {
-        dispatch(
-          showNotification({
-            autoHide: true,
-            message: `Screen sharing is being presenting by ${item._identity?.user?.name}`,
-          })
-        );
-        dispatch(setPresenter({ participantId: item._id, presenter: true }));
-      }
-
-      if (item._properties?.handraise === "start") {
-        dispatch(setRaiseHand({ participantId: item._id, raiseHand: true }));
-      }
-
-      if (item._properties?.isModerator === "true") {
-        dispatch(setModerator({ participantId: item._id, isModerator: true }));
-      }
-
-      if (item._properties?.resolution) {
-        dispatch(
-          setUserResolution({
-            participantId: item._id,
-            resolution: item._properties?.resolution,
-          })
-        );
-      }
-    });
 
     conference.addEventListener(
       SariskaMediaTransport.events.conference.TRACK_REMOVED,
@@ -249,20 +195,6 @@ const Meeting = () => {
     );
 
     conference.addEventListener(
-      SariskaMediaTransport.events.conference.FACIAL_EXPRESSION_ADDED,
-      (expression) => {
-        console.log("FACIAL_EXPRESSION_ADDED", expression);
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.SUBTITLES_RECEIVED,
-      (id, name, text) => {
-        dispatch(addSubtitle({ name, text }));
-      }
-    );
-
-    conference.addEventListener(
       SariskaMediaTransport.events.conference.TRACK_MUTE_CHANGED,
       (track) => {
         dispatch(remoteTrackMutedChanged());
@@ -278,124 +210,12 @@ const Meeting = () => {
     );
 
     conference.addEventListener(
-      SariskaMediaTransport.events.conference.LAST_N_ENDPOINTS_CHANGED,
-      (enterIds, exitingIds) => {
-        console.log("LAST_N_ENDPOINTS_CHANGED", enterIds, exitingIds);
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.PARTICIPANT_PROPERTY_CHANGED,
-      (participant, key, oldValue, newValue) => {
-        if (key === "presenting" && newValue === "start") {
-          dispatch(
-            showNotification({
-              autoHide: true,
-              message: `Screen sharing started by ${participant._identity?.user?.name}`,
-            })
-          );
-          dispatch(
-            setPresenter({ participantId: participant._id, presenter: true })
-          );
-        }
-
-        if (key === "presenting" && newValue === "stop") {
-          dispatch(
-            setPresenter({ participantId: participant._id, presenter: false })
-          );
-        }
-
-        if (key === "handraise" && newValue === "start") {
-          dispatch(
-            setRaiseHand({ participantId: participant._id, raiseHand: true })
-          );
-        }
-
-        if (key === "handraise" && newValue === "stop") {
-          dispatch(
-            setRaiseHand({ participantId: participant._id, raiseHand: false })
-          );
-        }
-
-        if (key === "isModerator" && newValue === "true") {
-          dispatch(
-            setModerator({ participantId: participant._id, isModerator: true })
-          );
-        }
-
-        if (key === "resolution") {
-          dispatch(
-            setUserResolution({
-              participantId: participant._id,
-              resolution: newValue,
-            })
-          );
-        }
-      }
-    );
-
-    conference.addEventListener(
       SariskaMediaTransport.events.conference.LOBBY_USER_JOINED,
       (id, displayName) => {
         new Audio(
           "https://sdk.sariska.io/knock_0b1ea0a45173ae6c10b084bbca23bae2.ogg"
         ).play();
         setLobbyUser((lobbyUser) => [...lobbyUser, { id, displayName }]);
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.MESSAGE_RECEIVED,
-      (id, text, ts) => {
-        dispatch(
-          addMessage({
-            text: text,
-            user: getUserById(id, conference),
-            time: new Date(),
-          })
-        );
-        if (id !== conference.myUserId()) {
-          dispatch(unreadMessage(1));
-        }
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.NOISY_MIC,
-      () => {
-        dispatch(
-          showNotification({
-            autoHide: true,
-            message: "Your mic seems to be noisy",
-            severity: "info",
-          })
-        );
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.TALK_WHILE_MUTED,
-      () => {
-        dispatch(
-          showNotification({
-            autoHide: true,
-            message: "Trying to speak?  your are muted!!!",
-            severity: "info",
-          })
-        );
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.NO_AUDIO_INPUT,
-      () => {
-        dispatch(
-          showNotification({
-            autoHide: true,
-            message: "Looks like device has no audio input",
-            severity: "warning",
-          })
-        );
       }
     );
 
@@ -450,32 +270,6 @@ const Meeting = () => {
       }
     );
 
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.ANALYTICS_EVENT_RECEIVED,
-      (payload) => {
-        const { name, action, actionSubject, source, attributes } = payload;
-        ReactGA.event({
-          category: name,
-          action,
-          label: actionSubject,
-        });
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.KICKED,
-      (id) => {
-        // if a user kicked by moderator
-        // kicked participant id
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.PARTICIPANT_KICKED,
-      (actorParticipant, kickedParticipant, reason) => {}
-    );
-
-    preloadIframes(conference);
     SariskaMediaTransport.effects.createRnnoiseProcessor();
     SariskaMediaTransport.mediaDevices.addEventListener(
       SariskaMediaTransport.events.mediaDevices.DEVICE_LIST_CHANGED,
@@ -505,13 +299,6 @@ const Meeting = () => {
         dispatch(setPinParticipant(null));
       }
 
-      if (layout.presenterParticipantIds.find((item) => item === id)) {
-        dispatch(setPresenter({ participantId: id, presenter: null }));
-      }
-
-      if (layout.raisedHandParticipantIds[id]) {
-        dispatch(setRaiseHand({ participantId: id, raiseHand: null }));
-      }
       dispatch(participantLeft(id));
     };
     conference.addEventListener(
@@ -555,13 +342,13 @@ const Meeting = () => {
       {layout.type === SPEAKER && (
         <SpeakerLayout dominantSpeakerId={dominantSpeakerId} />
       )}
-      {layout.type === GRID && (
+      {/* {layout.type === GRID && (
         <GridLayout dominantSpeakerId={dominantSpeakerId} />
-      )}
+      )} */}
       
-      {layout.type === PRESENTATION && (
+      {/* {layout.type === PRESENTATION && (
         <PresentationLayout dominantSpeakerId={dominantSpeakerId} />
-      )}
+      )} */}
       
       <ActionButtons dominantSpeakerId={dominantSpeakerId} />
       {lobbyUser.map((item) => (

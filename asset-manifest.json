@@ -1,24 +1,24 @@
 {
   "files": {
-    "main.css": "/static/css/main.20621830.chunk.css",
-    "main.js": "/static/js/main.da7d49c2.chunk.js",
-    "main.js.map": "/static/js/main.da7d49c2.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.89d7cb48.js",
-    "runtime-main.js.map": "/static/js/runtime-main.89d7cb48.js.map",
-    "static/js/2.c0f53822.chunk.js": "/static/js/2.c0f53822.chunk.js",
-    "static/js/2.c0f53822.chunk.js.map": "/static/js/2.c0f53822.chunk.js.map",
-    "static/js/3.5fd143a9.chunk.js": "/static/js/3.5fd143a9.chunk.js",
-    "static/js/3.5fd143a9.chunk.js.map": "/static/js/3.5fd143a9.chunk.js.map",
-    "index.html": "/index.html",
-    "static/css/main.20621830.chunk.css.map": "/static/css/main.20621830.chunk.css.map",
-    "static/js/2.c0f53822.chunk.js.LICENSE.txt": "/static/js/2.c0f53822.chunk.js.LICENSE.txt",
-    "static/media/index.css": "/static/media/DMSans-Regular.4ee96395.ttf",
-    "static/media/Logo_Empty.1e6339b3.svg": "/static/media/Logo_Empty.1e6339b3.svg"
+    "main.css": "/meet-recording/static/css/main.ed07f431.chunk.css",
+    "main.js": "/meet-recording/static/js/main.da7d49c2.chunk.js",
+    "main.js.map": "/meet-recording/static/js/main.da7d49c2.chunk.js.map",
+    "runtime-main.js": "/meet-recording/static/js/runtime-main.e6396877.js",
+    "runtime-main.js.map": "/meet-recording/static/js/runtime-main.e6396877.js.map",
+    "static/js/2.c0f53822.chunk.js": "/meet-recording/static/js/2.c0f53822.chunk.js",
+    "static/js/2.c0f53822.chunk.js.map": "/meet-recording/static/js/2.c0f53822.chunk.js.map",
+    "static/js/3.5fd143a9.chunk.js": "/meet-recording/static/js/3.5fd143a9.chunk.js",
+    "static/js/3.5fd143a9.chunk.js.map": "/meet-recording/static/js/3.5fd143a9.chunk.js.map",
+    "index.html": "/meet-recording/index.html",
+    "static/css/main.ed07f431.chunk.css.map": "/meet-recording/static/css/main.ed07f431.chunk.css.map",
+    "static/js/2.c0f53822.chunk.js.LICENSE.txt": "/meet-recording/static/js/2.c0f53822.chunk.js.LICENSE.txt",
+    "static/media/index.css": "/meet-recording/static/media/DMSans-Regular.4ee96395.ttf",
+    "static/media/Logo_Empty.1e6339b3.svg": "/meet-recording/static/media/Logo_Empty.1e6339b3.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.89d7cb48.js",
+    "static/js/runtime-main.e6396877.js",
     "static/js/2.c0f53822.chunk.js",
-    "static/css/main.20621830.chunk.css",
+    "static/css/main.ed07f431.chunk.css",
     "static/js/main.da7d49c2.chunk.js"
   ]
 }

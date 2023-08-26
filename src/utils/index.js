@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import {GENERATE_TOKEN_URL, GET_PRESIGNED_URL} from "../constants";
+import {GENERATE_TOKEN_URL} from "../constants";
 
 export function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -473,35 +473,6 @@ export function encodeHTML(str){
         }
 
         return full;
-    });
-}
-
-
-export function getPresignedUrl(params) {
-    return new Promise((resolve, reject) => {
-        const body = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem("SARISKA_TOKEN")}`
-            },
-            body: JSON.stringify({
-                fileType: params.fileType,
-                fileName: params.fileName
-            })
-        };
-
-        fetch(GET_PRESIGNED_URL, body)
-            .then((response) => {
-                if (response.ok) {
-                    return response.json(); //then consume it again, the error happens
-                }
-            })
-            .then(function (response) {
-                resolve(response);
-            }).catch((error) => {
-            reject(error)
-        })
     });
 }
 

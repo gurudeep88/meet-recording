@@ -2,26 +2,19 @@ import {
   Avatar,
   Box,
   makeStyles,
-  Tooltip,
-  Typography,
+  Typography
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { color } from "../../../assets/styles/_color";
 import Video from "../Video";
 import Audio from "../Audio";
-import PanTool from "@material-ui/icons/PanTool";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import MicIcon from "@material-ui/icons/Mic";
 import MicOffIcon from "@material-ui/icons/MicOff";
-import { setPinParticipant } from "../../../store/actions/layout";
-import PinParticipant from "../PinParticipant";
 import classnames from "classnames";
-import { videoShadow, calculateSteamHeightAndExtraDiff, isMobileOrTab } from "../../../utils";
-import AudioLevelIndicator from "../AudioIndicator";
-import SubTitle from "../SubTitle";
+import { calculateSteamHeightAndExtraDiff, isMobileOrTab } from "../../../utils";
 import { useDocumentSize } from "../../../hooks/useDocumentSize";
 import { profile } from "../../../store/reducers/profile";
-import { useWindowResize } from "../../../hooks/useWindowResize";
 
 const VideoBox = ({
   participantTracks,
@@ -33,7 +26,6 @@ const VideoBox = ({
   isActiveSpeaker,
   isFilmstrip,
   isLargeVideo,
-  isTranscription,
   numParticipants
 }) => {
     
@@ -163,7 +155,7 @@ const VideoBox = ({
     },
   }));
   const classes = useStyles();
-  const { pinnedParticipant, raisedHandParticipantIds } = useSelector(
+  const { pinnedParticipant } = useSelector(
     (state) => state.layout
   );
   let videoTrack = isPresenter
@@ -175,17 +167,7 @@ const VideoBox = ({
     );
   }
   const audioTrack = participantTracks?.find((track) => track?.isAudioTrack());
-  const audioIndicator = useSelector((state) => state.audioIndicator);
-  const dispatch = useDispatch();
-  const [visiblePinParticipant, setVisiblePinPartcipant] = useState(true);
-  let audioLevel = audioIndicator[participantDetails?.id];
-  const subtitle = useSelector((state) => state.subtitle);
-  const conference = useSelector((state) => state.conference);
   const { documentWidth, documentHeight } = useDocumentSize();
-
-  const togglePinParticipant = (id) => {
-    dispatch(setPinParticipant(id, isPresenter));
-  };
 
   const audioIndicatorActiveClasses = classnames(classes.avatar, {
     largeVideo: isLargeVideo,
@@ -212,13 +194,8 @@ const VideoBox = ({
   return (
     <Box
       style={{ width: `${width}px`, height: `${height}px` }}
-      onMouseEnter={() => setVisiblePinPartcipant(true)}
-      onMouseLeave={() => setVisiblePinPartcipant(false)}
       className={classes.root}
     >
-      {conference?.getParticipantCount() > 1 &&
-        isActiveSpeaker &&
-        !isPresenter && <div className={classes.videoBorder}></div>}
       <Box className={classnames(classes.audioBox, { audioBox: true })}>
         {audioTrack?.isMuted() ? <MicOffIcon /> : <MicIcon />}
         {!audioTrack?.isLocal() && <Audio track={audioTrack} />}
@@ -230,7 +207,6 @@ const VideoBox = ({
             style={
               isFilmstrip
                 ? {
-                    boxShadow: videoShadow(audioLevel),
                     background: avatarColor,
                   }
                 : { background: avatarColor }
@@ -253,22 +229,6 @@ const VideoBox = ({
           <Video isPresenter={isPresenter} track={videoTrack} />
         </Box>
       )}
-      <Box
-        className={classnames(classes.rightControls, { rightControls: true })}
-      >
-        {visiblePinParticipant && (
-          <PinParticipant
-            participantId={participantDetails?.id}
-            pinnedParticipantId={pinnedParticipant.participantId}
-            togglePinParticipant={togglePinParticipant}
-          />
-        )}
-        {raisedHandParticipantIds[participantDetails?.id] && (
-          <Typography className={classes.handRaise}>
-            <PanTool />
-          </Typography>
-        )}
-      </Box>
       <Box className={classnames(classes.textBox, { userDetails: true })}>
         <Typography>
           {localUserId === participantDetails?.id
@@ -276,16 +236,6 @@ const VideoBox = ({
             : participantDetails?.name}
         </Typography>
       </Box>
-      {!isFilmstrip && (
-        <Box>
-          <AudioLevelIndicator passedAudioLevel={audioLevel} />
-        </Box>
-      )}
-      {isTranscription && subtitle.text && (
-        <Box className={classes.subtitle}>
-          <SubTitle subtitle={subtitle} />
-        </Box>
-      )}
     </Box>
   );
 };

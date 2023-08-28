@@ -9,9 +9,9 @@ function App() {
     return (
         <Fragment>
             <Switch>
-                <Route exact path="/leave" component={Leave} />
-                <Route exact path="/:meetingId" component={Meeting}/>
-                <Route exact path="/" component={Home} />
+                <Route exact path="/meet/leave" component={Leave} />
+                <Route exact path="/meet/:meetingId" component={Meeting}/>
+                <Route exact path="/meet" component={Home} />
             </Switch>
         </Fragment>
     );

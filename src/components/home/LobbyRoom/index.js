@@ -340,9 +340,9 @@ const LobbyRoom = ({ tracks }) => {
         console.log('USER_ROLE_CHANGED', id, role)
         if (conference.isModerator() && !testMode) {
           conference.enableLobby();
-          history.push(`/${meetingTitle}`);
+          history.push(`/meet/${meetingTitle}`);
         } else {
-          history.push(`/${meetingTitle}`);
+          history.push(`/meet/${meetingTitle}`);
         }
       }
     );

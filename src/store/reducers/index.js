@@ -8,7 +8,6 @@ import {layout, layoutInitialState} from "./layout";
 import {profile} from "./profile";
 import {media} from "./media";
 import {color} from "./color";
-import {audioIndicator} from "./audioIndicator";
 import {notification} from "./notification";
 import {snackbar} from "./snackbar";
 import { EXIT_FULL_SCREEN_MODE } from "../../constants";
@@ -22,7 +21,6 @@ export const appReducer = combineReducers({
     profile,
     media,
     color,
-    audioIndicator,
     notification,
     snackbar
 });

@@ -26,7 +26,6 @@ import {
   setPinParticipant,
   setLayout
 } from "../../store/actions/layout";
-import { setAudioLevel } from "../../store/actions/audioIndicator";
 import { showNotification } from "../../store/actions/notification";
 import { useOnlineStatus } from "../../hooks/useOnlineStatus";
 import {
@@ -216,13 +215,6 @@ const Meeting = () => {
           "https://sdk.sariska.io/knock_0b1ea0a45173ae6c10b084bbca23bae2.ogg"
         ).play();
         setLobbyUser((lobbyUser) => [...lobbyUser, { id, displayName }]);
-      }
-    );
-
-    conference.addEventListener(
-      SariskaMediaTransport.events.conference.TRACK_AUDIO_LEVEL_CHANGED,
-      (participantId, audioLevel) => {
-        dispatch(setAudioLevel({ participantId, audioLevel }));
       }
     );
 

@@ -451,7 +451,7 @@ const LobbyRoom = ({ tracks }) => {
         {queryParams.meetingId ? 
           <Typography className={classes.headerJoin}>Joins {queryParams.meetingId}</Typography>
           :
-          <Typography className={classes.header}>Creates Meeting</Typography>
+          <Typography className={classes.header}>Create Meeting</Typography>
         }
         </Box>
         <Box className={!queryParams.meetingId ? classes.permissions : classes.joinPermissions}>

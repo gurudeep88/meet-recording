@@ -4,7 +4,7 @@ import {
   Hidden,
   makeStyles
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SariskaMediaTransport from "sariska-media-transport";
 import { color } from "../../../assets/styles/_color";
 import { useHistory } from "react-router-dom";
@@ -14,25 +14,18 @@ import MicIcon from "@material-ui/icons/Mic";
 import MicOffIcon from "@material-ui/icons/MicOff";
 import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import AlbumIcon from "@material-ui/icons/Album";
 import {
   localTrackMutedChanged
 } from "../../../store/actions/track";
 import {
-  RECORDING_ERROR_CONSTANTS
+  RECORDING_ERROR_CONSTANTS, s3
 } from "../../../constants";
-import {
-  setLayout,
-  setPresentationtType
-} from "../../../store/actions/layout";
 import { clearAllReducers } from "../../../store/actions/conference";
-import {
-  formatAMPM
-} from "../../../utils";
 import MoreAction from "../../shared/MoreAction";
-import DrawerBox from "../../shared/DrawerBox";
 import { showSnackbar } from "../../../store/actions/snackbar";
 import StyledTooltip from "../../shared/StyledTooltip";
+import { showNotification } from "../../../store/actions/notification";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -196,7 +189,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ActionButtons = ({ dominantSpeakerId }) => {
+const ActionButtons = () => {
   const history = useHistory();
   const audioTrack = useSelector((state) => state.localTrack).find((track) =>
     track.isAudioTrack()
@@ -207,16 +200,12 @@ const ActionButtons = ({ dominantSpeakerId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const conference = useSelector((state) => state.conference);
-  const localTracks = useSelector((state) => state.localTrack);
-  const [time, setTime] = useState(formatAMPM(new Date()));
   const profile = useSelector((state) => state.profile);
-  const layout = useSelector((state) => state.layout);
   const [featureStates, setFeatureStates] = useState({});
+  const recordingSession = useRef(null);
   const [moreActionState, setMoreActionState] = React.useState({
     right: false,
   });
-
-  const skipResize = false;
 
   const action = (actionData) => {
     featureStates[actionData.key] = actionData.value;
@@ -242,57 +231,20 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     await videoTrack?.unmute();
     dispatch(localTrackMutedChanged());
   };
+ 
 
-  const toggleMoreActionDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setMoreActionState({ ...moreActionState, [anchor]: open });
-  };
-
-  const moreActionList = (anchor) => (
-    <>
-      <MoreAction
-        dominantSpeakerId={dominantSpeakerId}
-        action={action}
-        featureStates={featureStates}
-        setLayoutAndFeature={setLayoutAndFeature}
-        onClick={toggleMoreActionDrawer("right", false)}
-        participantTitle = "Participants Details"
-        chatTitle="Chat Box"
-      />
-    </>
-  );
-
-  const setLayoutAndFeature = (layoutType, presentationType, actionData) => {
-    dispatch(setLayout(layoutType));
-    dispatch(setPresentationtType({ presentationType }));
-    action(actionData);
-  };
-
-  useEffect(() => {
-
-    const interval = setInterval(() => {
-      setTime(formatAMPM(new Date()));
-    }, 1000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
+  console.log('ouyt RECORDER_STATE_CHANGED', featureStates, conference.getParticipantsWithoutHidden())
   useEffect(() => {
     conference.getParticipantsWithoutHidden().forEach((item) => {
+      console.log('first item._properties?.recording', item._properties?.recording, featureStates)
       if (item._properties?.recording) {
         action({ key: "recording", value: true });
       }
     });
-
     conference.addEventListener(
       SariskaMediaTransport.events.conference.RECORDER_STATE_CHANGED,
       (data) => {
+        console.log('RECORDER_STATE_CHANGED', data, featureStates)
 
         if (data._status === "on" && data._mode === "file") {
           conference.setLocalParticipantProperty("recording", true);
@@ -325,6 +277,81 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     );
   }, []);
 
+  const startRecording = async () => {
+    if (featureStates.recording) {
+      return;
+    }
+
+    if (conference?.getRole() === "none") {
+      return dispatch(
+        showNotification({
+          severity: "info",
+          autoHide: true,
+          message: "You are not moderator!!",
+        })
+      );
+    }
+
+    // const response = await authorizeDropbox();
+    // if (!response?.token) {
+    //   return dispatch(
+    //     showNotification({
+    //       severity: "error",
+    //       message: "Recording failed no dropbox token",
+    //     })
+    //   );
+    // }
+    // const appData = {
+    //   file_recording_metadata: {
+    //     upload_credentials: {
+    //       service_name: "dropbox",
+    //       token: response.token,
+    //       app_key: DROPBOX_APP_KEY,
+    //       r_token: response.rToken,
+    //     },
+    //   },
+    // };
+
+    dispatch(
+      showSnackbar({
+        severity: "info",
+        message: "Starting Recording",
+        autoHide: false,
+      })
+    );
+
+    const session = await conference.startRecording({
+      mode: SariskaMediaTransport.constants.recording.mode.FILE,
+      appData: JSON.stringify(s3),
+    });
+    console.log('first session', session);
+    recordingSession.current = session;
+  };
+
+  const stopRecording = async () => {
+    console.log('stopRecording', featureStates);
+    if (!featureStates.recording) {
+      console.log('stopRecording if', featureStates);
+      return;
+    }
+    console.log('stopRecording after', featureStates);
+    if (conference?.getRole() === "none") {
+      return dispatch(
+        showNotification({
+          severity: "info",
+          autoHide: true,
+          message: "You are not moderator!!",
+        })
+      );
+    }
+    console.log('stopRecording pop', featureStates);
+    await conference.stopRecording(
+      localStorage.getItem("recording_session_id")
+    );
+    console.log('stopRecording end', featureStates);
+  };
+
+
   const leaveConference = () => {
     dispatch(clearAllReducers());
     history.push("/leave");
@@ -334,7 +361,6 @@ const ActionButtons = ({ dominantSpeakerId }) => {
     <Box id="footer" className={classes.root}>
       <Hidden smDown>
         <Box className={classes.infoContainer}>
-          <Box>{time}</Box>
           <Box className={classes.separator}>|</Box>
           <Box>{profile.meetingTitle}</Box>
         </Box>
@@ -379,18 +405,16 @@ const ActionButtons = ({ dominantSpeakerId }) => {
           <CallEndIcon onClick={leaveConference} className={classes.end} />
         </StyledTooltip>
       </Hidden>
-        <StyledTooltip title="More Actions">
-          <MoreVertIcon
-            onClick={toggleMoreActionDrawer("right", true)}
-            className={classes.more}
-          />
-        </StyledTooltip>
-        <DrawerBox
-          open={moreActionState["right"]}
-          onClose={toggleMoreActionDrawer("right", false)}
+      <StyledTooltip
+          title={featureStates.recording ? "Stop Recording" : "Start Recording"}
         >
-          {moreActionList("right")}
-        </DrawerBox>
+          {featureStates.recording ? (
+            <AlbumIcon onClick={stopRecording} className={classes.active} />
+          ) : (
+            <AlbumIcon onClick={startRecording} />
+          )}
+        </StyledTooltip>
+        
       </Box>
     </Box>
   );
